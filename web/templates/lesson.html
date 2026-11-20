@@ -1,27 +1,28 @@
 {{define "title"}}{{.Lesson.Title}} · {{.Course.Title}}{{end}}
-
 {{define "content"}}
-<p class="breadcrumb"><a href="{{.Base}}">{{.Module.Title}}</a></p>
-<article class="lesson">
-  <h1>{{.Lesson.Title}}</h1>
+<div class="deck">
+  <section class="slide slide-title">
+    <p class="breadcrumb"><a href="{{.Base}}">{{.Module.Title}}</a></p>
+    <h1>{{.Lesson.Title}}</h1>
+    <p class="deck-hint">Avanza con la flecha → del teclado o con los botones de abajo.</p>
+  </section>
   {{.Body}}
-</article>
-
-{{with .Lesson.Exercise}}
-<aside class="exercise">
-  <h2>Ejercicio</h2>
-  <p>{{.Goal}}</p>
-  <p>Abre <code>exercises/{{.Path}}</code> y ejecuta:</p>
-  <pre><code>go test ./{{.Path}}</code></pre>
-</aside>
-{{end}}
-
-<label class="done-toggle">
-  <input type="checkbox" data-done="{{.ID}}"> Marcar como completada
-</label>
-
-<nav class="pager">
-  {{with .Prev}}<a href="{{$.Base}}{{.ID}}/" rel="prev">← {{.Lesson.Title}}</a>{{end}}
-  {{with .Next}}<a href="{{$.Base}}{{.ID}}/" rel="next">{{.Lesson.Title}} →</a>{{end}}
-</nav>
+  <section class="slide slide-end">
+    {{with .Lesson.Exercise}}
+    <aside class="exercise">
+      <h2>Ejercicio</h2>
+      <p>{{.Goal}}</p>
+      <p>Abre <code>exercises/{{.Path}}</code> y ejecuta:</p>
+      <pre><code>go test ./{{.Path}}</code></pre>
+    </aside>
+    {{end}}
+    <label class="done-toggle">
+      <input type="checkbox" data-done="{{.ID}}"> Marcar como completada
+    </label>
+    <nav class="pager">
+      {{with .Prev}}<a href="{{$.Base}}{{.ID}}/" rel="prev">← {{.Lesson.Title}}</a>{{end}}
+      {{with .Next}}<a href="{{$.Base}}{{.ID}}/" rel="next">{{.Lesson.Title}} →</a>{{end}}
+    </nav>
+  </section>
+</div>
 {{end}}

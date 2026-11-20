@@ -75,6 +75,12 @@ func TestPages(t *testing.T) {
 			want:     []string{"<h1>First</h1>", "<p>First body</p>", "if a &lt; b", `data-done="00-intro/01-first"`, `rel="next"`},
 		},
 		{
+			name:     "lesson is a deck with a title card and a closing card",
+			path:     "/00-intro/01-first/",
+			wantCode: http.StatusOK,
+			want:     []string{`<div class="deck">`, `<section class="slide slide-title">`, `<section class="slide slide-end">`, `src="/static/js/deck.js"`},
+		},
+		{
 			name:     "lesson shows its exercise",
 			path:     "/00-intro/02-second/",
 			wantCode: http.StatusOK,
@@ -110,7 +116,7 @@ func TestPages(t *testing.T) {
 func TestBasePathPrefixesLinks(t *testing.T) {
 	_, body := get(t, newTestSite(t, "/paseo/").Handler(), "/")
 
-	for _, w := range []string{`href="/paseo/static/css/style.css"`, `href="/paseo/00-intro/01-first/"`, `src="/paseo/static/js/animations.js"`} {
+	for _, w := range []string{`href="/paseo/static/css/style.css"`, `href="/paseo/00-intro/01-first/"`, `src="/paseo/static/js/animations.js"`, `src="/paseo/static/js/deck.js"`} {
 		if !strings.Contains(body, w) {
 			t.Errorf("index does not contain %q", w)
 		}
@@ -140,6 +146,7 @@ func TestBuildWritesEveryPage(t *testing.T) {
 		"static/css/style.css":          ":root",
 		"static/js/progress.js":         "localStorage",
 		"static/js/animations.js":       "import(",
+		"static/js/deck.js":             "replaceState",
 		"static/js/animations/scene.js": "class Scene",
 	}
 	for file, want := range pages {

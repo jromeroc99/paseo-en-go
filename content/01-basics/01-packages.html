@@ -1,3 +1,4 @@
+<section class="slide">
 <p>
   Un programa de verdad no cabe en un solo archivo, y tampoco hace falta
   escribirlo todo desde cero. Calcular una raíz cuadrada, imprimir texto o
@@ -5,7 +6,9 @@
   código reutilizable en <em>packages</em> (paquetes: carpetas de código con
   un nombre), y tú los traes a tu programa con <code>import</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Todo archivo de Go empieza diciendo a qué paquete pertenece. Los programas
@@ -18,23 +21,33 @@
   <code>"math/rand"</code>, lo usas como <code>rand</code>. Cuando importas
   varios, lo habitual es agruparlos entre paréntesis.
 </p>
+</section>
+
+<section class="slide">
+<h2>Nombres exportados</h2>
 <p>
   Dentro de un paquete, un nombre es <em>exported</em> (exportado: visible
   desde fuera del paquete) cuando empieza por mayúscula. <code>math.Sqrt</code>
   y <code>math.Pi</code> son exportados. Lo que empieza por minúscula solo
   existe dentro de su propio paquete.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/packages/main.go"}}
 <p>Salida:</p>
 <pre><code>La raíz cuadrada de 16 es 4</code></pre>
+</section>
 
+<section class="slide">
 <p>Y un nombre exportado, que empieza por mayúscula:</p>
 {{code "examples/exported-names/main.go"}}
 <p>Salida:</p>
 <pre><code>3.141592653589793</code></pre>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>Fíjate en qué pasa si escribes <code>pi</code> en minúscula:</p>
 <pre><code class="language-go">package main
@@ -48,13 +61,20 @@ func main() {
 	fmt.Println(math.pi)
 }</code></pre>
 <pre><code>./prog.go:9:19: undefined: math.pi (but have Pi)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:9:19: undefined: math.pi (but have Pi)</code></pre>
 <p>
   Así se lee: en el archivo <code>prog.go</code>, línea 9, columna 19, el
   nombre <code>math.pi</code> no existe. El compilador incluso te da la pista:
   el paquete sí tiene <code>Pi</code>. Desde fuera de <code>math</code> solo
   ves los nombres que empiezan por mayúscula.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Importar un paquete y no usarlo. En otros lenguajes es un aviso; en Go es un
@@ -71,7 +91,13 @@ func main() {
 	fmt.Println("hola")
 }</code></pre>
 <pre><code>./prog.go:5:2: "math" imported and not used</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo arreglarlo</h2>
+<pre><code>./prog.go:5:2: "math" imported and not used</code></pre>
 <p>
   La solución es borrar el import que sobra. La mayoría de editores con
   soporte para Go lo hacen solos al guardar el archivo.
 </p>
+</section>

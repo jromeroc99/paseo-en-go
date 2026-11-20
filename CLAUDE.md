@@ -67,6 +67,12 @@ cd exercises && go test -tags solution ./...   # reference solutions must pass
   first, then the concept, then the example. One idea per lesson.
 - Lesson structure: a short motivating problem, the concept, a compiled
   example, the common mistake to avoid, and the exercise (if any).
+- A lesson body is a deck: a list of `<section class="slide">` cards, one
+  idea each. The template adds the title card and the closing card (the
+  exercise, the "done" checkbox and the pager), so never write them.
+- One card must fit a 1280×720 screen without scrolling: at most about 90
+  words of prose and one code block. A program and its output may share a
+  card. If a card does not fit, split it; never shrink the text.
 - Show errors on purpose: when a concept has a typical compiler error, show
   the exact message and explain how to read it.
 - Embed snippets with `{{code "examples/<name>/main.go"}}` instead of pasting
@@ -85,6 +91,11 @@ cd exercises && go test -tags solution ./...   # reference solutions must pass
   state and the exercise box. If everything glows, nothing does.
 - The index is a *walk*: a neon route with one stop per lesson that lights up
   when the lesson is done. Animations share this same look.
+- A lesson is a deck of cards, one on screen at a time and no page scroll.
+  `deck.js` moves through it with the arrow keys, Space, the bar under the
+  card or a swipe; → on the last card opens the next lesson. The bar repeats
+  the walk: a mini route with one stop per card. Without JS the cards stack
+  and the page scrolls like an article.
 - Body text in a readable system font; code in monospace.
 - Accessible contrast (WCAG AA), visible keyboard focus, works on a phone.
 

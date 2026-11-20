@@ -351,6 +351,190 @@ pre {
 
 .pager [rel="next"] { margin-left: auto; text-align: right; }
 
+/* Lesson deck: one card on screen at a time. deck.js adds .is-deck to
+   <html>; without it the cards stack and the page scrolls like an article. */
+
+.deck-hint { display: none; }
+
+.is-deck body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.is-deck .page {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 60rem;
+  min-height: 0;
+  padding: 1rem;
+}
+
+.is-deck .deck {
+  display: grid;
+  min-height: 0;
+}
+
+.is-deck .slide {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+  overflow-y: auto; /* last resort on a small phone; the page never scrolls */
+  padding: clamp(1rem, 3vw, 2rem) clamp(1.25rem, 4vw, 3rem);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  touch-action: pan-y; /* horizontal swipes belong to the deck */
+  /* The incoming card turns visible at once, or focus() would land on a
+     still-hidden card and be dropped. */
+  transition: opacity 0.2s, transform 0.2s, visibility 0s;
+}
+
+/* Inside a card the gap sets the rhythm: flexbox does not collapse
+   margins, so the article margins would add up and waste the height.
+   A code block scrolls sideways, which would let flexbox squash it to a
+   scrolling sliver; it keeps its full height instead. */
+.is-deck .slide > * { flex-shrink: 0; margin-block: 0; }
+
+/* Auto margins centre the content vertically and, unlike centring with
+   flexbox, never push the top of a tall card out of reach. */
+.is-deck .slide > :first-child { margin-top: auto; }
+.is-deck .slide > :last-child { margin-bottom: auto; }
+
+/* A ten-line program and its output must fit one card on a laptop. */
+.is-deck .slide pre { padding-block: 0.75rem; line-height: 1.45; }
+
+.is-deck .slide[data-pos="before"],
+.is-deck .slide[data-pos="after"] {
+  visibility: hidden;
+  opacity: 0;
+  /* The outgoing card hides only after it has faded out. */
+  transition: opacity 0.2s, transform 0.2s, visibility 0s 0.2s;
+}
+
+.is-deck .slide[data-pos="before"] { transform: translateX(-1.5rem); }
+.is-deck .slide[data-pos="after"] { transform: translateX(1.5rem); }
+
+/* The card takes focus only so a screen reader reads it; it is not a
+   control, so it gets no focus ring. */
+.is-deck .slide:focus { outline: none; box-shadow: none; }
+
+/* On the card's surface, nested boxes sink to the page colour. */
+.is-deck .slide pre,
+.is-deck .slide :not(pre) > code,
+.is-deck .slide .exercise { background: var(--bg); }
+
+.is-deck .deck-hint { display: block; color: var(--muted); }
+
+.is-deck .slide-end { gap: 1.5rem; }
+
+/* Deck bar: the arrows, a mini route with one stop per card, the counter. */
+
+.deck-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.deck-arrow {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--fg);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color 0.15s, box-shadow 0.15s, color 0.15s;
+}
+
+.deck-arrow:hover:not(:disabled) {
+  border-color: var(--accent);
+  box-shadow: var(--glow-faint);
+  color: var(--accent-soft);
+}
+
+.deck-arrow:disabled { opacity: 0.35; cursor: default; }
+
+.deck-route {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deck-route li { display: flex; align-items: center; }
+
+/* The route between two stops, lit once both have been visited. */
+.deck-route li + li::before {
+  content: "";
+  width: 0.6rem;
+  height: 1px;
+  background: var(--line);
+}
+
+.deck-route li:has(.is-visited) + li:has(.is-visited)::before { background: var(--accent); }
+
+/* A 24 px target around a small square stop, like the index route. */
+.deck-dot {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.deck-dot::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--muted);
+  transition: width 0.15s, height 0.15s, background-color 0.15s, box-shadow 0.15s;
+}
+
+.deck-dot:hover::before { background: var(--accent-soft); }
+
+.deck-dot.is-visited::before { background: var(--accent); }
+
+/* The current stop is larger, not only brighter, so colour is not the only cue. */
+.deck-dot[aria-current]::before {
+  width: 0.8rem;
+  height: 0.8rem;
+  background: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.deck-count {
+  min-width: 5ch;
+  margin: 0;
+  color: var(--muted);
+  font: 0.85rem var(--mono);
+  text-align: center;
+}
+
+/* On a phone the arrows and the counter are enough. */
+@media (max-width: 30rem) {
+  .deck-route { display: none; }
+  .deck-bar { justify-content: space-between; }
+}
+
 /* Animations: a looping scene in a frame, its code and its caption. */
 
 .anim {
