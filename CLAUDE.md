@@ -52,25 +52,63 @@ cd exercises && go test -tags solution ./...   # reference solutions must pass
 
 ## Content
 
-- Lesson text is in **neutral Spanish** (no regional slang). Code, identifiers,
-  comments, tests and commit messages are in **English**.
+- Code, identifiers, comments, tests and commit messages are in **English**.
+- Everything the student reads (lessons, UI text, exercise goals) is in
+  **neutral Spanish from Spain**:
+  - Address the reader as `tú`: "abre", "ejecuta", "fíjate". Never voseo
+    ("abrí", "corré") and never `usted`.
+  - Spain vocabulary: "ordenador" (not "computadora"), "archivo", "carpeta",
+    "ejecutar un programa/test" (not "correr").
+  - No regional slang or idioms. Clear, warm and direct, short sentences.
+  - Keep Go terms in English when that is what the reader will see in the
+    docs and errors (`slice`, `map`, `struct`, `goroutine`), introduced in
+    *cursiva* the first time with a one-line Spanish explanation.
 - Write for someone who is learning to program in Go: explain the problem
   first, then the concept, then the example. One idea per lesson.
+- Lesson structure: a short motivating problem, the concept, a compiled
+  example, the common mistake to avoid, and the exercise (if any).
+- Show errors on purpose: when a concept has a typical compiler error, show
+  the exact message and explain how to read it.
 - Embed snippets with `{{code "examples/<name>/main.go"}}` instead of pasting
   code into HTML, so every example is compiled and never goes stale.
 - Adding a lesson: add it to `content/catalog.go`, create its `.html` body,
   run `go test ./...` (it fails if a body is missing or a slug is invalid).
 
+## Visual style
+
+- **Dark theme only.** Deep background, light text, one accent colour. All
+  colours are CSS tokens on `:root` in `web/static/css/style.css`; never
+  hard-code a colour anywhere else.
+- Retro pixel touches that support reading, not decorate it: square corners,
+  hard pixel shadows (`box-shadow` with no blur), stepped borders. Body text
+  stays in a readable system font; code in monospace.
+- Accessible contrast (WCAG AA), visible keyboard focus, works on a phone.
+
 ## Animations
 
-- Pixel-art style: simple, visual and pretty. A small palette, crisp pixels
-  (`image-rendering: pixelated`), chunky shapes, short and clear motion.
-- Use them only where a picture explains better than text: memory and
-  pointers, slices and backing arrays, interfaces, readers, channels.
-- Each animation is a vanilla JS Web Component in `web/static/js/animations/`,
-  one per file, used as a tag inside the lesson body (e.g. `<pointer-demo>`).
-- Always readable without the animation (alt text or a static fallback), and
-  respect `prefers-reduced-motion`.
+Pixel art: simple, visual and pretty. Their only job is to make an invisible
+concept visible (memory, pointers, backing arrays, interface values, buffers,
+channels). If text explains it just as well, do not animate it.
+
+- **Palette:** only the `--px-*` tokens from `style.css` (a small dark-friendly
+  palette). Each colour has one meaning across the whole course, e.g. a value,
+  a pointer, a highlight, an error.
+- **Pixels:** draw on a small `<canvas>` (e.g. 160×90) scaled up by an integer
+  factor with `image-rendering: pixelated`, on an 8 px grid. Chunky shapes,
+  no anti-aliasing, no gradients, no blur.
+- **Motion:** step-based (a few frames per move, like a retro game), short
+  scenes of a few seconds. One thing moves at a time, so the eye knows where
+  to look.
+- **Controls:** every animation has play/pause, step forward and restart, and
+  starts paused. Each step shows a one-line Spanish caption explaining what
+  just happened, ideally next to the line of Go code it represents.
+- **Code:** one vanilla JS Web Component per file in
+  `web/static/js/animations/<name>.js`, used as a tag in the lesson body
+  (`<pointer-demo>`). No libraries. The scene is plain data (a list of steps);
+  the drawing code just renders the current step.
+- **Accessibility:** respect `prefers-reduced-motion` (show steps without
+  tweening), keyboard-operable controls, and a text fallback inside the tag
+  so the lesson still makes sense without JS.
 
 ## Exercises
 

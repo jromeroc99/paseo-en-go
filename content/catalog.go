@@ -23,14 +23,14 @@ var Course = course.Course{
 		{
 			Slug:    "00-setup",
 			Title:   "Preparación",
-			Summary: "Instalá Go, descargá los ejercicios y corré tu primer test.",
+			Summary: "Instala Go, descarga los ejercicios y ejecuta tu primer test.",
 			Lessons: []course.Lesson{
 				{
 					Slug:  "01-welcome",
 					Title: "Bienvenida",
 					Exercise: &course.Exercise{
 						Path: "00-setup/hello",
-						Goal: "Hacer que Greeting devuelva un saludo.",
+						Goal: "Haz que Greeting devuelva un saludo.",
 					},
 				},
 			},

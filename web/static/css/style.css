@@ -1,25 +1,32 @@
+/* Dark theme only. Every colour lives here as a token. */
 :root {
-  --bg: #fdfdfc;
-  --fg: #1f2328;
-  --muted: #59636e;
-  --accent: #007d9c; /* Go blue */
-  --surface: #f2f4f6;
-  --border: #d8dee4;
-  --done: #1a7f37;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  line-height: 1.6;
-}
+  color-scheme: dark;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f1419;
-    --fg: #e6e8eb;
-    --muted: #9aa4ae;
-    --accent: #4fc3dc;
-    --surface: #1a2129;
-    --border: #2d3640;
-    --done: #3fb950;
-  }
+  --bg: #0e1117;
+  --surface: #171b24;
+  --surface-2: #202634;
+  --border: #2e3648;
+  --fg: #e7e9ee;
+  --muted: #9aa3b5;
+  --accent: #4fd1e8; /* Go blue, brightened for dark backgrounds */
+  --accent-ink: #0e1117;
+  --done: #5ee38a;
+
+  /* Pixel-art palette for animations: one meaning per colour. */
+  --px-ink: #0e1117;      /* outlines, background */
+  --px-paper: #e7e9ee;    /* text, labels */
+  --px-value: #4fd1e8;    /* a value stored in memory */
+  --px-pointer: #ffb454;  /* a pointer / address / arrow */
+  --px-highlight: #f7e26b;/* what is changing in this step */
+  --px-ok: #5ee38a;       /* success, a received message */
+  --px-error: #ff6b6b;    /* an error, a nil, a panic */
+  --px-dim: #4a5368;      /* unused memory, inactive parts */
+
+  --pixel: 4px;
+  --shadow: var(--pixel) var(--pixel) 0 0 #000;
+
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.65;
 }
 
 * { box-sizing: border-box; }
@@ -30,37 +37,74 @@ body {
   color: var(--fg);
 }
 
-a { color: var(--accent); }
+a { color: var(--accent); text-underline-offset: 3px; }
+
+:focus-visible {
+  outline: var(--pixel) solid var(--px-highlight);
+  outline-offset: 2px;
+}
+
+/* Header */
 
 .site-header {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  border-bottom: var(--pixel) solid var(--border);
 }
 
 .brand {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   text-decoration: none;
 }
+
+.brand::before { content: "▶ "; color: var(--px-pointer); }
 
 .page {
   max-width: 46rem;
   margin: 0 auto;
-  padding: 1.5rem 1rem 4rem;
+  padding: 2rem 1rem 4rem;
 }
+
+h1, h2 { line-height: 1.25; }
 
 .lead, .breadcrumb { color: var(--muted); }
 
+.breadcrumb {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Code */
+
+code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; }
+
+:not(pre) > code {
+  background: var(--surface-2);
+  padding: 0.1em 0.35em;
+}
+
 pre {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: var(--pixel) solid var(--border);
+  box-shadow: var(--shadow);
   padding: 0.75rem 1rem;
   overflow-x: auto;
 }
 
-code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; }
+/* Index */
 
-.module { margin-top: 2rem; }
+.module {
+  margin-top: 2rem;
+  padding: 0.25rem 1.25rem 1rem;
+  background: var(--surface);
+  border: var(--pixel) solid var(--border);
+  box-shadow: var(--shadow);
+}
 
 .lesson-list { padding-left: 1.25rem; }
 
@@ -69,17 +113,38 @@ code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em;
   color: var(--done);
 }
 
+/* Lesson */
+
 .exercise {
   margin-top: 2rem;
   padding: 0.5rem 1rem;
-  border-left: 4px solid var(--accent);
   background: var(--surface);
+  border: var(--pixel) solid var(--accent);
+  box-shadow: var(--shadow);
 }
 
 .done-toggle {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   margin-top: 2rem;
   font-weight: 600;
+  cursor: pointer;
+}
+
+.done-toggle input {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  background: var(--surface-2);
+  border: var(--pixel) solid var(--border);
+  cursor: pointer;
+}
+
+.done-toggle input:checked {
+  background: var(--done);
+  border-color: var(--done);
 }
 
 .pager {
@@ -89,4 +154,26 @@ code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em;
   margin-top: 2rem;
 }
 
+.pager a {
+  padding: 0.4rem 0.75rem;
+  background: var(--surface);
+  border: var(--pixel) solid var(--border);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+
+.pager a:hover { background: var(--accent); color: var(--accent-ink); }
+
 .pager [rel="next"] { margin-left: auto; }
+
+/* Pixel-art animations: integer scaling, no smoothing. */
+
+.pixel-canvas {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  image-rendering: pixelated;
+  background: var(--px-ink);
+  border: var(--pixel) solid var(--border);
+  box-shadow: var(--shadow);
+}
