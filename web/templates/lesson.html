@@ -1,0 +1,27 @@
+{{define "title"}}{{.Lesson.Title}} · {{.Course.Title}}{{end}}
+
+{{define "content"}}
+<p class="breadcrumb">{{.Module.Title}}</p>
+<article class="lesson">
+  <h1>{{.Lesson.Title}}</h1>
+  {{.Body}}
+</article>
+
+{{with .Lesson.Exercise}}
+<aside class="exercise">
+  <h2>Ejercicio</h2>
+  <p>{{.Goal}}</p>
+  <p>Abrí <code>exercises/{{.Path}}</code> y corré:</p>
+  <pre><code>go test ./{{.Path}}</code></pre>
+</aside>
+{{end}}
+
+<label class="done-toggle">
+  <input type="checkbox" data-done="{{.ID}}"> Marcar como completada
+</label>
+
+<nav class="pager">
+  {{with .Prev}}<a href="{{$.Base}}{{.ID}}/" rel="prev">← {{.Lesson.Title}}</a>{{end}}
+  {{with .Next}}<a href="{{$.Base}}{{.ID}}/" rel="next">{{.Lesson.Title}} →</a>{{end}}
+</nav>
+{{end}}

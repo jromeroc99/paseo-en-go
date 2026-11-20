@@ -1,0 +1,92 @@
+:root {
+  --bg: #fdfdfc;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --accent: #007d9c; /* Go blue */
+  --surface: #f2f4f6;
+  --border: #d8dee4;
+  --done: #1a7f37;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1419;
+    --fg: #e6e8eb;
+    --muted: #9aa4ae;
+    --accent: #4fc3dc;
+    --surface: #1a2129;
+    --border: #2d3640;
+    --done: #3fb950;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+a { color: var(--accent); }
+
+.site-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.lead, .breadcrumb { color: var(--muted); }
+
+pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+}
+
+code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; }
+
+.module { margin-top: 2rem; }
+
+.lesson-list { padding-left: 1.25rem; }
+
+.lesson-list .is-done a::after {
+  content: " ✓";
+  color: var(--done);
+}
+
+.exercise {
+  margin-top: 2rem;
+  padding: 0.5rem 1rem;
+  border-left: 4px solid var(--accent);
+  background: var(--surface);
+}
+
+.done-toggle {
+  display: block;
+  margin-top: 2rem;
+  font-weight: 600;
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.pager [rel="next"] { margin-left: auto; }

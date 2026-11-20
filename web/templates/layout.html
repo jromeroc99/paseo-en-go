@@ -1,0 +1,18 @@
+{{define "layout"}}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{block "title" .}}{{.Course.Title}}{{end}}</title>
+  <link rel="stylesheet" href="{{.Base}}static/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="{{.Base}}" class="brand">{{.Course.Title}}</a>
+  </header>
+  <main class="page">
+    {{template "content" .}}
+  </main>
+  <script src="{{.Base}}static/js/progress.js" defer></script>
+</body>
+</html>{{end}}

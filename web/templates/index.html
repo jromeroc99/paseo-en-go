@@ -1,0 +1,19 @@
+{{define "content"}}
+<h1>{{.Course.Title}}</h1>
+<p class="lead">Un recorrido por Go, paso a paso, con ejercicios que resolvés en tu computadora.</p>
+
+{{range .Course.Modules}}
+{{$module := .}}
+<section class="module">
+  <h2>{{.Title}}</h2>
+  <p>{{.Summary}}</p>
+  <ul class="lesson-list">
+    {{range .Lessons}}
+    <li data-lesson="{{$module.Slug}}/{{.Slug}}">
+      <a href="{{$.Base}}{{$module.Slug}}/{{.Slug}}/">{{.Title}}</a>
+    </li>
+    {{end}}
+  </ul>
+</section>
+{{end}}
+{{end}}
