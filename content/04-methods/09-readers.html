@@ -25,7 +25,16 @@
   esta interfaz: <code>strings.Reader</code>, <code>os.File</code>,
   <code>bytes.Buffer</code> y muchos más.
 </p>
-<!-- animation: reader-demo scene=chunks -->
+<reader-demo scene="chunks">
+  <p>
+    Animación: el texto «Hola, Reader!» son 13 bytes y <code>b</code> tiene
+    sitio para 8. El primer <code>Read</code> copia 8 bytes y devuelve
+    <code>n = 8</code>. El segundo solo encuentra 5: sobrescribe el principio
+    de <code>b</code> y los 3 últimos bytes se quedan con restos de la vuelta
+    anterior, por eso solo cuenta <code>b[:n]</code>. El tercero no encuentra
+    nada: <code>n = 0</code> y <code>err = EOF</code>.
+  </p>
+</reader-demo>
 
 <h2>El ejemplo</h2>
 <p>Un texto de 13 bytes leído a trozos de 8:</p>
