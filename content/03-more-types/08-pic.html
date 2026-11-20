@@ -1,9 +1,12 @@
+<section class="slide">
 <p>
   Un tablero de tres en raya tiene filas y columnas. Una imagen es una
   cuadrícula de píxeles. Un slice te da una fila de valores, pero aquí
   necesitas dos dimensiones.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Un slice puede contener cualquier tipo, incluidos otros slices. Un
@@ -12,6 +15,10 @@
   <code>board[y][x]</code> es la fila <code>y</code>, columna
   <code>x</code>.
 </p>
+</section>
+
+<section class="slide">
+<h2>Crear cada fila</h2>
 <p>
   La clave está en cómo se crea. <code>make([][]string, 3)</code> crea el
   slice de fuera con tres filas, pero cada fila es un slice
@@ -25,14 +32,21 @@
   Como cada fila es su propio slice con su propio array, cambiar una celda de
   una fila no afecta a las demás.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/slices-of-slices/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>[X _ _]
 [_ O _]
 [X _ _]</code></pre>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Crear el slice de fuera y olvidarte de las filas:
@@ -44,13 +58,20 @@ func main() {
 	board[0][0] = "X"
 }</code></pre>
 <pre><code>panic: runtime error: index out of range [0] with length 0</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>panic: runtime error: index out of range [0] with length 0</code></pre>
 <p>
   <code>board[0]</code> existe, pero es una fila <code>nil</code> de longitud
   0, así que no tiene índice 0. El mensaje lo dice con exactitud: índice 0
   fuera de rango con longitud 0. Cuando veas «with length 0» en un slice de
   slices, comprueba que creaste cada fila.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio vas a escribir <code>Pic</code>, que construye una
@@ -60,3 +81,4 @@ func main() {
   rellénala con un bucle dentro de otro. Es el primer paso hacia las imágenes
   que dibujarás al final del próximo módulo.
 </p>
+</section>

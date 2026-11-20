@@ -1,15 +1,22 @@
+<section class="slide">
 <p>
   Lees números de un archivo y no sabes cuántos hay. Un slice creado con
   <code>make</code> tiene un tamaño fijo y no puede pasar de su capacidad.
   Necesitas una forma de añadir elementos al final según van llegando.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   La función <code>append</code> añade elementos al final de un slice:
 </p>
 <pre><code class="language-go">s = append(s, 1)
 s = append(s, 2, 3, 4)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Por qué devuelve un slice</h2>
 <p>
   Fíjate en que <code>append</code> no cambia el slice que le pasas:
   devuelve uno nuevo, y tú lo guardas otra vez en <code>s</code>. Hay una
@@ -18,10 +25,18 @@ s = append(s, 2, 3, 4)</code></pre>
   copia los elementos y devuelve un slice sobre ese array nuevo. En los dos
   casos, el resultado es el único slice que tiene la longitud correcta.
 </p>
+</section>
+
+<section class="slide">
+<h2>Desde un slice nil</h2>
 <p>
   <code>append</code> también funciona con un slice <code>nil</code>, así que
   puedes empezar con <code>var s []int</code> y añadir desde ahí.
 </p>
+</section>
+
+<section class="slide">
+<h2>Cuando el array se llena</h2>
 <slice-demo scene="append">
   <p>
     Animación: <code>var s []int</code> es <code>nil</code>, con longitud 0 y
@@ -31,9 +46,14 @@ s = append(s, 2, 3, 4)</code></pre>
     viejos se quedan sin usar.
   </p>
 </slice-demo>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/append/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>len=0 cap=0 []
 len=1 cap=1 [0]
@@ -44,7 +64,9 @@ len=5 cap=6 [0 1 2 3 4]</code></pre>
   Cuánto mayor exactamente es un detalle interno de Go; no escribas código que
   dependa de ese número.
 </p>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>
   Como el resultado de <code>append</code> es lo único que importa, Go no te
@@ -60,12 +82,19 @@ func main() {
 	fmt.Println(s)
 }</code></pre>
 <pre><code>./prog.go:7:2: append(s, 4) (value of type []int) is not used</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo arreglarlo</h2>
+<pre><code>./prog.go:7:2: append(s, 4) (value of type []int) is not used</code></pre>
 <p>
   En la línea 7, el compilador te dice que <code>append(s, 4)</code> produce
   un valor de tipo <code>[]int</code> que nadie usa. La solución es
   guardarlo: <code>s = append(s, 4)</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Guardar el resultado en otra variable y seguir usando la vieja:
@@ -78,3 +107,4 @@ fmt.Println(len(s), len(more)) // 3 4</code></pre>
   quieras dos slices distintos a propósito, escribe siempre
   <code>s = append(s, x)</code>: la misma variable a los dos lados.
 </p>
+</section>

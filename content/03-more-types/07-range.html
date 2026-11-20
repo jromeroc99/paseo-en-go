@@ -1,10 +1,13 @@
+<section class="slide">
 <p>
   Tienes un slice y quieres hacer algo con cada elemento: imprimirlo, sumarlo
   o comprobar si cumple una condición. Con un <code>for</code> clásico
   necesitas un contador, una condición con <code>len</code> y un incremento.
   Funciona, pero es mucho ruido para algo tan común.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   La forma <code>range</code> del bucle <code>for</code> recorre un slice
@@ -14,6 +17,9 @@
 <pre><code class="language-go">for i, v := range s {
 	// i es el índice, v es una copia de s[i]
 }</code></pre>
+</section>
+
+<section class="slide">
 <p>
   Si solo necesitas uno de los dos, tienes dos opciones:
 </p>
@@ -27,9 +33,14 @@
   Una nota moderna: desde Go 1.22 también puedes recorrer un número.
   <code>for i := range 10</code> da vueltas con <code>i</code> de 0 a 9.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/range/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>2^0 = 1
 2^1 = 2
@@ -37,16 +48,23 @@
 2^3 = 8
 2^4 = 16
 2^5 = 32</code></pre>
+</section>
 
+<section class="slide">
 <p>Usando solo el índice, y luego solo el valor:</p>
 {{code "examples/range-skip/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>1
 2
 4
 8
 16</code></pre>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>
   Go no permite variables declaradas que no se usan, y eso incluye las de un
@@ -63,12 +81,19 @@ func main() {
 	}
 }</code></pre>
 <pre><code>./prog.go:7:6: declared and not used: i</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo arreglarlo</h2>
+<pre><code>./prog.go:7:6: declared and not used: i</code></pre>
 <p>
   En la línea 7, columna 6, está <code>i</code>: la declaraste y nunca la
   usas. Si no necesitas el índice, cámbialo por <code>_</code>:
   <code>for _, name := range names</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Cambiar <code>v</code> esperando cambiar el slice. <code>v</code> es una
@@ -84,10 +109,13 @@ fmt.Println(scores) // [1 2 3]</code></pre>
   <code>scores[i] = scores[i] * 10</code>. Así el resultado sí es
   <code>[10 20 30]</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio vas a escribir <code>Evens</code>, que recorre una lista de
   números y devuelve un slice nuevo con los pares. Usa <code>range</code> y
   <code>append</code>, y no modifiques el slice que recibes.
 </p>
+</section>

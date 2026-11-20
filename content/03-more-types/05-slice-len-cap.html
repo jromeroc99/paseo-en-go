@@ -1,9 +1,12 @@
+<section class="slide">
 <p>
   Ya sabes que un slice es una ventana sobre un array. Pero una ventana tiene
   dos medidas: lo que ves ahora y hasta dónde podría abrirse. Para usar bien
   los slices necesitas conocer las dos.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Un slice tiene una longitud y una capacidad:
@@ -13,6 +16,10 @@
   <li><code>cap(s)</code> es la capacidad: cuántos elementos hay en el array
     de debajo, contando desde el primer elemento del slice.</li>
 </ul>
+</section>
+
+<section class="slide">
+<h2>Volver a cortar</h2>
 <p>
   Puedes volver a cortar un slice para hacerlo más largo, siempre que no
   pases de su capacidad. Por eso <code>s[:0]</code> deja la longitud a 0 sin
@@ -20,12 +27,10 @@
   con <code>s[2:]</code>, la capacidad baja, porque la ventana ya empieza más
   adelante.
 </p>
-<p>
-  El valor cero de un slice es <code>nil</code>: longitud 0, capacidad 0 y
-  ningún array debajo. Para crear un slice de un tamaño concreto usas
-  <code>make([]T, len, cap)</code>. El tercer argumento es opcional; si lo
-  omites, la capacidad es igual a la longitud.
-</p>
+</section>
+
+<section class="slide">
+<h2>Longitud y capacidad</h2>
 <slice-demo scene="len-cap">
   <p>
     Animación: <code>s</code> es una ventana sobre un array de 6 elementos,
@@ -35,23 +40,45 @@
     inicio dos casillas sin mover el final: longitud 2 y capacidad 4.
   </p>
 </slice-demo>
+</section>
 
+<section class="slide">
+<h2>El valor cero</h2>
+<p>
+  El valor cero de un slice es <code>nil</code>: longitud 0, capacidad 0 y
+  ningún array debajo. Para crear un slice de un tamaño concreto usas
+  <code>make([]T, len, cap)</code>. El tercer argumento es opcional; si lo
+  omites, la capacidad es igual a la longitud.
+</p>
+</section>
+
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/slice-len-cap/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>len=6 cap=6 [2 3 5 7 11 13]
 len=0 cap=6 []
 len=4 cap=6 [2 3 5 7]
 len=2 cap=4 [5 7]</code></pre>
+</section>
 
+<section class="slide">
 <p>Un slice <code>nil</code>:</p>
 {{code "examples/nil-slices/main.go"}}
 <p>Salida:</p>
 <pre><code>[] 0 0
 true</code></pre>
+</section>
 
-<p>Slices creados con <code>make</code>:</p>
+<section class="slide">
+<h2>Slices creados con make</h2>
 {{code "examples/making-slices/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>a len=5 cap=5 [0 0 0 0 0]
 b len=0 cap=5 []
@@ -62,7 +89,9 @@ d len=3 cap=3 [0 0 0]</code></pre>
   <code>d</code>: aunque <code>c</code> solo tiene dos elementos, puedes
   cortar hasta 5 porque esa es su capacidad.
 </p>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>
   La capacidad es el límite. Si intentas ir más allá, el programa se detiene:
@@ -77,12 +106,19 @@ func main() {
 	fmt.Println(s)
 }</code></pre>
 <pre><code>panic: runtime error: slice bounds out of range [:6] with capacity 4</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>panic: runtime error: slice bounds out of range [:6] with capacity 4</code></pre>
 <p>
   Léelo por partes: los límites del corte están fuera de rango; pediste
   <code>[:6]</code> y la capacidad es 4. Para tener más sitio hace falta un
   array nuevo, y eso lo verás en la próxima lección.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Tratar un slice <code>nil</code> como si fuera un error. No lo es: tiene
@@ -91,3 +127,4 @@ func main() {
   <code>len(s) == 0</code>, que funciona igual con un slice
   <code>nil</code> y con uno vacío.
 </p>
+</section>

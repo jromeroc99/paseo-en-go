@@ -1,9 +1,12 @@
+<section class="slide">
 <p>
   Los días de la semana son siete. Las casillas de un tablero de tres en raya
   son nueve. Cuando sabes de antemano cuántos elementos vas a guardar, y ese
   número no cambia nunca, puedes usar un tipo que lo diga.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Un <em>array</em> (vector de tamaño fijo) guarda un número fijo de valores
@@ -11,6 +14,9 @@
   cada elemento por su índice, que empieza en 0: <code>a[0]</code>,
   <code>a[1]</code> y <code>a[2]</code>.
 </p>
+</section>
+
+<section class="slide">
 <p>
   Hay dos detalles importantes:
 </p>
@@ -21,9 +27,14 @@
   <li>Un array es un valor. Al asignarlo a otra variable, o al pasarlo a una
     función, Go copia todos sus elementos.</li>
 </ul>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/arrays/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>hola mundo
 [hola mundo]
@@ -34,7 +45,9 @@
   <code>primes</code>, porque son dos arrays distintos. La función
   <code>len</code> te da la longitud.
 </p>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>
   Como la longitud se conoce al compilar, Go comprueba los índices constantes
@@ -50,13 +63,20 @@ func main() {
 	fmt.Println(a)
 }</code></pre>
 <pre><code>./prog.go:7:4: invalid argument: index 3 out of bounds [0:3]</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:7:4: invalid argument: index 3 out of bounds [0:3]</code></pre>
 <p>
   En la línea 7, el índice 3 está fuera de los límites. La notación
   <code>[0:3]</code> significa «desde 0 hasta 3, sin incluir el 3»: los
   índices válidos son 0, 1 y 2. Un array de longitud <code>n</code> acaba en
   el índice <code>n-1</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Pensar que un <code>[3]int</code> y un <code>[5]int</code> son
@@ -71,3 +91,4 @@ var big [5]int = small</code></pre>
   directamente. En la próxima lección verás los slices, que se
   apoyan en un array y sí pueden cambiar de tamaño.
 </p>
+</section>

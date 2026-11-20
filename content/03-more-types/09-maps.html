@@ -1,9 +1,12 @@
+<section class="slide">
 <p>
   Quieres guardar la edad de cada persona por su nombre, o el número de
   unidades de cada producto. Con un slice tendrías que recorrerlo entero cada
   vez para encontrar a «Ana». Necesitas buscar directamente por el nombre.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Un <em>map</em> (mapa) asocia claves con valores. Su tipo es
@@ -12,6 +15,9 @@
 </p>
 <pre><code class="language-go">ages := make(map[string]int)
 stock := map[string]int{"manzanas": 3, "peras": 5}</code></pre>
+</section>
+
+<section class="slide">
 <p>Las operaciones básicas:</p>
 <ul>
   <li>Insertar o actualizar: <code>m[key] = value</code>.</li>
@@ -25,24 +31,36 @@ stock := map[string]int{"manzanas": 3, "peras": 5}</code></pre>
   El valor cero de un map es <code>nil</code>. Un map <code>nil</code> no
   tiene claves, y no puedes añadirle ninguna.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/maps/main.go"}}
 <p>Salida:</p>
 <pre><code>31
 2</code></pre>
+</section>
 
+<section class="slide">
 <p>
   En un literal cuyos valores son structs, puedes omitir el nombre del tipo
   en cada valor:
 </p>
 {{code "examples/map-literals/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>{40.4168 -3.7038}
 map[Madrid:{40.4168 -3.7038} Sevilla:{37.3891 -5.9845}]</code></pre>
+</section>
 
+<section class="slide">
 <p>Insertar, actualizar, borrar y preguntar:</p>
 {{code "examples/mutating-maps/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>manzanas: 42
 manzanas: 48
@@ -53,7 +71,9 @@ manzanas: 0 ¿existe? false</code></pre>
   cambiar de una ejecución a otra. <code>fmt.Println</code> sí ordena las
   claves al imprimir un map entero.
 </p>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>Escribir en un map que nunca creaste:</p>
 <pre><code class="language-go">package main
@@ -63,13 +83,20 @@ func main() {
 	ages["Ana"] = 30
 }</code></pre>
 <pre><code>panic: assignment to entry in nil map</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo arreglarlo</h2>
+<pre><code>panic: assignment to entry in nil map</code></pre>
 <p>
   El mensaje es directo: has asignado una entrada en un map
   <code>nil</code>. <code>var</code> solo declara la variable; para poder
   escribir, crea el map con <code>make(map[string]int)</code> o con un
   literal.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Leer una clave que no existe y no darte cuenta. En el ejemplo,
@@ -77,7 +104,9 @@ func main() {
   hubiera 0 manzanas. Cuando necesites distinguir los dos casos, pregunta con
   <code>ok</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio vas a contar las palabras de un texto. La función
@@ -87,3 +116,4 @@ func main() {
   <code>[hola mundo]</code>. Recorre ese slice y suma 1 en el map por cada
   palabra.
 </p>
+</section>
