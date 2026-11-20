@@ -84,35 +84,39 @@ cd exercises && go test -tags solution ./...   # reference solutions must pass
   The neon glow (`--glow`) is used sparingly: the course route, focus, active
   state and the exercise box. If everything glows, nothing does.
 - The index is a *walk*: a neon route with one stop per lesson that lights up
-  when the lesson is done. Pixel art lives in the animations, not the chrome.
+  when the lesson is done. Animations share this same look.
 - Body text in a readable system font; code in monospace.
 - Accessible contrast (WCAG AA), visible keyboard focus, works on a phone.
 
 ## Animations
 
-Pixel art: simple, visual and pretty. Their only job is to make an invisible
-concept visible (memory, pointers, backing arrays, interface values, buffers,
-channels). If text explains it just as well, do not animate it.
+Simple, visual and pretty, in the site's own style. Their only job is to make
+an invisible concept visible (memory, pointers, backing arrays, interface
+values, buffers, channels). If text explains it just as well, do not animate it.
 
-- **Palette:** only the `--px-*` tokens from `style.css` (a small dark-friendly
-  palette). Each colour has one meaning across the whole course, e.g. a value,
-  a pointer, a highlight, an error.
-- **Pixels:** draw on a small `<canvas>` (e.g. 160×90) scaled up by an integer
-  factor with `image-rendering: pixelated`, on an 8 px grid. Chunky shapes,
-  no anti-aliasing, no gradients, no blur.
-- **Motion:** step-based (a few frames per move, like a retro game), short
-  scenes of a few seconds. One thing moves at a time, so the eye knows where
-  to look.
-- **Controls:** every animation has play/pause, step forward and restart, and
-  starts paused. Each step shows a one-line Spanish caption explaining what
-  just happened, ideally next to the line of Go code it represents.
+- **Look:** the page's style, not pixel art. Rounded boxes (`--radius-sm`),
+  1 CSS px hairlines, monospace text, the glow only on what changes in the
+  step. Colours come only from the `--anim-*` tokens in `style.css`; each one
+  has one meaning across the whole course (a value, a pointer, a highlight,
+  an error).
+- **Drawing:** a `<canvas>` with 160×96 logical units, stretched to the frame's
+  width (max 640 px) and drawn at `devicePixelRatio`, so it stays sharp.
+  Components draw through `Paint` (`rect`, `dot`, `frame`, `line`, `arrow`,
+  `text`, `centerText`) and never touch the canvas directly.
+- **Motion:** an endless loop with no player controls. Each step eases in,
+  holds long enough to read its caption, and after the last step the scene
+  fades out and starts again. One thing moves at a time, so the eye knows
+  where to look. It plays only while it is on screen and the tab is visible.
+- **Captions:** each step shows a one-line Spanish caption and highlights the
+  line of Go code it represents.
 - **Code:** one vanilla JS Web Component per file in
-  `web/static/js/animations/<name>.js`, used as a tag in the lesson body
-  (`<pointer-demo>`). No libraries. The scene is plain data (a list of steps);
-  the drawing code just renders the current step.
-- **Accessibility:** respect `prefers-reduced-motion` (show steps without
-  tweening), keyboard-operable controls, and a text fallback inside the tag
-  so the lesson still makes sense without JS.
+  `web/static/js/animations/<name>.js`, extending `Scene` from `scene.js` and
+  used as a tag in the lesson body (`<pointer-demo>`). No libraries. The scene
+  is plain data (a list of steps); `draw` just renders the current step.
+- **Accessibility:** the loop pauses while the pointer is over it or it has
+  keyboard focus (WCAG 2.2.2). Respect `prefers-reduced-motion` (no tweening,
+  no fade). The canvas is an image labelled with the text fallback inside the
+  tag, so the lesson still makes sense without JS.
 
 ## Exercises
 

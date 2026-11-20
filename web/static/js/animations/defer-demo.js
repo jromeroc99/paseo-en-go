@@ -1,7 +1,7 @@
 // <defer-demo> shows deferred calls as cards on a stack. Scene: "stack"
 // (each defer drops a card on top; when the function returns, the cards
 // leave top-first, so the last one deferred is the first one to run).
-import { PixelScene, lerp, pointOnPath } from "./pixel-scene.js";
+import { Scene, lerp, pointOnPath } from "./scene.js";
 
 const CARD_WIDTH = 62;
 const CARD_HEIGHT = 12;
@@ -94,7 +94,7 @@ const scenes = {
   },
 };
 
-class DeferDemo extends PixelScene {
+class DeferDemo extends Scene {
   static scenes = scenes;
 
   // Only one card moves per step: the one being pushed falls into its

@@ -1,7 +1,7 @@
 // <reader-demo> shows an io.Reader filling a byte slice one chunk at a time.
 // Scene: "chunks" (a 13-byte text read through an 8-byte buffer: the second
 // Read leaves stale bytes behind, so only b[:n] counts).
-import { PixelScene, lerp } from "./pixel-scene.js";
+import { Scene, lerp } from "./scene.js";
 
 // Source bytes and buffer bytes share one grid, so the first chunk falls
 // straight down and the second visibly jumps back to the start of b.
@@ -139,7 +139,7 @@ const scenes = {
   },
 };
 
-class ReaderDemo extends PixelScene {
+class ReaderDemo extends Scene {
   static scenes = scenes;
 
   // A Read step moves its chunk from the text into b while t runs; the

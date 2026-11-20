@@ -13,17 +13,16 @@
   --glow: 0 0 0.5rem rgb(0 173 216 / 0.55), 0 0 1.5rem rgb(0 173 216 / 0.25);
   --glow-faint: 0 0 1.25rem rgb(0 173 216 / 0.12);
 
-  /* Pixel-art palette for animations: one meaning per colour. */
-  --px-ink: #081018;      /* outlines, background */
-  --px-paper: #e4ecf2;    /* text, labels */
-  --px-value: #00add8;    /* a value stored in memory */
-  --px-pointer: #ffb454;  /* a pointer / address / arrow */
-  --px-highlight: #f7e26b;/* what is changing in this step */
-  --px-ok: #5ee38a;       /* success, a received message */
-  --px-error: #ff6b6b;    /* an error, a nil, a panic */
-  --px-dim: #3a4a5c;      /* unused memory, inactive parts */
+  /* Animation palette: one meaning per colour. */
+  --anim-ink: #081018;      /* outlines, background */
+  --anim-paper: #e4ecf2;    /* text, labels */
+  --anim-value: #00add8;    /* a value stored in memory */
+  --anim-pointer: #ffb454;  /* a pointer / address / arrow */
+  --anim-highlight: #f7e26b;/* what is changing in this step */
+  --anim-ok: #5ee38a;       /* success, a received message */
+  --anim-error: #ff6b6b;    /* an error, a nil, a panic */
+  --anim-dim: #3a4a5c;      /* unused memory, inactive parts */
 
-  --pixel: 4px;
   --radius: 10px;
   --radius-sm: 6px;
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
@@ -352,19 +351,7 @@ pre {
 
 .pager [rel="next"] { margin-left: auto; text-align: right; }
 
-/* Pixel-art animations: integer scaling, no smoothing. */
-
-.pixel-canvas {
-  display: block;
-  width: 100%;
-  max-width: 640px;
-  image-rendering: pixelated;
-  background: var(--px-ink);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-
-/* The frame around an animation: canvas, code, caption and controls. */
+/* Animations: a looping scene in a frame, its code and its caption. */
 
 .anim {
   margin: 1.75rem 0;
@@ -374,7 +361,16 @@ pre {
   border-radius: var(--radius);
 }
 
-.anim .pixel-canvas { margin: 0 auto; }
+.anim-canvas {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin: 0 auto;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
 
 .anim-code {
   margin: 1rem 0 0;
@@ -389,47 +385,19 @@ pre {
   padding: 0 1rem;
   border-left: 2px solid transparent;
   color: var(--muted);
+  transition: color 0.3s, background 0.3s, border-color 0.3s;
 }
 
 .anim-line.is-current {
-  border-left-color: var(--px-highlight);
+  border-left-color: var(--accent);
   background: var(--line);
   color: var(--fg);
 }
 
 .anim-caption {
-  min-height: 3.4em; /* two lines, so the controls do not jump between steps */
-  margin: 0.75rem 0;
+  min-height: 3.4em; /* two lines, so the frame does not jump between steps */
+  margin: 0.75rem 0 0;
 }
-
-.anim-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.anim-controls button {
-  padding: 0.35rem 0.85rem;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  color: var(--fg);
-  font: inherit;
-  font-size: 0.9375rem;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, box-shadow 0.15s;
-}
-
-.anim-controls button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-soft); }
-
-.anim-controls button:disabled { color: var(--muted); cursor: default; opacity: 0.6; }
-
-.anim-controls .is-active { border-color: var(--accent); color: var(--accent); box-shadow: var(--glow); }
-
-.anim-icon { display: inline-block; min-width: 1.1em; }
-
-.anim-counter { margin-left: auto; color: var(--muted); font-size: 0.875rem; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }

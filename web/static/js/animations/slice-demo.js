@@ -1,7 +1,7 @@
 // <slice-demo> shows a slice as a window over an array. Scenes: "view" (two
 // slices share one array), "len-cap" (a window has a length and a capacity)
 // and "append" (append moves to a bigger array when the current one is full).
-import { PixelScene, lerp } from "./pixel-scene.js";
+import { Scene, lerp } from "./scene.js";
 
 const DROP = 6; // pixels an entering array falls before it settles
 
@@ -286,7 +286,7 @@ const scenes = {
   },
 };
 
-class SliceDemo extends PixelScene {
+class SliceDemo extends Scene {
   static scenes = scenes;
 
   // The three scenes share cells and output, but each has its own layout.

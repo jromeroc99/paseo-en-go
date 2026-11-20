@@ -1,11 +1,11 @@
 // <pointer-demo> shows variables as boxes in memory and pointers as arrows
 // to those boxes. Scenes: "basics" (&, * and nil) and "receivers" (a value
 // receiver gets a copy, a pointer receiver gets the original).
-import { PixelScene, lerp, pointOnPath } from "./pixel-scene.js";
+import { Scene, lerp, pointOnPath } from "./scene.js";
 
 const BOX_WIDTH = 40;
 const BOX_HEIGHT = 16;
-const DROP = 6; // pixels an entering box falls before it settles
+const DROP = 6; // units an entering box falls before it settles
 
 // The output strip, where fmt.Println writes.
 const OUTPUT = { x: 84, y: 52, width: 72, height: 40 };
@@ -143,7 +143,7 @@ const scenes = {
   },
 };
 
-class PointerDemo extends PixelScene {
+class PointerDemo extends Scene {
   static scenes = scenes;
 
   // A step plays in two halves: new boxes drop in, then new arrows grow.
@@ -163,7 +163,7 @@ class PointerDemo extends PixelScene {
     }
     if (step.follow && t < 1) {
       const [x, y] = pointOnPath(step.follow.points, t);
-      paint.rect(x - 1, y - 1, 3, 3, paint.colors.highlight);
+      paint.dot(x, y, paint.colors.highlight);
     }
     if (step.output) drawOutput(paint, step.output, step.printed, t);
   }

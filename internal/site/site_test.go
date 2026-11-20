@@ -134,13 +134,13 @@ func TestBuildWritesEveryPage(t *testing.T) {
 	}
 
 	pages := map[string]string{
-		"index.html":                          "Test Tour",
-		"00-intro/01-first/index.html":        "First body",
-		"00-intro/02-second/index.html":       "Second body",
-		"static/css/style.css":                ":root",
-		"static/js/progress.js":               "localStorage",
-		"static/js/animations.js":             "import(",
-		"static/js/animations/pixel-scene.js": "class PixelScene",
+		"index.html":                    "Test Tour",
+		"00-intro/01-first/index.html":  "First body",
+		"00-intro/02-second/index.html": "Second body",
+		"static/css/style.css":          ":root",
+		"static/js/progress.js":         "localStorage",
+		"static/js/animations.js":       "import(",
+		"static/js/animations/scene.js": "class Scene",
 	}
 	for file, want := range pages {
 		data, err := os.ReadFile(filepath.Join(dir, file))

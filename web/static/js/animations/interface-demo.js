@@ -1,7 +1,7 @@
 // <interface-demo> shows an interface value as what it really is: a pair of
 // a concrete type and a value. Scene: "pair" (an empty interface is nil; one
 // that holds a nil pointer still has a type, so it is not nil).
-import { PixelScene, lerp } from "./pixel-scene.js";
+import { Scene, lerp } from "./scene.js";
 
 const BOX_HEIGHT = 16;
 const DROP = 6; // pixels an entering box falls before it settles
@@ -85,7 +85,7 @@ const scenes = {
   },
 };
 
-class InterfaceDemo extends PixelScene {
+class InterfaceDemo extends Scene {
   static scenes = scenes;
 
   // An entering box falls into place; a changing pair swaps when t reaches 1.
