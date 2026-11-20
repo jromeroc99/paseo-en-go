@@ -4,7 +4,7 @@
 import { Scene, lerp } from "./scene.js";
 
 const BOX_HEIGHT = 16;
-const DROP = 6; // pixels an entering box falls before it settles
+const DROP = 6; // units an entering box falls before it settles
 
 // d, the interface value: one box split into a type cell and a value cell.
 // The value cell is wider because "GOPHER" is the longest thing it holds.

@@ -3,13 +3,13 @@
 // and "append" (append moves to a bigger array when the current one is full).
 import { Scene, lerp } from "./scene.js";
 
-const DROP = 6; // pixels an entering array falls before it settles
+const DROP = 6; // units an entering array falls before it settles
 
 // The output strip, where the program prints. It fits four lines.
 const OUTPUT = { x: 4, y: 52, width: 152, height: 44 };
 
 // view: the array names, with window a above it and window b below it.
-const NAMES = { x: 38, y: 17, cellWidth: 28, cellHeight: 16 };
+const NAMES = { x: 38, y: 17, cellWidth: 30, cellHeight: 16 };
 const A = { id: "a", label: "a", from: 0, to: 2, y: 4, side: "above" };
 const B = { id: "b", label: "b", from: 1, to: 3, y: 40, side: "below" };
 const NAMES_BEFORE = ["Ana", "Luis", "Marta", "Pablo"];
@@ -453,14 +453,15 @@ function drawCells(paint, row, y, cells) {
   }
 }
 
-// cellX returns the left edge of cell i; neighbours share one border pixel.
+// cellX returns the left edge of cell i; neighbours share one border.
 function cellX(row, i) {
   return row.x + i * (row.cellWidth - 1);
 }
 
-// textOffset centres a 5-pixel glyph inside a cell's border.
+// textOffset is how far below a cell's top edge a line of text starts so
+// that it sits in the middle of the cell.
 function textOffset(row) {
-  return Math.floor((row.cellHeight - 4) / 2);
+  return (row.cellHeight - 5) / 2;
 }
 
 // drawOutput draws what the program has printed so far. When this step

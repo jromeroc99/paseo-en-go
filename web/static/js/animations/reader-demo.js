@@ -8,10 +8,10 @@ import { Scene, lerp } from "./scene.js";
 const CELL_X = 9;
 const CELL_WIDTH = 10;
 const CELL_HEIGHT = 11;
-const PITCH = 11; // cell width plus a 1-pixel gap
+const PITCH = 11; // cell width plus a 1-unit gap
 const SOURCE_Y = 3;
 const BUFFER_Y = 29;
-const DROP = 6; // pixels an entering row falls before it settles
+const DROP = 6; // units an entering row falls before it settles
 
 // n and err, the two results of Read.
 const N_BOX = { label: "n", labelX: 8, x: 14, y: 46, width: 13 };
@@ -225,16 +225,19 @@ function drawChunk(paint, { from, count }, t) {
 // visible mark, or it would look like a missing byte.
 function drawCell(paint, char, x, y, color) {
   paint.frame(x, y, CELL_WIDTH, CELL_HEIGHT, color);
-  const glyphX = x + Math.floor((CELL_WIDTH - 3) / 2);
-  const glyphY = y + 3;
   if (char === "\0") return;
   if (char === " ") {
-    paint.rect(glyphX, glyphY + 4, 3, 1, color);
-    paint.rect(glyphX, glyphY + 3, 1, 1, color);
-    paint.rect(glyphX + 2, glyphY + 3, 1, 1, color);
+    drawSpaceMark(paint, x + CELL_WIDTH / 2, y + 7, color);
     return;
   }
-  paint.text(char, glyphX, glyphY, color);
+  paint.centerText(char, x, y + (CELL_HEIGHT - 5) / 2, CELL_WIDTH, color);
+}
+
+// drawSpaceMark draws the open box (␣) that marks a space, centred on x.
+function drawSpaceMark(paint, x, y, color) {
+  paint.line(x - 2, y, x - 2, y + 1.5, color);
+  paint.line(x - 2, y + 1.5, x + 2, y + 1.5, color);
+  paint.line(x + 2, y + 1.5, x + 2, y, color);
 }
 
 // drawField draws one result of Read as a labelled box. The box lights up

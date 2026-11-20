@@ -5,7 +5,7 @@ import { Scene, lerp, pointOnPath } from "./scene.js";
 
 const CARD_WIDTH = 62;
 const CARD_HEIGHT = 12;
-const CARD_PITCH = 13; // one pixel of gap between stacked cards
+const CARD_PITCH = 13; // one unit of gap between stacked cards
 
 // The stack is an open-top box: cards drop in and leave through the top.
 const PILE = { x: 6, top: 32, floor: 84, width: 66 };
