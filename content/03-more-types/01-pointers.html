@@ -1,0 +1,78 @@
+<p>
+  Cuando llamas a una función, Go le pasa una copia de cada argumento. Si la
+  función cambia esa copia, tu variable no se entera. A veces eso es justo lo
+  que quieres. Otras veces necesitas que la función cambie tu variable, y para
+  eso tiene que saber dónde vive.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Cada variable ocupa un sitio en la memoria del ordenador, y ese sitio tiene
+  una dirección. Un <em>pointer</em> (puntero) es un valor que guarda la
+  dirección de otro valor. Su tipo se escribe con un asterisco:
+  <code>*int</code> es «un puntero a un <code>int</code>».
+</p>
+<ul>
+  <li><code>&amp;x</code> te da la dirección de <code>x</code>.</li>
+  <li><code>*p</code> sigue el puntero y te da el valor al que apunta. Con
+    <code>*p = 21</code> cambias ese valor.</li>
+</ul>
+<p>
+  El valor cero de un puntero es <code>nil</code>: un puntero que todavía no
+  apunta a nada. A diferencia de C, Go no tiene aritmética de punteros: no
+  puedes sumar 1 a una dirección para saltar al valor de al lado.
+</p>
+<!-- animation: pointer-demo scene=basics -->
+
+<h2>El ejemplo</h2>
+{{code "examples/pointers/main.go"}}
+<p>Salida:</p>
+<pre><code>42
+21
+true</code></pre>
+<p>
+  Fíjate en que nunca escribes <code>i = 21</code>. Cambias <code>i</code> a
+  través de <code>p</code>, porque <code>p</code> sabe dónde está.
+</p>
+
+<h2>Un error a propósito</h2>
+<p>
+  Seguir un puntero que vale <code>nil</code> no tiene sentido: no hay ningún
+  valor al otro lado. Este programa compila, pero falla al ejecutarlo:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	var p *int
+	fmt.Println(*p)
+}</code></pre>
+<pre><code>panic: runtime error: invalid memory address or nil pointer dereference</code></pre>
+<p>
+  Un <em>panic</em> es un error que detiene el programa mientras se ejecuta.
+  El mensaje se lee así: <em>runtime error</em> (error en ejecución),
+  dirección de memoria no válida, <em>nil pointer dereference</em> (has
+  seguido un puntero <code>nil</code>). Cuando lo veas, busca qué puntero no
+  apuntaba a nada.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Pasar el valor cuando querías pasar la dirección. Si una función recibe un
+  <code>int</code> y le suma 1, solo cambia su copia:
+</p>
+<pre><code class="language-go">func increment(n int) { n++ }   // cambia la copia
+func incrementPtr(n *int) { *n++ } // cambia el original</code></pre>
+<p>
+  Para la segunda versión llamas a <code>incrementPtr(&amp;x)</code>, con
+  <code>&amp;</code>. Si te olvidas, el compilador te avisa, porque un
+  <code>int</code> no es un <code>*int</code>.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio vas a escribir <code>Swap</code>, que recibe dos punteros a
+  enteros e intercambia sus valores. La función no devuelve nada: el cambio se
+  ve en las variables de quien la llama.
+</p>

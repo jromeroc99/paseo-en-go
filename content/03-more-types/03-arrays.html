@@ -1,0 +1,73 @@
+<p>
+  Los días de la semana son siete. Las casillas de un tablero de tres en raya
+  son nueve. Cuando sabes de antemano cuántos elementos vas a guardar, y ese
+  número no cambia nunca, puedes usar un tipo que lo diga.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un <em>array</em> (vector de tamaño fijo) guarda un número fijo de valores
+  del mismo tipo. <code>[3]int</code> es un array de tres enteros. Accedes a
+  cada elemento por su índice, que empieza en 0: <code>a[0]</code>,
+  <code>a[1]</code> y <code>a[2]</code>.
+</p>
+<p>
+  Hay dos detalles importantes:
+</p>
+<ul>
+  <li>La longitud forma parte del tipo. <code>[3]int</code> y
+    <code>[5]int</code> son tipos distintos, y un array no puede crecer ni
+    encoger.</li>
+  <li>Un array es un valor. Al asignarlo a otra variable, o al pasarlo a una
+    función, Go copia todos sus elementos.</li>
+</ul>
+
+<h2>El ejemplo</h2>
+{{code "examples/arrays/main.go"}}
+<p>Salida:</p>
+<pre><code>hola mundo
+[hola mundo]
+[2 3 5 7 11 13] 6
+2 100</code></pre>
+<p>
+  La última línea lo demuestra: cambiar <code>copied</code> no toca
+  <code>primes</code>, porque son dos arrays distintos. La función
+  <code>len</code> te da la longitud.
+</p>
+
+<h2>Un error a propósito</h2>
+<p>
+  Como la longitud se conoce al compilar, Go comprueba los índices constantes
+  antes de ejecutar nada:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	var a [3]int
+	a[3] = 7
+	fmt.Println(a)
+}</code></pre>
+<pre><code>./prog.go:7:4: invalid argument: index 3 out of bounds [0:3]</code></pre>
+<p>
+  En la línea 7, el índice 3 está fuera de los límites. La notación
+  <code>[0:3]</code> significa «desde 0 hasta 3, sin incluir el 3»: los
+  índices válidos son 0, 1 y 2. Un array de longitud <code>n</code> acaba en
+  el índice <code>n-1</code>.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Pensar que un <code>[3]int</code> y un <code>[5]int</code> son
+  intercambiables porque los dos guardan enteros:
+</p>
+<pre><code class="language-go">var small [3]int
+var big [5]int = small</code></pre>
+<pre><code>cannot use small (variable of type [3]int) as [5]int value in variable declaration</code></pre>
+<p>
+  Para Go son tipos tan distintos como <code>int</code> y
+  <code>string</code>. Esta rigidez hace que los arrays se usen poco
+  directamente. En la próxima lección verás los slices, que se
+  apoyan en un array y sí pueden cambiar de tamaño.
+</p>

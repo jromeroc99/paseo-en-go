@@ -1,0 +1,93 @@
+<p>
+  Un jugador tiene un nombre y una puntuación. Un punto tiene una coordenada
+  <code>X</code> y otra <code>Y</code>. Podrías guardarlos en variables
+  sueltas, pero entonces nada te dice que van juntas. Necesitas una forma de
+  agruparlas bajo un solo nombre.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un <em>struct</em> (estructura) es un tipo que agrupa varios campos, cada
+  uno con su nombre y su tipo:
+</p>
+<pre><code class="language-go">type Vertex struct {
+	X int
+	Y int
+}</code></pre>
+<p>
+  Accedes a cada campo con un punto: <code>v.X</code>. Si tienes un puntero
+  <code>p</code> a un <code>Vertex</code>, también escribes
+  <code>p.X</code>. Go sigue el puntero por ti, así que no hace falta escribir
+  <code>(*p).X</code>.
+</p>
+<p>
+  Para crear un valor usas un <em>struct literal</em> (literal de
+  estructura): <code>Vertex{1, 2}</code> da valor a todos los campos en orden,
+  y <code>Vertex{X: 1}</code> nombra solo los que quieres; el resto toma su
+  valor cero. Con <code>&amp;Vertex{1, 2}</code> obtienes directamente un
+  puntero al nuevo valor.
+</p>
+
+<h2>El ejemplo</h2>
+{{code "examples/structs/main.go"}}
+<p>Salida:</p>
+<pre><code>{1 2}
+4 2</code></pre>
+
+<p>Un struct a través de un puntero, y qué pasa al pasarlo a una función:</p>
+{{code "examples/struct-pointers/main.go"}}
+<p>Salida:</p>
+<pre><code>{10 2}
+{10 2}
+{11 2}</code></pre>
+
+<p>Las formas de escribir un literal:</p>
+{{code "examples/struct-literals/main.go"}}
+<p>Salida:</p>
+<pre><code>{1 2} {1 0} {0 0} &amp;{1 2}</code></pre>
+<p>
+  El <code>&amp;</code> delante de <code>{1 2}</code> te recuerda que
+  <code>p</code> es un puntero.
+</p>
+
+<h2>Un error a propósito</h2>
+<p>
+  El compilador conoce todos los campos de un struct. Si pides uno que no
+  existe, te lo dice:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+type Player struct {
+	Name  string
+	Score int
+}
+
+func main() {
+	p := Player{Name: "Ana"}
+	fmt.Println(p.Points)
+}</code></pre>
+<pre><code>./prog.go:12:16: p.Points undefined (type Player has no field or method Points)</code></pre>
+<p>
+  En la línea 12, <code>p.Points</code> no está definido: el tipo
+  <code>Player</code> no tiene ningún campo llamado <code>Points</code>. Suele
+  ser una errata o un nombre que recordabas mal; revisa la declaración del
+  struct.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Pasar un struct por valor y esperar que la función lo cambie. Lo has visto
+  en el ejemplo: <code>moveCopy</code> recibe una copia, así que
+  <code>v</code> sigue siendo <code>{10 2}</code>. Si la función debe
+  modificar el struct, recibe un puntero, como <code>move</code>, y la llamas
+  con <code>&amp;v</code>.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio vas a crear un <code>Player</code> con
+  <code>NewPlayer</code>, que devuelve un puntero a un jugador nuevo con cero
+  puntos, y a sumarle puntos con <code>AddPoints</code>.
+</p>

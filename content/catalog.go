@@ -135,5 +135,29 @@ var Course = course.Course{
 				},
 			},
 		},
+		{
+			Slug:    "03-more-types",
+			Title:   "Más tipos",
+			Summary: "Punteros, structs, slices, maps y funciones como valores: cómo se organizan los datos.",
+			Lessons: []course.Lesson{
+				{
+					Slug:  "01-pointers",
+					Title: "Punteros",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/swap",
+						Goal: "Intercambia dos enteros usando punteros.",
+					},
+				},
+				{
+					Slug:  "02-structs",
+					Title: "Structs",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/player",
+						Goal: "Crea un jugador y súmale puntos.",
+					},
+				},
+				{Slug: "03-arrays", Title: "Arrays"},
+			},
+		},
 	},
 }
