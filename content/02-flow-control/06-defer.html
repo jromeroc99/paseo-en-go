@@ -31,7 +31,16 @@
   a abrirlo. Así, quien lea la función ve de un vistazo que lo abierto se
   cierra.
 </p>
-<!-- animation: defer-demo scene=stack -->
+<defer-demo scene="stack">
+  <p>
+    Animación: el programa imprime «contando». Cada vuelta del bucle apila una
+    tarjeta con la llamada aplazada y el valor de <code>i</code> de ese
+    momento: <code>fmt.Println(1)</code>, luego <code>fmt.Println(2)</code>
+    encima y <code>fmt.Println(3)</code> arriba del todo. Después se imprime
+    «hecho». Al terminar <code>main</code>, las tarjetas salen de la pila
+    empezando por arriba e imprimen 3, 2 y 1.
+  </p>
+</defer-demo>
 
 <h2>El ejemplo</h2>
 <p>
