@@ -65,9 +65,11 @@ type Square struct{}
 
 func (s Square) ColorModel() color.Model {
 	return color.RGBAModel
-}
+}</code></pre>
+</section>
 
-func (s Square) Bounds() image.Rectangle {
+<section class="slide">
+<pre><code class="language-go">func (s Square) Bounds() image.Rectangle {
 	return image.Rect(0, 0, 8, 8)
 }
 

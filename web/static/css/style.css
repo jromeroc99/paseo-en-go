@@ -569,9 +569,13 @@ pre {
   font-size: 0.875rem;
 }
 
+/* A long line wraps with a hanging indent, so the whole statement stays in
+   sight beside the canvas and its continuation still reads as one line. */
 .anim-line {
   display: block;
-  padding: 0 1rem;
+  padding: 0 1rem 0 2rem;
+  text-indent: -1rem;
+  white-space: pre-wrap;
   border-left: 2px solid transparent;
   color: var(--fg);
   transition: color 0.3s, background 0.3s, border-color 0.3s, opacity 0.3s;

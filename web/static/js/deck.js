@@ -5,7 +5,9 @@
 const NEXT_KEYS = new Set(["ArrowRight", " ", "PageDown"]);
 const PREV_KEYS = new Set(["ArrowLeft", "PageUp"]);
 const SWIPE_PX = 50;
-// Walking back from the next lesson lands on this lesson's final card.
+// Walking forwards opens the next lesson on its first card; walking back
+// from it lands on this lesson's final card.
+const FIRST_HASH = "#1";
 const LAST_HASH = "#last";
 
 const deck = document.querySelector(".deck");
@@ -43,7 +45,7 @@ function start(deck) {
   function next() {
     if (sceneOf(slides[current])?.next()) return;
     if (current < slides.length - 1) show(current + 1);
-    else follow("next");
+    else follow("next", FIRST_HASH);
   }
 
   function prev() {
@@ -93,7 +95,10 @@ function start(deck) {
   window.addEventListener("hashchange", () => show(indexFromHash()));
   onSwipe(deck, { left: next, right: prev });
 
-  show(indexFromHash(), { focus: false });
+  // A hash means the reader came from another card (or a link to one), so
+  // the keyboard focus follows them onto the card; a plain visit leaves the
+  // focus at the top of the page.
+  show(indexFromHash(), { focus: location.hash !== "" });
 }
 
 // sceneOf returns the animation on a card, once its component has loaded;

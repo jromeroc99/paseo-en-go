@@ -31,7 +31,11 @@
 
 <section class="slide">
 <h2>El ejemplo</h2>
-{{code "examples/function-values/main.go"}}
+{{codeLines "examples/function-values/main.go" 1 17}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/function-values/main.go" 19 21}}
 </section>
 
 <section class="slide">
@@ -57,9 +61,11 @@ import "fmt"
 
 func apply(f func(int) int, x int) int {
 	return f(x)
-}
+}</code></pre>
+</section>
 
-func shout(s string) string {
+<section class="slide">
+<pre><code class="language-go">func shout(s string) string {
 	return s + "!"
 }
 

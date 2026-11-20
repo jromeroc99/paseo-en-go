@@ -36,6 +36,9 @@ stock := map[string]int{"manzanas": 3, "peras": 5}</code></pre>
 <section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/maps/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>31
 2</code></pre>
@@ -46,7 +49,11 @@ stock := map[string]int{"manzanas": 3, "peras": 5}</code></pre>
   En un literal cuyos valores son structs, puedes omitir el nombre del tipo
   en cada valor:
 </p>
-{{code "examples/map-literals/main.go"}}
+{{codeLines "examples/map-literals/main.go" 1 15}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/map-literals/main.go" 16 18}}
 </section>
 
 <section class="slide">
@@ -57,7 +64,11 @@ map[Madrid:{40.4168 -3.7038} Sevilla:{37.3891 -5.9845}]</code></pre>
 
 <section class="slide">
 <p>Insertar, actualizar, borrar y preguntar:</p>
-{{code "examples/mutating-maps/main.go"}}
+{{codeLines "examples/mutating-maps/main.go" 1 15}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/mutating-maps/main.go" 17 19}}
 </section>
 
 <section class="slide">

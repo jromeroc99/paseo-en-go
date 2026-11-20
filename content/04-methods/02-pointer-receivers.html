@@ -53,7 +53,11 @@
 
 <section class="slide">
 <h2>Los dos receptores, uno detrás de otro</h2>
-{{code "examples/pointer-receivers/main.go"}}
+{{codeLines "examples/pointer-receivers/main.go" 1 13}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/pointer-receivers/main.go" 15 27}}
 </section>
 
 <section class="slide">
@@ -64,7 +68,11 @@
 
 <section class="slide">
 <h2>Y Go poniendo el <code>&amp;</code> y el <code>*</code> por ti</h2>
-{{code "examples/indirection/main.go"}}
+{{codeLines "examples/indirection/main.go" 1 16}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/indirection/main.go" 18 25}}
 </section>
 
 <section class="slide">
@@ -82,9 +90,11 @@ import "fmt"
 
 type Vertex struct {
 	X, Y float64
-}
+}</code></pre>
+</section>
 
-func (v *Vertex) Scale(f float64) {
+<section class="slide">
+<pre><code class="language-go">func (v *Vertex) Scale(f float64) {
 	v.X = v.X * f
 	v.Y = v.Y * f
 }

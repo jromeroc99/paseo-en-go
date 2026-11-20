@@ -136,22 +136,41 @@ func (r renderer) page(name string, data any) ([]byte, error) {
 }
 
 // body renders a lesson body. Inside it, {{code "examples/x/main.go"}}
-// embeds a file from the lesson's module folder as an escaped code block.
+// embeds a file from the lesson's module folder as an escaped code block,
+// and {{codeLines "examples/x/main.go" 1 17}} embeds only those lines, so a
+// program too long for one card is read across several while it is still
+// compiled whole.
 func (r renderer) body(ref course.Ref) (template.HTML, error) {
 	src, err := fs.ReadFile(r.content, ref.BodyPath())
 	if err != nil {
 		return "", fmt.Errorf("lesson %q: %w", ref.ID(), err)
 	}
 
-	code := func(file string) (template.HTML, error) {
+	read := func(file string) (string, error) {
 		snippet, err := fs.ReadFile(r.content, path.Join(ref.Module.Slug, file))
+		return string(snippet), err
+	}
+	code := func(file string) (template.HTML, error) {
+		snippet, err := read(file)
 		if err != nil {
 			return "", err
 		}
-		return template.HTML(`<pre><code class="language-go">` + html.EscapeString(string(snippet)) + `</code></pre>`), nil
+		return codeBlock(snippet), nil
+	}
+	codeLines := func(file string, first, last int) (template.HTML, error) {
+		snippet, err := read(file)
+		if err != nil {
+			return "", err
+		}
+		lines := strings.SplitAfter(strings.TrimSuffix(snippet, "\n"), "\n")
+		if first < 1 || last < first || last > len(lines) {
+			return "", fmt.Errorf("codeLines %s %d %d: the file has lines 1 to %d", file, first, last, len(lines))
+		}
+		return codeBlock(strings.Join(lines[first-1:last], "")), nil
 	}
 
-	tmpl, err := template.New(ref.ID()).Funcs(template.FuncMap{"code": code}).Parse(string(src))
+	funcs := template.FuncMap{"code": code, "codeLines": codeLines}
+	tmpl, err := template.New(ref.ID()).Funcs(funcs).Parse(string(src))
 	if err != nil {
 		return "", fmt.Errorf("lesson %q: %w", ref.ID(), err)
 	}
@@ -161,4 +180,9 @@ func (r renderer) body(ref course.Ref) (template.HTML, error) {
 	}
 	// Lesson bodies are authored by us, not by users, so they are trusted HTML.
 	return template.HTML(buf.String()), nil
+}
+
+// codeBlock wraps Go source in an escaped code block.
+func codeBlock(src string) template.HTML {
+	return template.HTML(`<pre><code class="language-go">` + html.EscapeString(src) + `</code></pre>`)
 }

@@ -34,7 +34,11 @@
 
 <section class="slide">
 <h2>Dos tipos distintos en la misma variable</h2>
-{{code "examples/interfaces/main.go"}}
+{{codeLines "examples/interfaces/main.go" 1 17}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/interfaces/main.go" 19 30}}
 </section>
 
 <section class="slide">
@@ -45,7 +49,11 @@
 
 <section class="slide">
 <h2>Y la implementación implícita</h2>
-{{code "examples/implicit-interfaces/main.go"}}
+{{codeLines "examples/implicit-interfaces/main.go" 1 16}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/implicit-interfaces/main.go" 18 21}}
 </section>
 
 <section class="slide">
@@ -67,9 +75,11 @@ type Speaker interface {
 	Speak() string
 }
 
-type Dog struct{}
+type Dog struct{}</code></pre>
+</section>
 
-func (d *Dog) Speak() string {
+<section class="slide">
+<pre><code class="language-go">func (d *Dog) Speak() string {
 	return "guau"
 }
 

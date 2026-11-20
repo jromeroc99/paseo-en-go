@@ -77,11 +77,17 @@ cd exercises && go test -tags solution ./...   # reference solutions must pass
   concept, the animation (alone, with at most a `<h2>`), the example, its
   output and the "fíjate" note, "Un error a propósito" (the code and its
   message), "Cómo leer el error" (the message again and how to read it),
-  "El error típico" and "Tu turno". An example over 20 lines gets a card
-  with only its heading; its output goes to the next card.
+  "El error típico" and "Tu turno". A card with a heading holds at most
+  17 lines of code; a longer program is read across cards with
+  `{{codeLines "examples/<name>/main.go" first last}}`, cut at a blank line
+  or between functions. A program and its output share a card only while
+  both fit in 13 lines; otherwise the output goes to the next card. An
+  error program that does not fit is cut the same way, and its message
+  goes with the second half.
 - `TestSlideBudget` checks the budget: at most 90 words outside headings,
-  code and animations, one Go program and one output block per card. It
-  is a proxy; the real proof is that the card fits on screen.
+  code and animations, one Go program and one output block per card, at
+  most 17 lines per snippet and 13 for a snippet with its output. It is a
+  proxy; the real proof is that the card fits on screen.
 - Show errors on purpose: when a concept has a typical compiler error, show
   the exact message and explain how to read it.
 - Embed snippets with `{{code "examples/<name>/main.go"}}` instead of pasting

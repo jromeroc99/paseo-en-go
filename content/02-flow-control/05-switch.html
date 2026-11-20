@@ -45,7 +45,11 @@ default:
 </section>
 
 <section class="slide">
-{{code "examples/switch/main.go"}}
+{{codeLines "examples/switch/main.go" 1 17}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/switch/main.go" 19 24}}
 </section>
 
 <section class="slide">
@@ -62,7 +66,11 @@ no es un día</code></pre>
 </section>
 
 <section class="slide">
-{{code "examples/switch-no-condition/main.go"}}
+{{codeLines "examples/switch-no-condition/main.go" 1 17}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/switch-no-condition/main.go" 19 21}}
 </section>
 
 <section class="slide">
@@ -75,9 +83,11 @@ no es un día</code></pre>
 <p>Repetir el mismo valor en dos <code>case</code>:</p>
 <pre><code class="language-go">package main
 
-import "fmt"
+import "fmt"</code></pre>
+</section>
 
-func main() {
+<section class="slide">
+<pre><code class="language-go">func main() {
 	day := 6
 	switch day {
 	case 6, 7:

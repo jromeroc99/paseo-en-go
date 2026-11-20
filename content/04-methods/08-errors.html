@@ -42,7 +42,14 @@ if err != nil {
 <section class="slide">
 <h2>El ejemplo</h2>
 <p>Un texto que se convierte y otro que no:</p>
-{{code "examples/errors/main.go"}}
+{{codeLines "examples/errors/main.go" 1 6}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/errors/main.go" 8 17}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>número: 42
 error: strconv.Atoi: parsing "cuarenta": invalid syntax</code></pre>
@@ -50,7 +57,11 @@ error: strconv.Atoi: parsing "cuarenta": invalid syntax</code></pre>
 
 <section class="slide">
 <h2>Y un tipo de error propio junto a <code>errors.New</code></h2>
-{{code "examples/custom-error/main.go"}}
+{{codeLines "examples/custom-error/main.go" 1 15}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/custom-error/main.go" 17 31}}
 </section>
 
 <section class="slide">

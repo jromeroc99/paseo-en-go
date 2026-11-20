@@ -49,7 +49,11 @@
 
 <section class="slide">
 <h2>Un struct a través de un puntero</h2>
-{{code "examples/struct-pointers/main.go"}}
+{{codeLines "examples/struct-pointers/main.go" 1 14}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/struct-pointers/main.go" 16 32}}
 </section>
 
 <section class="slide">
@@ -86,9 +90,11 @@ import "fmt"
 type Player struct {
 	Name  string
 	Score int
-}
+}</code></pre>
+</section>
 
-func main() {
+<section class="slide">
+<pre><code class="language-go">func main() {
 	p := Player{Name: "Ana"}
 	fmt.Println(p.Points)
 }</code></pre>

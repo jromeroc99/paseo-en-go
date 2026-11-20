@@ -384,10 +384,13 @@ export class Scene extends HTMLElement {
     );
     // A loop in the Go code jumps back up, so the code still to come is what
     // lies below the furthest line any step shown so far has reached.
+    // Once the last step has been reached the whole program has run, so the
+    // closing braces after a final `break` are no longer still to come.
+    const finished = this.#reached === steps.length - 1;
     const lastRun = Math.max(...steps.slice(0, this.#reached + 1).map((s) => s.line));
     this.#ui.lines.forEach((line, i) => {
       line.classList.toggle("is-current", i === step.line);
-      line.classList.toggle("is-ahead", i > lastRun);
+      line.classList.toggle("is-ahead", !finished && i > lastRun);
     });
   }
 }

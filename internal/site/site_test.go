@@ -31,8 +31,9 @@ func testCourse() course.Course {
 func testContent() fstest.MapFS {
 	return fstest.MapFS{
 		"00-intro/01-first.html":      {Data: []byte(`<p>First body</p>{{code "examples/x/main.go"}}`)},
-		"00-intro/02-second.html":     {Data: []byte(`<p>Second body</p>`)},
+		"00-intro/02-second.html":     {Data: []byte(`<p>Second body</p>{{codeLines "examples/y/main.go" 2 3}}`)},
 		"00-intro/examples/x/main.go": {Data: []byte(`if a < b { fmt.Println("hi") }`)},
+		"00-intro/examples/y/main.go": {Data: []byte("package main\n\nfunc main() {\n}\n")},
 	}
 }
 
@@ -87,6 +88,12 @@ func TestPages(t *testing.T) {
 			want:     []string{"exercises/00-intro/hello", "go test ./00-intro/hello", `rel="prev"`},
 		},
 		{
+			name:     "lesson shows only the asked lines of a snippet",
+			path:     "/00-intro/02-second/",
+			wantCode: http.StatusOK,
+			want:     []string{`<pre><code class="language-go">` + "\nfunc main() {\n</code></pre>"},
+		},
+		{
 			name:     "static assets are served",
 			path:     "/static/css/style.css",
 			wantCode: http.StatusOK,
@@ -129,6 +136,27 @@ func TestNewFailsWhenLessonBodyIsMissing(t *testing.T) {
 
 	if _, err := New(testCourse(), content, web.FS, "/"); err == nil {
 		t.Fatal("New() = nil error, want error for missing lesson body")
+	}
+}
+
+func TestNewFailsWhenCodeLinesAreOutOfRange(t *testing.T) {
+	tests := []struct {
+		name string
+		body string
+	}{
+		{name: "last line past the end", body: `{{codeLines "examples/y/main.go" 3 5}}`},
+		{name: "first line before the start", body: `{{codeLines "examples/y/main.go" 0 2}}`},
+		{name: "first line after the last", body: `{{codeLines "examples/y/main.go" 3 2}}`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			content := testContent()
+			content["00-intro/02-second.html"] = &fstest.MapFile{Data: []byte(tt.body)}
+
+			if _, err := New(testCourse(), content, web.FS, "/"); err == nil {
+				t.Fatalf("New() = nil error, want error for %s", tt.body)
+			}
+		})
 	}
 }
 
