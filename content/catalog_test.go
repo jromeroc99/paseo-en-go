@@ -1,6 +1,7 @@
 package content
 
 import (
+	"bytes"
 	"io/fs"
 	"regexp"
 	"testing"
@@ -38,6 +39,20 @@ func TestEveryAnimationHasComponent(t *testing.T) {
 			if _, err := fs.Stat(web.FS, file); err != nil {
 				t.Errorf("lesson %q uses <%s>, but web/%s does not exist", ref.ID(), match[1], file)
 			}
+		}
+	}
+}
+
+// A marker is a placeholder left while a lesson waits for its animation;
+// a published lesson should not carry one.
+func TestNoAnimationMarkerLeft(t *testing.T) {
+	for _, ref := range Course.Lessons() {
+		body, err := fs.ReadFile(FS, ref.BodyPath())
+		if err != nil {
+			continue // reported by TestEveryLessonHasBody
+		}
+		if bytes.Contains(body, []byte("<!-- animation:")) {
+			t.Errorf("lesson %q still has an <!-- animation: --> marker; replace it with the component tag or remove it", ref.ID())
 		}
 	}
 }
