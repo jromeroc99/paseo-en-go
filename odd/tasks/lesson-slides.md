@@ -50,7 +50,7 @@ Replaces the playback rules of S13 in `tour-modules.md`; the look stays.
 ### S5 — Content rules for cards
 
 - Typical cards of a lesson, in order: the problem; the concept (one or two cards); the animation (if any); the example code; its output and the "fíjate" note; "Un error a propósito"; "El error típico"; "Tu turno". The lesson structure of `CLAUDE.md` stays the same, only cut into cards.
-- Budget per card (testable proxy for "fits"): at most about 90 words of prose, and at most one code block. An example over about 20 lines gets a card of its own with no prose besides its heading.
+- Budget per card (testable proxy for "fits"): at most about 90 words of prose, and at most one code block; a program and its output count as one (D2). An example over about 20 lines gets a card of its own with no prose besides its heading.
 - Split, do not rewrite: existing sentences move into cards unchanged; a sentence is shortened only when a card does not fit at the sizes of S7. Spanish rules of `CLAUDE.md` apply to any changed word.
 
 ### S6 — Tests (Go, standard library only)
@@ -81,7 +81,7 @@ Risk: item 6 (no automated test catches a layout overflow or a broken step order
 
 ## Tasks
 
-- [ ] T1 — Deck: `deck.js`, `lesson.html` title and closing cards, CSS tokens and classes, S3 navigation, site tests (S6), `CLAUDE.md` "Visual style" and "Content". Pilot content: `00-setup/01-welcome` and `01-basics/01-packages` cut into cards. Route: inline (the base must exist before any lesson is converted). Recommended model: Opus 5.5, effort high.
+- [x] T1 — Deck: `deck.js`, `lesson.html` title and closing cards, CSS tokens and classes, S3 navigation, site tests (S6), `CLAUDE.md` "Visual style" and "Content". Pilot content: `00-setup/01-welcome` and `01-basics/01-packages` cut into cards. Route: inline (the base must exist before any lesson is converted). Recommended model: Opus 5.5, effort high. Commit `73c4a2f`; RED/GREEN in L4.
 - [ ] T2 — Stepped animations (S4): `scene.js` `next`/`prev`, the side-by-side layout, `CLAUDE.md` "Animations"; `03-more-types/01-pointers` cut into cards as the animation pilot. Route: inline. Recommended model: Opus 5.5, effort high. Then stop for the user's review of the three pilot lessons; corrections go to `## Log` and into S2–S5.
 - [ ] T3 — Content tests `TestEveryLessonIsSlides` and `TestSlideBudget` (RED on every unconverted lesson), then convert the rest: `01-basics`, `02-flow-control`, `03-more-types`, `04-methods`. Route: delegated, four parallel writers (Writer trigger (a): four independent units with disjoint surfaces `content/<module>/*.html`, each well over 100 lines); the parent owns the tests, `CLAUDE.md` and git, and runs the seam check. Recommended model: Opus 5.5, effort medium.
 - [ ] T4 — Fit check and walk of S7 over all 40 lessons; split the cards it reports; adapt any demo whose layout breaks on the narrower canvas. Route: inline. Recommended model: Opus 5.5, effort high.
@@ -93,3 +93,9 @@ Commits: T1 and T2 one each (`feat(web): …`); T3 one per module (`refactor(con
 - L1 (2026-11-20, user, original request): "quiero que el frontend sean cards rollo diapositivas, las lecciones, sin scrolls, dandole a la fecha, las animaciones secuencia de código en paralelo a la animación, siguiendo los clicks de la diapositiva, haz el plan"
 - L2 (2026-11-20): plan written (S1–S8, T1–T4). Explored: `lesson.html`, `layout.html`, `scene.js` (loop, hold, code panel under the canvas), `style.css` `.anim*`, `content/catalog_test.go`. Facts behind D1: 40 lessons with 166 `<h2>` sections, 8 lessons with an animation, longest examples 30–32 lines. Next: user approval, then T1.
 - L3 (2026-11-20, user): "Apruebo el plan, comitea, limpio y arranca". Plan committed on `feat/lesson-slides` with no attribution lines; T1 starts.
+- L4 (2026-11-20): T1 done in `73c4a2f`. RED: `TestPages` (deck, title and closing cards, `deck.js` src), `TestBasePathPrefixesLinks` and `TestBuildWritesEveryPage` failed on the missing markup and `static/js/deck.js`; GREEN after the template, layout and script. Checks: `gofmt` clean, `go vet ./...`, `go test ./...`, exercises with `-tags solution`, `node --check deck.js`. Headless Chrome (CDP driver in the session scratchpad, kept for T4): both pilots fit at 1280×720, 1024×768 and 390×844 with no page scroll and no clipped `pre`; walk verified deep link `#2`, ←/→ with focus on the new card, ← on the first card opens the previous lesson at `#last`, → on the last opens the next lesson; no console errors.
+  - D2: a program and its output may share a card (S5 updated).
+  - D3: an error gets two cards, the code with its message, then the message again beside how to read or fix it; packages prose moved unchanged, only `<h2>` headings added.
+  - D4: `#last` in the URL opens a lesson at its final card; ← on a first card follows `a[rel=prev]` with it.
+  - Fixes found by the checks: the incoming card turns visible at once (a `visibility` transition starts hidden, so `focus()` was dropped); cards use `gap` with zero child margins and `flex-shrink: 0` (flexbox does not collapse margins and squashed `pre` into a scrolling sliver); the first fit check missed clipped `pre`, so it now measures them too.
+  - Next: T2.
