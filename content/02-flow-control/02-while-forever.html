@@ -1,3 +1,4 @@
+<section class="slide">
 <p>
   A veces no sabes de antemano cuántas vueltas va a dar un bucle. Quieres
   doblar un número hasta que pase de 1000, o pedir datos hasta que lleguen
@@ -8,7 +9,9 @@
   En otros lenguajes usarías un bucle <code>while</code>. En Go no existe esa
   palabra, porque no hace falta: el mismo <code>for</code> se encarga.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Si quitas el inicio y el paso de un <code>for</code>, también puedes quitar
@@ -21,6 +24,10 @@
   Se lee como «mientras <code>n</code> sea menor que 1000, dóblalo». Antes de
   cada vuelta, Go comprueba la condición; cuando es <code>false</code>, sale.
 </p>
+</section>
+
+<section class="slide">
+<h2>El bucle infinito</h2>
 <p>
   Si quitas también la condición, tienes un bucle infinito:
 </p>
@@ -32,15 +39,22 @@
   medio del cuerpo. Para salir usas <code>break</code>, que termina el bucle
   en ese mismo momento y sigue con la línea de después.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>¿Cuántas veces hay que doblar 1 para pasar de 1000?</p>
 {{code "examples/for-while/main.go"}}
 <p>Salida:</p>
 <pre><code>1024 en 10 pasos</code></pre>
+</section>
 
+<section class="slide">
 <p>Y una cuenta atrás con un bucle infinito que sale con <code>break</code>:</p>
 {{code "examples/forever/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>3
 2
@@ -51,7 +65,9 @@
   <code>countdown</code> llega a 0, el programa muestra el mensaje y
   <code>break</code> sale del bucle.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Escribir una condición que nunca cambia. Si olvidas la línea
@@ -59,6 +75,10 @@
   siempre es <code>true</code> y el programa no termina nunca. Lo mismo pasa
   con un <code>for {}</code> sin <code>break</code>.
 </p>
+</section>
+
+<section class="slide">
+<h2>Cómo darte cuenta</h2>
 <p>
   El compilador no puede avisarte: un bucle infinito es código válido. Lo
   notarás porque el programa se queda colgado y no muestra nada más. Para
@@ -66,10 +86,13 @@
   revisa el bucle y pregúntate: ¿qué línea acerca la condición a
   <code>false</code> en cada vuelta?
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio contarás cuántas veces puedes dividir un número entre dos
   hasta llegar a cero. No sabes cuántas vueltas serán, así que es el momento
   de usar un <code>for</code> con solo una condición.
 </p>
+</section>

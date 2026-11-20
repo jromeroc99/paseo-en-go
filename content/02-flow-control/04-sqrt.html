@@ -1,10 +1,13 @@
+<section class="slide">
 <p>
   Ya sabes repetir con <code>for</code> y decidir con <code>if</code>. Es hora
   de juntarlos en un problema de verdad: calcular la raíz cuadrada de un
   número sin usar <code>math.Sqrt</code>. Parece difícil, pero hay un método
   de hace más de 300 años que lo resuelve con un bucle de pocas líneas.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   El método de Newton funciona así: empiezas con un valor cualquiera,
@@ -19,6 +22,10 @@
   cuánto mover <code>z</code>. El paso queda así:
 </p>
 <pre><code class="language-go">z -= (z*z - x) / (2*z)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cuándo parar</h2>
 <p>
   Si empiezas con <code>z = 1</code> y <code>x = 2</code>, estos son los
   primeros valores de <code>z</code>:
@@ -34,12 +41,18 @@
   Esa es la señal para parar: cuando la diferencia entre un valor y el
   siguiente es diminuta, el resultado ya es bueno.
 </p>
+</section>
+
+<section class="slide">
+<h2>Sin ejemplo compilado</h2>
 <p>
   Esta lección no tiene ejemplo compilado, porque el ejemplo sería la
   solución del ejercicio. Tienes todas las piezas: un bucle, el paso de
   Newton y una condición para salir.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Comparar números decimales con <code>==</code>. Los <code>float64</code> no
@@ -54,6 +67,10 @@
   <code>1.414213562373095</code>. Un bucle que espera a que dos valores
   seguidos sean iguales con <code>==</code> no terminaría nunca.
 </p>
+</section>
+
+<section class="slide">
+<h2>Cómo arreglarlo</h2>
 <p>
   La forma correcta es comprobar si la diferencia es muy pequeña. La función
   <code>math.Abs</code> devuelve el valor absoluto, así que la condición
@@ -61,7 +78,9 @@
   <code>1e-12</code> es notación científica: un 1 en la duodécima cifra
   decimal.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio escribirás <code>Sqrt</code> con el método de Newton. Los
@@ -69,3 +88,4 @@
   diferencia de hasta <code>1e-9</code>. Prueba también con 0: ¿tu bucle
   termina?
 </p>
+</section>

@@ -1,3 +1,4 @@
+<section class="slide">
 <p>
   Imagina que quieres mostrar los números del 1 al 100. Podrías escribir cien
   líneas con <code>fmt.Println</code>, pero sería absurdo. Lo que necesitas es
@@ -9,7 +10,9 @@
   <code>while</code>, <code>do</code>… Go tiene uno solo: <code>for</code>. Es
   sencillo y sirve para todo.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>El <code>for</code> clásico tiene tres partes separadas por punto y coma:</p>
 <pre><code class="language-go">for i := 0; i &lt; 3; i++ {
@@ -20,6 +23,10 @@
   <li><strong>Condición</strong> (<code>i &lt; 3</code>): se comprueba antes de cada vuelta. Si es <code>false</code>, el bucle termina.</li>
   <li><strong>Paso</strong> (<code>i++</code>): se ejecuta al final de cada vuelta.</li>
 </ul>
+</section>
+
+<section class="slide">
+<h2>Dos detalles</h2>
 <p>
   Fíjate en dos detalles. No hay paréntesis alrededor de las tres partes, y las
   llaves <code>{ }</code> son obligatorias, aunque el cuerpo tenga una sola
@@ -29,13 +36,18 @@
   El inicio y el paso son opcionales. Puedes dejarlos vacíos, pero los puntos y
   coma se quedan.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>
   Un bucle que da tres vueltas, y otro sin inicio que dobla un número hasta
   pasar de 100:
 </p>
 {{code "examples/for/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>vuelta 0
 vuelta 1
@@ -45,7 +57,9 @@ total: 128</code></pre>
   El segundo bucle tiene el cuerpo vacío: todo el trabajo lo hace el paso,
   <code>total += total</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>Si vienes de C o de Java, es fácil poner paréntesis por costumbre:</p>
 <pre><code class="language-go">package main
@@ -58,6 +72,11 @@ func main() {
 	}
 }</code></pre>
 <pre><code>./prog.go:6:9: syntax error: unexpected :=, expected )</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:6:9: syntax error: unexpected :=, expected )</code></pre>
 <p>
   Lee el mensaje por partes: archivo <code>prog.go</code>, línea 6, columna 9.
   Es un <em>syntax error</em> (error de sintaxis): el código no tiene la forma
@@ -65,7 +84,9 @@ func main() {
   expresión normal y no esperaba un <code>:=</code> ahí. La solución es quitar
   los paréntesis.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Equivocarte en una vuelta, por usar <code>&lt;</code> donde querías
@@ -73,9 +94,12 @@ func main() {
   del 1 al 9, no al 10. Cuando escribas un bucle, comprueba siempre el primer
   valor y el último: ¿entra el extremo o no?
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio sumarás todos los números del 1 al <code>n</code>. Piensa
   bien la condición: el propio <code>n</code> tiene que entrar en la suma.
 </p>
+</section>

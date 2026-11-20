@@ -1,3 +1,4 @@
+<section class="slide">
 <p>
   Imagina que tienes el número de un día de la semana y quieres decir si es
   laborable. Con <code>if</code> te saldría una cadena larga:
@@ -5,7 +6,9 @@
   luego otro… Funciona, pero cuesta leerlo. Cuando comparas un mismo valor
   con muchas opciones, hay una herramienta más clara: <code>switch</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   <code>switch</code> evalúa un valor y lo compara con cada <code>case</code>,
@@ -24,31 +27,50 @@ default:
   <li>Un <code>case</code> puede tener varios valores separados por comas.</li>
   <li><code>default</code> se ejecuta si no coincide ninguno. Es opcional.</li>
 </ul>
+</section>
+
+<section class="slide">
+<h2><code>switch</code> sin valor</h2>
 <p>
   También puedes escribir <code>switch</code> sin valor. Entonces cada
   <code>case</code> es una condición, y se ejecuta la primera que sea
   <code>true</code>. Es la forma limpia de escribir una cadena larga de
   <code>if</code>/<code>else</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>Clasificar un día de la semana, donde 1 es el lunes:</p>
+</section>
+
+<section class="slide">
 {{code "examples/switch/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>laborable
 viernes
 fin de semana
 no es un día</code></pre>
-
 <p>
   Y un <code>switch</code> sin condición para poner nota. Como los casos se
   prueban en orden, un 10 cumple <code>score &gt;= 9</code> y ya no llega a
   los siguientes:
 </p>
+</section>
+
+<section class="slide">
 {{code "examples/switch-no-condition/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>sobresaliente notable aprobado suspenso</code></pre>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>Repetir el mismo valor en dos <code>case</code>:</p>
 <pre><code class="language-go">package main
@@ -66,6 +88,12 @@ func main() {
 }</code></pre>
 <pre><code>./prog.go:10:10: duplicate case 6 (constant of type int) in expression switch
 	./prog.go:8:7: previous case</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:10:10: duplicate case 6 (constant of type int) in expression switch
+	./prog.go:8:7: previous case</code></pre>
 <p>
   El mensaje tiene dos líneas. La primera dice dónde está el problema (línea
   10, columna 10): el valor 6 aparece por segunda vez. La segunda señala la
@@ -73,7 +101,9 @@ func main() {
   se ejecutaría el primero, así que el segundo no serviría para nada. Go
   prefiere avisarte.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Si vienes de C, Java o JavaScript, esperarás que, al terminar un
@@ -83,10 +113,13 @@ func main() {
   lo mismo, no los pongas en casos seguidos: júntalos en un único
   <code>case</code> con comas.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio dirás a qué estación pertenece un mes del hemisferio norte.
   Agrupa los meses de cada estación en un solo <code>case</code> y usa
   <code>default</code> para los números que no son meses.
 </p>
+</section>

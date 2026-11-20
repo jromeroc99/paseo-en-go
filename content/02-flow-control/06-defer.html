@@ -1,3 +1,4 @@
+<section class="slide">
 <p>
   Cuando abres algo, tienes que cerrarlo: un archivo, una conexión, una
   puerta. El problema es que una función puede terminar por varios caminos,
@@ -5,7 +6,9 @@
   ellos. Lo ideal sería dejar el cierre apuntado justo al lado de la
   apertura, y que Go se encargue de hacerlo al final.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   <code>defer</code> (aplazar) hace exactamente eso. Escribes
@@ -13,6 +16,10 @@
   tarde: se ejecuta cuando la función que la contiene termina, por el camino
   que sea.
 </p>
+</section>
+
+<section class="slide">
+<h2>Dos reglas</h2>
 <p>Hay dos reglas que conviene tener claras:</p>
 <ul>
   <li>
@@ -26,11 +33,19 @@
     platos: el último que pones encima es el primero que quitas.
   </li>
 </ul>
+</section>
+
+<section class="slide">
+<h2>Su uso más habitual</h2>
 <p>
   Su uso más habitual es cerrar lo que acabas de abrir, en la línea siguiente
   a abrirlo. Así, quien lea la función ve de un vistazo que lo abierto se
   cierra.
 </p>
+</section>
+
+<section class="slide">
+<h2>La pila de <code>defer</code></h2>
 <defer-demo scene="stack">
   <p>
     Animación: el programa imprime «contando». Cada vuelta del bucle apila una
@@ -41,13 +56,18 @@
     empezando por arriba e imprimen 3, 2 y 1.
   </p>
 </defer-demo>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>
   Antes de leer la salida, intenta adivinarla. ¿Qué nombre aparecerá en el
   «adiós»?
 </p>
 {{code "examples/defer/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>hola, Luis
 adiós, Ana</code></pre>
@@ -56,12 +76,18 @@ adiós, Ana</code></pre>
   porque <code>name</code> se evaluó en la línea del <code>defer</code>,
   cuando todavía valía <code>"Ana"</code>.
 </p>
+</section>
 
+<section class="slide">
+<h2>Varios <code>defer</code></h2>
 <p>
   Ahora varios <code>defer</code> dentro de un bucle. De nuevo, piensa la
   salida antes de mirarla:
 </p>
 {{code "examples/defer-stack/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>contando
 hecho
@@ -73,7 +99,9 @@ hecho
   ese momento: 1, luego 2, luego 3. Cuando <code>main</code> termina, Go las
   ejecuta desde la última hasta la primera.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Pensar que los argumentos se calculan cuando la llamada por fin se ejecuta.
@@ -86,3 +114,4 @@ hecho
   Cuando dudes, recuerda: lo que se aplaza es la <strong>llamada</strong>, no
   el cálculo de sus argumentos.
 </p>
+</section>
