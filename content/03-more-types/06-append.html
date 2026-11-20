@@ -22,7 +22,15 @@ s = append(s, 2, 3, 4)</code></pre>
   <code>append</code> también funciona con un slice <code>nil</code>, así que
   puedes empezar con <code>var s []int</code> y añadir desde ahí.
 </p>
-<!-- animation: slice-demo scene=append -->
+<slice-demo scene="append">
+  <p>
+    Animación: <code>var s []int</code> es <code>nil</code>, con longitud 0 y
+    capacidad 0. Al añadir el 0, Go crea un array de capacidad 1. Al añadir
+    el 1 ya no cabe: Go reserva un array de capacidad 2 y copia el 0. Al
+    añadir 2, 3 y 4 pasa lo mismo con un array de capacidad 6. Los arrays
+    viejos se quedan sin usar.
+  </p>
+</slice-demo>
 
 <h2>El ejemplo</h2>
 {{code "examples/append/main.go"}}

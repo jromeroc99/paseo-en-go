@@ -26,7 +26,15 @@
   defecto y <code>high</code>, la longitud. Así, <code>q[:2]</code>,
   <code>q[4:]</code> y <code>q[:]</code> son válidos.
 </p>
-<!-- animation: slice-demo scene=view -->
+<slice-demo scene="view">
+  <p>
+    Animación: el array <code>names</code> ocupa 4 casillas seguidas.
+    <code>a := names[0:2]</code> es una ventana sobre las casillas 0 y 1, y
+    <code>b := names[1:3]</code> otra sobre las casillas 1 y 2. Con
+    <code>b[0] = "XXX"</code> cambia la casilla 1 del array, y como las dos
+    ventanas la miran, <code>a</code> y <code>b</code> muestran el cambio.
+  </p>
+</slice-demo>
 
 <h2>El ejemplo</h2>
 {{code "examples/slices/main.go"}}

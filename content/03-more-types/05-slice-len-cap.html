@@ -26,7 +26,15 @@
   <code>make([]T, len, cap)</code>. El tercer argumento es opcional; si lo
   omites, la capacidad es igual a la longitud.
 </p>
-<!-- animation: slice-demo scene=len-cap -->
+<slice-demo scene="len-cap">
+  <p>
+    Animación: <code>s</code> es una ventana sobre un array de 6 elementos,
+    con longitud 6 y capacidad 6. <code>s[:0]</code> cierra la ventana
+    (longitud 0) pero el array sigue ahí, con capacidad 6.
+    <code>s[:4]</code> la vuelve a abrir hasta 4. <code>s[2:]</code> mueve el
+    inicio dos casillas sin mover el final: longitud 2 y capacidad 4.
+  </p>
+</slice-demo>
 
 <h2>El ejemplo</h2>
 {{code "examples/slice-len-cap/main.go"}}
