@@ -1,0 +1,79 @@
+<p>
+  Cuando abres algo, tienes que cerrarlo: un archivo, una conexión, una
+  puerta. El problema es que una función puede terminar por varios caminos,
+  con varios <code>return</code>, y es fácil olvidar cerrar en alguno de
+  ellos. Lo ideal sería dejar el cierre apuntado justo al lado de la
+  apertura, y que Go se encargue de hacerlo al final.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  <code>defer</code> (aplazar) hace exactamente eso. Escribes
+  <code>defer</code> delante de una llamada a función y Go la guarda para más
+  tarde: se ejecuta cuando la función que la contiene termina, por el camino
+  que sea.
+</p>
+<p>Hay dos reglas que conviene tener claras:</p>
+<ul>
+  <li>
+    <strong>Los argumentos se evalúan en la línea del <code>defer</code></strong>,
+    no al final. Go calcula los valores en ese momento y los guarda junto con
+    la llamada.
+  </li>
+  <li>
+    <strong>Si hay varios <code>defer</code>, se ejecutan al revés</strong>: el
+    último que apuntas es el primero que se ejecuta. Es como una pila de
+    platos: el último que pones encima es el primero que quitas.
+  </li>
+</ul>
+<p>
+  Su uso más habitual es cerrar lo que acabas de abrir, en la línea siguiente
+  a abrirlo. Así, quien lea la función ve de un vistazo que lo abierto se
+  cierra.
+</p>
+<!-- animation: defer-demo scene=stack -->
+
+<h2>El ejemplo</h2>
+<p>
+  Antes de leer la salida, intenta adivinarla. ¿Qué nombre aparecerá en el
+  «adiós»?
+</p>
+{{code "examples/defer/main.go"}}
+<p>Salida:</p>
+<pre><code>hola, Luis
+adiós, Ana</code></pre>
+<p>
+  El «adiós» sale al final, porque está aplazado. Y dice «Ana», no «Luis»,
+  porque <code>name</code> se evaluó en la línea del <code>defer</code>,
+  cuando todavía valía <code>"Ana"</code>.
+</p>
+
+<p>
+  Ahora varios <code>defer</code> dentro de un bucle. De nuevo, piensa la
+  salida antes de mirarla:
+</p>
+{{code "examples/defer-stack/main.go"}}
+<p>Salida:</p>
+<pre><code>contando
+hecho
+3
+2
+1</code></pre>
+<p>
+  Cada vuelta del bucle apunta una llamada con el valor de <code>i</code> de
+  ese momento: 1, luego 2, luego 3. Cuando <code>main</code> termina, Go las
+  ejecuta desde la última hasta la primera.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Pensar que los argumentos se calculan cuando la llamada por fin se ejecuta.
+  En el primer ejemplo, mucha gente espera ver «adiós, Luis», porque al
+  terminar <code>main</code> la variable ya vale <code>"Luis"</code>. Pero Go
+  no vuelve a mirar la variable: usa el valor que guardó al llegar al
+  <code>defer</code>.
+</p>
+<p>
+  Cuando dudes, recuerda: lo que se aplaza es la <strong>llamada</strong>, no
+  el cálculo de sus argumentos.
+</p>

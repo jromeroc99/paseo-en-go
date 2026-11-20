@@ -116,6 +116,23 @@ var Course = course.Course{
 						Goal: "Calcula la raíz cuadrada con el método de Newton, sin usar math.Sqrt.",
 					},
 				},
+				{
+					Slug:  "05-switch",
+					Title: "switch",
+					Exercise: &course.Exercise{
+						Path: "02-flow-control/season",
+						Goal: "Indica a qué estación del año pertenece un mes.",
+					},
+				},
+				{Slug: "06-defer", Title: "defer"},
+				{
+					Slug:  "07-review",
+					Title: "Repaso: números primos",
+					Exercise: &course.Exercise{
+						Path: "02-flow-control/primes",
+						Goal: "Decide si un número es primo y cuenta cuántos primos hay hasta un límite.",
+					},
+				},
 			},
 		},
 	},
