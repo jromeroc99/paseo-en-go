@@ -1,0 +1,75 @@
+<p>
+  A veces no sabes de antemano cuántas vueltas va a dar un bucle. Quieres
+  doblar un número hasta que pase de 1000, o pedir datos hasta que lleguen
+  bien. No hay un contador que vaya del 1 al 10: solo hay una condición que,
+  tarde o temprano, dejará de cumplirse.
+</p>
+<p>
+  En otros lenguajes usarías un bucle <code>while</code>. En Go no existe esa
+  palabra, porque no hace falta: el mismo <code>for</code> se encarga.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Si quitas el inicio y el paso de un <code>for</code>, también puedes quitar
+  los puntos y coma. Queda solo la condición:
+</p>
+<pre><code class="language-go">for n &lt; 1000 {
+	n *= 2
+}</code></pre>
+<p>
+  Se lee como «mientras <code>n</code> sea menor que 1000, dóblalo». Antes de
+  cada vuelta, Go comprueba la condición; cuando es <code>false</code>, sale.
+</p>
+<p>
+  Si quitas también la condición, tienes un bucle infinito:
+</p>
+<pre><code class="language-go">for {
+	// se repite para siempre
+}</code></pre>
+<p>
+  Parece peligroso, pero es muy útil cuando la decisión de parar está en
+  medio del cuerpo. Para salir usas <code>break</code>, que termina el bucle
+  en ese mismo momento y sigue con la línea de después.
+</p>
+
+<h2>El ejemplo</h2>
+<p>¿Cuántas veces hay que doblar 1 para pasar de 1000?</p>
+{{code "examples/for-while/main.go"}}
+<p>Salida:</p>
+<pre><code>1024 en 10 pasos</code></pre>
+
+<p>Y una cuenta atrás con un bucle infinito que sale con <code>break</code>:</p>
+{{code "examples/forever/main.go"}}
+<p>Salida:</p>
+<pre><code>3
+2
+1
+¡despegue!</code></pre>
+<p>
+  Fíjate en que la comprobación está al principio del cuerpo. Cuando
+  <code>countdown</code> llega a 0, el programa muestra el mensaje y
+  <code>break</code> sale del bucle.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Escribir una condición que nunca cambia. Si olvidas la línea
+  <code>n *= 2</code>, <code>n</code> vale 1 para siempre, la condición
+  siempre es <code>true</code> y el programa no termina nunca. Lo mismo pasa
+  con un <code>for {}</code> sin <code>break</code>.
+</p>
+<p>
+  El compilador no puede avisarte: un bucle infinito es código válido. Lo
+  notarás porque el programa se queda colgado y no muestra nada más. Para
+  detenerlo, pulsa <kbd>Ctrl</kbd>+<kbd>C</kbd> en la terminal. Después
+  revisa el bucle y pregúntate: ¿qué línea acerca la condición a
+  <code>false</code> en cada vuelta?
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio contarás cuántas veces puedes dividir un número entre dos
+  hasta llegar a cero. No sabes cuántas vueltas serán, así que es el momento
+  de usar un <code>for</code> con solo una condición.
+</p>

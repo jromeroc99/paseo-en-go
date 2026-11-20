@@ -1,0 +1,71 @@
+<p>
+  Ya sabes repetir con <code>for</code> y decidir con <code>if</code>. Es hora
+  de juntarlos en un problema de verdad: calcular la raíz cuadrada de un
+  número sin usar <code>math.Sqrt</code>. Parece difícil, pero hay un método
+  de hace más de 300 años que lo resuelve con un bucle de pocas líneas.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  El método de Newton funciona así: empiezas con un valor cualquiera,
+  <code>z</code>, y lo vas mejorando paso a paso. Cada paso te acerca más a la
+  raíz de verdad.
+</p>
+<p>
+  ¿Cómo sabes cuánto corregir? Si <code>z</code> fuera la raíz exacta de
+  <code>x</code>, <code>z*z</code> valdría exactamente <code>x</code>. La
+  diferencia <code>z*z - x</code> te dice cuánto te has pasado (o cuánto te
+  falta). Newton dividió esa diferencia entre <code>2*z</code> para saber
+  cuánto mover <code>z</code>. El paso queda así:
+</p>
+<pre><code class="language-go">z -= (z*z - x) / (2*z)</code></pre>
+<p>
+  Si empiezas con <code>z = 1</code> y <code>x = 2</code>, estos son los
+  primeros valores de <code>z</code>:
+</p>
+<pre><code>1.5
+1.4166666666666667
+1.4142156862745099
+1.4142135623746899
+1.4142135623730951</code></pre>
+<p>
+  En cinco pasos ya tienes la raíz de 2 con todos los decimales que caben en
+  un <code>float64</code>. A partir de ahí, cada paso apenas cambia nada.
+  Esa es la señal para parar: cuando la diferencia entre un valor y el
+  siguiente es diminuta, el resultado ya es bueno.
+</p>
+<p>
+  Esta lección no tiene ejemplo compilado, porque el ejemplo sería la
+  solución del ejercicio. Tienes todas las piezas: un bucle, el paso de
+  Newton y una condición para salir.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Comparar números decimales con <code>==</code>. Los <code>float64</code> no
+  guardan todos los decimales exactos: si sumas dos variables que valen
+  <code>0.1</code> y <code>0.2</code>, el resultado es
+  <code>0.30000000000000004</code>, y compararlo con <code>0.3</code> da
+  <code>false</code>.
+</p>
+<p>
+  Con la raíz de 2 pasa algo parecido. Si sigues dando pasos, <code>z</code>
+  salta para siempre entre <code>1.4142135623730951</code> y
+  <code>1.414213562373095</code>. Un bucle que espera a que dos valores
+  seguidos sean iguales con <code>==</code> no terminaría nunca.
+</p>
+<p>
+  La forma correcta es comprobar si la diferencia es muy pequeña. La función
+  <code>math.Abs</code> devuelve el valor absoluto, así que la condición
+  <code>math.Abs(next-z) &lt; 1e-12</code> significa «casi no ha cambiado».
+  <code>1e-12</code> es notación científica: un 1 en la duodécima cifra
+  decimal.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio escribirás <code>Sqrt</code> con el método de Newton. Los
+  tests comparan tu resultado con <code>math.Sqrt</code> y aceptan una
+  diferencia de hasta <code>1e-9</code>. Prueba también con 0: ¿tu bucle
+  termina?
+</p>

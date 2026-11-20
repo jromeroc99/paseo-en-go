@@ -1,0 +1,105 @@
+<p>
+  Hasta ahora tus programas hacían siempre lo mismo, línea tras línea. Pero
+  casi todo programa real tiene que decidir: si el número es negativo, avisa;
+  si la contraseña es correcta, entra; si no, muestra un error. Para eso está
+  <code>if</code>.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Igual que en <code>for</code>, la condición va sin paréntesis y las llaves
+  son obligatorias:
+</p>
+<pre><code class="language-go">if n &lt; 0 {
+	fmt.Println("negativo")
+} else if n == 0 {
+	fmt.Println("cero")
+} else {
+	fmt.Println("positivo")
+}</code></pre>
+<p>
+  Go comprueba las condiciones de arriba abajo y ejecuta solo el primer bloque
+  que se cumple. <code>else if</code> añade otra condición y <code>else</code>
+  recoge todo lo demás. Los dos son opcionales.
+</p>
+<p>
+  El <code>if</code> también acepta una sentencia corta antes de la condición,
+  separada por punto y coma:
+</p>
+<pre><code class="language-go">if p := price - discount; p &gt; minimum {
+	return p
+}</code></pre>
+<p>
+  La variable <code>p</code> solo existe dentro del <code>if</code> (y de sus
+  <code>else</code>). Así no ensucias el resto de la función con variables que
+  solo necesitas para decidir.
+</p>
+
+<h2>El ejemplo</h2>
+<p>
+  Una función que describe un número. Usa <code>strconv.Itoa</code>, del
+  paquete <code>strconv</code>, que convierte un <code>int</code> en el texto
+  que lo representa: <code>strconv.Itoa(7)</code> da <code>"7"</code>.
+</p>
+{{code "examples/if/main.go"}}
+<p>Salida:</p>
+<pre><code>-4 es negativo
+cero
+7 es positivo</code></pre>
+
+<p>Y la sentencia corta, para aplicar un descuento solo si merece la pena:</p>
+{{code "examples/if-short-statement/main.go"}}
+<p>Salida:</p>
+<pre><code>15
+10</code></pre>
+
+<h2>Un error a propósito</h2>
+<p>Poner el <code>else</code> en su propia línea, después de la llave:</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	age := 15
+	if age &gt;= 18 {
+		fmt.Println("adulto")
+	}
+	else {
+		fmt.Println("menor")
+	}
+}</code></pre>
+<pre><code>./prog.go:10:2: syntax error: unexpected keyword else, expected }</code></pre>
+<p>
+  En la línea 10, el compilador encuentra un <code>else</code> que no esperaba.
+  Go añade un punto y coma invisible al final de la línea 9, justo después de
+  <code>}</code>, así que para él el <code>if</code> ya había terminado. La
+  regla es sencilla: escribe siempre <code>} else {</code> en la misma línea.
+</p>
+
+<h2>El error típico</h2>
+<p>Usar la variable de la sentencia corta cuando el <code>if</code> ya ha terminado:</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	price := 20.0
+	if p := price - 5; p &gt; 10 {
+		fmt.Println(p)
+	}
+	fmt.Println(p)
+}</code></pre>
+<pre><code>./prog.go:10:14: undefined: p</code></pre>
+<p>
+  <code>undefined</code> significa que en ese punto no existe nada con ese
+  nombre. Si necesitas el valor después, declara la variable antes del
+  <code>if</code>.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio jugarás a FizzBuzz: devuelve <code>"Fizz"</code> si el número
+  es divisible entre 3, <code>"Buzz"</code> si lo es entre 5,
+  <code>"FizzBuzz"</code> si lo es entre los dos y, si no, el propio número
+  como texto. Piensa en qué orden tienes que comprobar las condiciones.
+</p>

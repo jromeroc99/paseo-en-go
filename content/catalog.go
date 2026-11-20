@@ -79,5 +79,44 @@ var Course = course.Course{
 				},
 			},
 		},
+		{
+			Slug:    "02-flow-control",
+			Title:   "Control de flujo",
+			Summary: "Bucles, condiciones, switch y defer: cómo decide tu programa qué hacer y cuántas veces.",
+			Lessons: []course.Lesson{
+				{
+					Slug:  "01-for",
+					Title: "El bucle for",
+					Exercise: &course.Exercise{
+						Path: "02-flow-control/sum",
+						Goal: "Suma todos los números del 1 al n.",
+					},
+				},
+				{
+					Slug:  "02-while-forever",
+					Title: "for como while y bucles infinitos",
+					Exercise: &course.Exercise{
+						Path: "02-flow-control/halvings",
+						Goal: "Cuenta cuántas veces puedes dividir un número entre dos hasta llegar a cero.",
+					},
+				},
+				{
+					Slug:  "03-if",
+					Title: "if y else",
+					Exercise: &course.Exercise{
+						Path: "02-flow-control/fizzbuzz",
+						Goal: "Devuelve Fizz, Buzz, FizzBuzz o el número, según sus divisores.",
+					},
+				},
+				{
+					Slug:  "04-sqrt",
+					Title: "Práctica: tu propia raíz cuadrada",
+					Exercise: &course.Exercise{
+						Path: "02-flow-control/sqrt",
+						Goal: "Calcula la raíz cuadrada con el método de Newton, sin usar math.Sqrt.",
+					},
+				},
+			},
+		},
 	},
 }
