@@ -1,0 +1,72 @@
+<p>
+  Lees números de un archivo y no sabes cuántos hay. Un slice creado con
+  <code>make</code> tiene un tamaño fijo y no puede pasar de su capacidad.
+  Necesitas una forma de añadir elementos al final según van llegando.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  La función <code>append</code> añade elementos al final de un slice:
+</p>
+<pre><code class="language-go">s = append(s, 1)
+s = append(s, 2, 3, 4)</code></pre>
+<p>
+  Fíjate en que <code>append</code> no cambia el slice que le pasas:
+  devuelve uno nuevo, y tú lo guardas otra vez en <code>s</code>. Hay una
+  buena razón. Si el array de debajo tiene sitio, <code>append</code> escribe
+  ahí y devuelve un slice más largo. Si no cabe, crea un array más grande,
+  copia los elementos y devuelve un slice sobre ese array nuevo. En los dos
+  casos, el resultado es el único slice que tiene la longitud correcta.
+</p>
+<p>
+  <code>append</code> también funciona con un slice <code>nil</code>, así que
+  puedes empezar con <code>var s []int</code> y añadir desde ahí.
+</p>
+<!-- animation: slice-demo scene=append -->
+
+<h2>El ejemplo</h2>
+{{code "examples/append/main.go"}}
+<p>Salida:</p>
+<pre><code>len=0 cap=0 []
+len=1 cap=1 [0]
+len=2 cap=2 [0 1]
+len=5 cap=6 [0 1 2 3 4]</code></pre>
+<p>
+  Mira la capacidad: cada vez que se queda corta, Go reserva un array mayor.
+  Cuánto mayor exactamente es un detalle interno de Go; no escribas código que
+  dependa de ese número.
+</p>
+
+<h2>Un error a propósito</h2>
+<p>
+  Como el resultado de <code>append</code> es lo único que importa, Go no te
+  deja tirarlo:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	s := []int{1, 2, 3}
+	append(s, 4)
+	fmt.Println(s)
+}</code></pre>
+<pre><code>./prog.go:7:2: append(s, 4) (value of type []int) is not used</code></pre>
+<p>
+  En la línea 7, el compilador te dice que <code>append(s, 4)</code> produce
+  un valor de tipo <code>[]int</code> que nadie usa. La solución es
+  guardarlo: <code>s = append(s, 4)</code>.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Guardar el resultado en otra variable y seguir usando la vieja:
+</p>
+<pre><code class="language-go">more := append(s, 4)
+fmt.Println(len(s), len(more)) // 3 4</code></pre>
+<p>
+  Esto compila, pero <code>s</code> sigue teniendo longitud 3: el cuarto
+  elemento solo está en <code>more</code>. Salvo que
+  quieras dos slices distintos a propósito, escribe siempre
+  <code>s = append(s, x)</code>: la misma variable a los dos lados.
+</p>

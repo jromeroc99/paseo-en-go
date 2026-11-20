@@ -1,0 +1,62 @@
+<p>
+  Un tablero de tres en raya tiene filas y columnas. Una imagen es una
+  cuadrícula de píxeles. Un slice te da una fila de valores, pero aquí
+  necesitas dos dimensiones.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un slice puede contener cualquier tipo, incluidos otros slices. Un
+  <code>[][]string</code> es un slice de filas, y cada fila es un
+  <code>[]string</code>. Accedes a una celda con dos índices:
+  <code>board[y][x]</code> es la fila <code>y</code>, columna
+  <code>x</code>.
+</p>
+<p>
+  La clave está en cómo se crea. <code>make([][]string, 3)</code> crea el
+  slice de fuera con tres filas, pero cada fila es un slice
+  <code>nil</code>: todavía no tiene celdas. Tienes que crear cada fila por
+  separado, normalmente con un bucle:
+</p>
+<pre><code class="language-go">for y := range board {
+	board[y] = make([]string, 3)
+}</code></pre>
+<p>
+  Como cada fila es su propio slice con su propio array, cambiar una celda de
+  una fila no afecta a las demás.
+</p>
+
+<h2>El ejemplo</h2>
+{{code "examples/slices-of-slices/main.go"}}
+<p>Salida:</p>
+<pre><code>[X _ _]
+[_ O _]
+[X _ _]</code></pre>
+
+<h2>El error típico</h2>
+<p>
+  Crear el slice de fuera y olvidarte de las filas:
+</p>
+<pre><code class="language-go">package main
+
+func main() {
+	board := make([][]string, 3)
+	board[0][0] = "X"
+}</code></pre>
+<pre><code>panic: runtime error: index out of range [0] with length 0</code></pre>
+<p>
+  <code>board[0]</code> existe, pero es una fila <code>nil</code> de longitud
+  0, así que no tiene índice 0. El mensaje lo dice con exactitud: índice 0
+  fuera de rango con longitud 0. Cuando veas «with length 0» en un slice de
+  slices, comprueba que creaste cada fila.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio vas a escribir <code>Pic</code>, que construye una
+  cuadrícula de <code>dy</code> filas y <code>dx</code> columnas de
+  <code>uint8</code>. Cada celda <code>[y][x]</code> vale
+  <code>uint8((x + y) / 2)</code>. Crea cada fila con <code>make</code> y
+  rellénala con un bucle dentro de otro. Es el primer paso hacia las imágenes
+  que dibujarás al final del próximo módulo.
+</p>

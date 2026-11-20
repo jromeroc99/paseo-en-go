@@ -1,0 +1,79 @@
+<p>
+  Un array tiene un tamaño fijo, y casi nunca sabes de antemano cuántos
+  elementos vas a tener: las palabras de un texto, los productos de un
+  carrito, las líneas de un archivo. Además, a menudo solo te interesa una
+  parte: los tres primeros, o todos menos el primero.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un <em>slice</em> (porción) es una ventana sobre un array. Su tipo es
+  <code>[]T</code>, sin número entre los corchetes. La expresión
+  <code>a[low:high]</code> crea un slice con los elementos de
+  <code>a</code> desde el índice <code>low</code> hasta
+  <code>high</code>, sin incluir <code>high</code>.
+</p>
+<p>
+  Lo importante es que un slice no guarda datos. Solo describe un trozo de un
+  array que vive en otro sitio. Si cambias un elemento del slice, cambias el
+  elemento del array. Y si dos slices miran el mismo array, los dos ven el
+  cambio.
+</p>
+<p>
+  Casi siempre crearás slices con un literal, como
+  <code>[]int{2, 3, 5}</code>: Go crea el array y te da un slice que lo cubre
+  entero. Al cortar puedes omitir los límites: <code>low</code> vale 0 por
+  defecto y <code>high</code>, la longitud. Así, <code>q[:2]</code>,
+  <code>q[4:]</code> y <code>q[:]</code> son válidos.
+</p>
+<!-- animation: slice-demo scene=view -->
+
+<h2>El ejemplo</h2>
+{{code "examples/slices/main.go"}}
+<p>Salida:</p>
+<pre><code>[3 5 7]
+3 3</code></pre>
+
+<p>Dos slices que comparten el mismo array:</p>
+{{code "examples/slices-share-array/main.go"}}
+<p>Salida:</p>
+<pre><code>[Ana Luis] [Luis Marta]
+[Ana XXX] [XXX Marta]
+[Ana XXX Marta Pablo]</code></pre>
+
+<p>Literales y límites por defecto:</p>
+{{code "examples/slice-literals/main.go"}}
+<p>Salida:</p>
+<pre><code>[2 3 5 7 11 13]
+[3 5 7]
+[2 3]
+[11 13]
+[2 3 5 7 11 13]</code></pre>
+
+<h2>Un error a propósito</h2>
+<p>
+  Con un slice, el compilador no siempre sabe cuántos elementos habrá. Por
+  eso un índice fuera de rango se detecta al ejecutar:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	s := []int{10, 20, 30}
+	fmt.Println(s[5])
+}</code></pre>
+<pre><code>panic: runtime error: index out of range [5] with length 3</code></pre>
+<p>
+  El mensaje te da los dos datos que necesitas: pediste el índice 5 y el
+  slice tiene longitud 3, así que el último índice válido es el 2.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Olvidar que los slices comparten su array. En el segundo ejemplo,
+  <code>b[0] = "XXX"</code> también cambió <code>a</code> y
+  <code>names</code>. Si pasas un slice a una función y la función cambia sus
+  elementos, tú verás esos cambios. Cuando necesites una copia independiente,
+  tendrás que crearla a propósito.
+</p>

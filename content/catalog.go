@@ -157,6 +157,25 @@ var Course = course.Course{
 					},
 				},
 				{Slug: "03-arrays", Title: "Arrays"},
+				{Slug: "04-slices", Title: "Slices"},
+				{Slug: "05-slice-len-cap", Title: "Longitud y capacidad"},
+				{Slug: "06-append", Title: "Añadir elementos con append"},
+				{
+					Slug:  "07-range",
+					Title: "Recorrer con range",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/evens",
+						Goal: "Devuelve solo los números pares de una lista.",
+					},
+				},
+				{
+					Slug:  "08-pic",
+					Title: "Práctica: slices de slices",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/pic",
+						Goal: "Construye una cuadrícula de dy filas y dx columnas.",
+					},
+				},
 			},
 		},
 	},
