@@ -1,7 +1,7 @@
 {{define "title"}}{{.Lesson.Title}} · {{.Course.Title}}{{end}}
 
 {{define "content"}}
-<p class="breadcrumb">{{.Module.Title}}</p>
+<p class="breadcrumb"><a href="{{.Base}}">{{.Module.Title}}</a></p>
 <article class="lesson">
   <h1>{{.Lesson.Title}}</h1>
   {{.Body}}

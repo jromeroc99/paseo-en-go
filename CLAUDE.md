@@ -76,12 +76,16 @@ cd exercises && go test -tags solution ./...   # reference solutions must pass
 
 ## Visual style
 
-- **Dark theme only.** Deep background, light text, one accent colour. All
-  colours are CSS tokens on `:root` in `web/static/css/style.css`; never
-  hard-code a colour anywhere else.
-- Retro pixel touches that support reading, not decorate it: square corners,
-  hard pixel shadows (`box-shadow` with no blur), stepped borders. Body text
-  stays in a readable system font; code in monospace.
+- **Dark theme only.** Deep blue-ink background, light text, one neon accent:
+  Gopher Blue (`--accent`). All colours are CSS tokens on `:root` in
+  `web/static/css/style.css`; never hard-code a colour anywhere else.
+- **Modern and minimalist.** Rounded boxes (`--radius`, `--radius-sm`), 1 px
+  hairlines, generous space. Every code block gets a copy button (`copy.js`).
+  The neon glow (`--glow`) is used sparingly: the course route, focus, active
+  state and the exercise box. If everything glows, nothing does.
+- The index is a *walk*: a neon route with one stop per lesson that lights up
+  when the lesson is done. Pixel art lives in the animations, not the chrome.
+- Body text in a readable system font; code in monospace.
 - Accessible contrast (WCAG AA), visible keyboard focus, works on a phone.
 
 ## Animations
