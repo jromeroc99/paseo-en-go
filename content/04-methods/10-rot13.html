@@ -1,0 +1,55 @@
+<p>
+  ROT13 es un cifrado muy sencillo: cambia cada letra por la que está 13
+  posiciones más adelante en el alfabeto. La <code>a</code> pasa a ser
+  <code>n</code>, y la <code>n</code>, <code>a</code>. Tienes un mensaje
+  cifrado que llega desde un <code>Reader</code> y quieres leerlo ya
+  descifrado, sin cargarlo entero en memoria primero.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un <code>Reader</code> puede envolver a otro. Guarda el de dentro en un
+  campo, y su método <code>Read</code> hace dos cosas: llama al
+  <code>Read</code> de dentro y transforma los bytes que ha recibido antes de
+  devolverlos. Quien lee desde fuera no nota la diferencia: sigue teniendo un
+  <code>io.Reader</code>.
+</p>
+<p>
+  La biblioteca estándar usa este patrón constantemente. Por ejemplo,
+  <code>gzip.NewReader</code> envuelve un <code>Reader</code> de datos
+  comprimidos y te da los datos ya descomprimidos. Y como el resultado es otro
+  <code>Reader</code>, puedes encadenar tantos como quieras.
+</p>
+
+<h2>El ejemplo</h2>
+<p>
+  Un <code>Reader</code> que pasa las letras a mayúsculas. <code>io.Copy</code>
+  lee de él hasta el final y lo escribe en la salida estándar:
+</p>
+{{code "examples/upper-reader/main.go"}}
+<p>Salida:</p>
+<pre><code>HOLA, GOPHER</code></pre>
+<p>
+  Fíjate en el orden dentro de <code>Read</code>: primero lee, después
+  transforma, y al final devuelve el mismo <code>n</code> y el mismo error que
+  le dio el <code>Reader</code> de dentro. Así, cuando este avisa con
+  <code>io.EOF</code>, el aviso llega intacto a quien está leyendo.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Transformar el <code>slice</code> entero en lugar de los <code>n</code> bytes
+  que se acaban de leer. El bucle tiene que ir de <code>0</code> a
+  <code>n</code>, no hasta <code>len(b)</code>. Si te pasas, cambias bytes que
+  no forman parte de esta lectura. Con trozos grandes el fallo puede pasar
+  desapercibido; con un <code>Reader</code> que entrega los datos de byte en
+  byte, salta enseguida.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio escribirás <code>Rot13Reader</code>, que envuelve otro
+  <code>Reader</code> y aplica ROT13 a las letras, en mayúscula y en minúscula.
+  Los números, los espacios y los signos de puntuación pasan sin cambios. Los
+  tests lo leerán también de byte en byte.
+</p>

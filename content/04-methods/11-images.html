@@ -1,0 +1,94 @@
+<p>
+  Una imagen es una cuadrícula de píxeles de colores. El paquete
+  <code>image</code> no te obliga a guardarla de una forma concreta: te pide
+  que sepas responder a tres preguntas. Y eso, en Go, es una interfaz.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  <code>image.Image</code> tiene tres métodos:
+</p>
+<pre><code class="language-go">type Image interface {
+	ColorModel() color.Model
+	Bounds() Rectangle
+	At(x, y int) color.Color
+}</code></pre>
+<p>
+  <code>ColorModel</code> dice cómo se representan los colores, por ejemplo
+  <code>color.RGBAModel</code>: rojo, verde, azul y opacidad. <code>Bounds</code>
+  devuelve el rectángulo que ocupa la imagen; <code>image.Rect(0, 0, 100, 100)</code>
+  es un cuadrado de 100 por 100 que empieza en la esquina (0, 0).
+  <code>At</code> devuelve el color del píxel en la posición (x, y).
+</p>
+<p>
+  Cualquier tipo con esos tres métodos es una imagen, y funciona con todo lo
+  que acepta <code>image.Image</code>, como <code>png.Encode</code>, que la
+  guarda en formato PNG. Si solo necesitas una imagen en la que pintar,
+  <code>image.NewRGBA</code> te da una ya hecha.
+</p>
+
+<h2>El ejemplo</h2>
+{{code "examples/images/main.go"}}
+<p>Salida:</p>
+<pre><code>(0,0)-(100,100)
+{0 173 216 255}
+{0 0 0 0}</code></pre>
+<p>
+  El píxel que has pintado tiene el color de Go. El que no has tocado tiene el
+  valor cero de un color: negro y transparente.
+</p>
+
+<h2>Un error a propósito</h2>
+<p>Un tipo al que le falta uno de los tres métodos:</p>
+<pre><code class="language-go">package main
+
+import (
+	"image"
+	"image/color"
+)
+
+type Square struct{}
+
+func (s Square) ColorModel() color.Model {
+	return color.RGBAModel
+}
+
+func (s Square) Bounds() image.Rectangle {
+	return image.Rect(0, 0, 8, 8)
+}
+
+func main() {
+	var img image.Image = Square{}
+	_ = img
+}</code></pre>
+<pre><code>./prog.go:19:24: cannot use Square{} (value of struct type Square) as image.Image value in variable declaration: Square does not implement image.Image (missing method At)</code></pre>
+<p>
+  Igual que en la lección de interfaces: la segunda parte del mensaje dice qué
+  falta, <code>missing method At</code>. Añade el método y
+  <code>Square</code> será una imagen.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Olvidar que un <code>uint8</code> solo llega hasta 255. Si conviertes una
+  variable que vale 300, <code>uint8(x)</code> no da error: da 44, porque
+  vuelve a empezar desde 0. Mantén los valores de color entre 0 y 255.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio crearás tu propio tipo <code>Image</code> con un ancho y un
+  alto. El color de cada píxel sale de sus coordenadas:
+  <code>color.RGBA{uint8(x), uint8(y), 255, 255}</code>. Si los tests pasan,
+  <code>png.Encode</code> podrá guardarlo como una imagen de verdad.
+</p>
+
+<h2>Fin del paseo</h2>
+<p>
+  Con esta lección termina la ruta. Has empezado con un
+  <code>package main</code> y has llegado a escribir tus propios
+  <code>Reader</code> e imágenes: tipos, funciones, control de flujo,
+  <code>slices</code>, <code>maps</code>, métodos e interfaces. Es la base
+  sobre la que se escribe cualquier programa en Go. Lo siguiente es usarla: elige
+  un problema pequeño que te interese y resuélvelo con lo que ya sabes.
+</p>

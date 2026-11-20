@@ -1,0 +1,62 @@
+<p>
+  Un archivo, una conexión de red, un texto en memoria, un archivo comprimido.
+  Son cosas muy distintas, pero todas tienen datos que se leen poco a poco. En
+  Go se leen todas de la misma manera, gracias a una interfaz de un solo
+  método.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  El paquete <code>io</code> declara <code>io.Reader</code>:
+</p>
+<pre><code class="language-go">type Reader interface {
+	Read(b []byte) (n int, err error)
+}</code></pre>
+<p>
+  Tú le das un <code>slice</code> de bytes y <code>Read</code> lo llena con
+  datos, como mucho <code>len(b)</code>. Devuelve <code>n</code>, cuántos bytes
+  ha escrito de verdad, y un error. Cuando los datos se acaban, devuelve el
+  error <code>io.EOF</code> (<em>end of file</em>, fin de los datos).
+</p>
+<p>
+  Lo normal es leer en un bucle: llamas a <code>Read</code> una y otra vez y
+  usas los <code>n</code> bytes de cada vuelta, hasta que llega
+  <code>io.EOF</code>. La biblioteca estándar está llena de tipos que cumplen
+  esta interfaz: <code>strings.Reader</code>, <code>os.File</code>,
+  <code>bytes.Buffer</code> y muchos más.
+</p>
+<!-- animation: reader-demo scene=chunks -->
+
+<h2>El ejemplo</h2>
+<p>Un texto de 13 bytes leído a trozos de 8:</p>
+{{code "examples/reader/main.go"}}
+<p>Salida:</p>
+<pre><code>n = 8 err = &lt;nil&gt; b[:n] = "Hola, Re"
+n = 5 err = &lt;nil&gt; b[:n] = "ader!"
+n = 0 err = EOF b[:n] = ""</code></pre>
+<p>
+  La primera lectura llena el <code>slice</code> entero. La segunda solo
+  encuentra 5 bytes. La tercera ya no encuentra nada y avisa con
+  <code>EOF</code>.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Usar <code>b</code> donde hace falta <code>b[:n]</code>. <code>Read</code>
+  no borra el <code>slice</code>: solo sobrescribe los primeros
+  <code>n</code> bytes. En la segunda vuelta del ejemplo, <code>b</code>
+  entero vale <code>"ader! Re"</code>; los tres últimos bytes son restos de
+  la vuelta anterior.
+</p>
+<p>
+  El otro error es tratar <code>io.EOF</code> como un fallo. No lo es: es la
+  forma normal de decir «ya no hay más». Compara con <code>io.EOF</code> y
+  sal del bucle; cualquier otro error sí es un problema.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio crearás tu propio <code>Reader</code>: uno que nunca se acaba
+  y llena todo el <code>slice</code> que le den con la letra
+  <code>'A'</code>.
+</p>

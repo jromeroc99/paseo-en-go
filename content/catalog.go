@@ -257,6 +257,38 @@ var Course = course.Course{
 						Goal: "Haz que una dirección IP se imprima como 127.0.0.1.",
 					},
 				},
+				{
+					Slug:  "08-errors",
+					Title: "Errores",
+					Exercise: &course.Exercise{
+						Path: "04-methods/safesqrt",
+						Goal: "Devuelve un error cuando te pidan la raíz de un número negativo.",
+					},
+				},
+				{
+					Slug:  "09-readers",
+					Title: "Readers",
+					Exercise: &course.Exercise{
+						Path: "04-methods/areader",
+						Goal: "Crea un Reader que emite la letra A sin parar.",
+					},
+				},
+				{
+					Slug:  "10-rot13",
+					Title: "Práctica: rot13Reader",
+					Exercise: &course.Exercise{
+						Path: "04-methods/rot13",
+						Goal: "Descifra un mensaje con un Reader que aplica ROT13.",
+					},
+				},
+				{
+					Slug:  "11-images",
+					Title: "Imágenes",
+					Exercise: &course.Exercise{
+						Path: "04-methods/images",
+						Goal: "Crea tu propio tipo de imagen implementando image.Image.",
+					},
+				},
 			},
 		},
 	},

@@ -324,10 +324,10 @@ Detailed when phase 3 starts. Required: `pointer-demo`, `slice-demo` (scenes `vi
 ## Tasks
 
 - [x] T0 — Plan (S1–S12). Route: inline. Commit: `docs: plan the tour modules feature`.
-- [x] T1 — Module `01-basics` (S3–S7, S11), 9 lessons, 4 exercises. Route: inline (single unit, no writer reason). Commits: `c6d225a`, `feat(content): add basics lessons on types, conversions and constants`. Waiting for the user's review.
-- [ ] T2 — Module `02-flow-control` (S3–S6, S8, S11), 7 lessons, 6 exercises. Route: delegated.
-- [ ] T3 — Module `03-more-types` (S3–S6, S9, S11), 12 lessons, 8 exercises. Route: delegated.
-- [ ] T4 — Module `04-methods` (S3–S6, S10, S11), 11 lessons, 9 exercises. Route: delegated.
+- [x] T1 — Module `01-basics` (S3–S7, S11), 9 lessons, 4 exercises. Route: inline (single unit, no writer reason). Commits: `c6d225a`, `feat(content): add basics lessons on types, conversions and constants`. Reviewed and accepted by the user (L6).
+- [x] T2 — Module `02-flow-control` (S3–S6, S8, S11), 7 lessons, 6 exercises. Route: delegated (parallel writer, trigger (a)). Commits: `874b20e`, `c7f1c3a`.
+- [x] T3 — Module `03-more-types` (S3–S6, S9, S11), 12 lessons, 8 exercises. Route: delegated (parallel writer, trigger (a)). Commits: `1e26e5f`, `244ff85`, `6b4c8eb`.
+- [x] T4 — Module `04-methods` (S3–S6, S10, S11), 11 lessons, 9 exercises. Route: delegated (parallel writer, trigger (a)). Commits: `6a3628d`, `1f48ea6`, the commit `feat(content): add lessons on errors, readers and images`.
 - [ ] T5 — Animations (S6, S12). Route: decided at phase 3.
 
 T2–T4 route evidence: three independent units with disjoint edit surfaces (`content/<module>/**`, `exercises/<module>/**`), each well over 100 lines, launched together (Writer trigger, parallelism). `content/catalog.go` is shared: the parent adds the three modules' entries before launching and runs the seam check (S11) at the end. Fallback: inline, one module after another.
@@ -342,4 +342,5 @@ Commits: slices of 3–5 lessons with their examples, exercises and catalog entr
 - L4 (2026-11-20, user): "Apruebo el plan".
 - L5 (2026-11-20, user): "Arranca con el plan". T1 done inline on Opus medium. RED: `TestEveryLessonHasBody` failed for the 9 new slugs; every stub test failed and every solution passed. S11 clean (gofmt, vet, tests, build, voseo grep with no hits). Compiler messages reproduced with go1.26.8. Findings: `int(4.9)` with a constant does not compile (`cannot convert 4.9 (untyped float constant) to type int`), so conversion examples use variables; lessons add a "Un error a propósito" `<h2>` between the example and "El error típico", and a "Tu turno" `<h2>` for the bridge; `06-zero-values` gained a paragraph on `var` versus `:=` to reach the length in S3. Subtests are unnamed (`#00`); the failure message carries the arguments.
 - L6 (2026-11-20, user): "Dale todo lo que use opus 5.5 del tirón". Read as: pilot accepted with no corrections; run phase 2 (T2–T4) in one go. Conventions from L5 (extra `<h2>` sections, variables in conversion examples) apply to T2–T4. The parent added the three modules to `content/catalog.go` before launching the writers.
-- Next step: three parallel writers for T2–T4; parent runs the seam check and commits the slices.
+- L7 (2026-11-20, phase 2 evidence): three parallel Opus writers, disjoint surfaces, no writes outside them. Seam check S11 clean on the whole repo: gofmt 0 files, `go vet ./...` ok, `go test ./...` ok, build wrote 41 pages (40 lessons + index), exercises vet ok with and without the solution tag, every solution passes, all 27 stub packages fail, voseo grep 0 hits. Each commit slice was verified alone (catalog trimmed to its lessons). Findings: `0.1+0.2 == 0.3` with constants is true, so `04-sqrt` speaks of variables; Newton on floats oscillates, which motivates a tolerance stop; `&Vertex{3, 4}.Scale(2)` parses as `&(…)`, so the fix stores the value first; `i.(type)` outside a switch reports `invalid syntax tree: use of .(type) outside type switch`; a constant out-of-range slice index on a literal panics at run time. Two inline fragments in `03-more-types` show the message without a position because they are not full files. Review lessons (`07-review`, `12-review`) are about 200 words by design.
+- Next step: phase 3 (T5, animations) after the user reviews modules 02–04.
