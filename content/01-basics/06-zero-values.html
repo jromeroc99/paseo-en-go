@@ -1,10 +1,13 @@
+<section class="slide">
 <p>
   ¿Qué vale una variable que declaras sin darle valor? En algunos lenguajes,
   cualquier cosa: lo que hubiera en esa zona de memoria, o un valor especial
   como <code>undefined</code> que hace fallar el programa más adelante. En Go
   la respuesta es siempre la misma y es predecible.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Toda variable declarada sin valor inicial recibe el <em>zero value</em>
@@ -20,6 +23,10 @@
   cero, una bandera empieza desactivada y un texto empieza vacío, sin que
   tengas que escribirlo.
 </p>
+</section>
+
+<section class="slide">
+<h2>¿<code>var</code> o <code>:=</code>?</h2>
 <p>
   Esto te da una regla sencilla para elegir cómo declarar. Si ya tienes el
   valor, usa <code>:=</code>: <code>name := "Gopher"</code>. Si quieres
@@ -27,7 +34,9 @@
   valor: <code>var total int</code>. Quien lea tu código entenderá que
   <code>total</code> empieza en cero a propósito.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>
   El verbo <code>%q</code> imprime el texto entre comillas, para que se vea
@@ -36,7 +45,9 @@
 {{code "examples/zero-values/main.go"}}
 <p>Salida:</p>
 <pre><code>0 0 false ""</code></pre>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Escribir código defensivo para un valor que no puede existir. Esto sobra:
@@ -48,3 +59,4 @@ total = 0 // innecesario: total ya vale 0</code></pre>
   diseñados para que su valor cero ya funcione, y verás que tus propios tipos
   también pueden hacerlo.
 </p>
+</section>

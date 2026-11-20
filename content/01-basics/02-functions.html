@@ -1,9 +1,12 @@
+<section class="slide">
 <p>
   Si tienes que sumar dos números en diez sitios distintos de tu programa, no
   quieres escribir la misma operación diez veces. Le pones un nombre una vez y
   la llamas cuando la necesites. Eso es una función.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Una función recibe cero o más parámetros y puede devolver un resultado. En Go
@@ -16,18 +19,26 @@
   <code>int</code>, y devuelve un <code>int</code>». El tipo del resultado va
   al final, antes de la llave.
 </p>
+</section>
+
+<section class="slide">
+<h2>Parámetros del mismo tipo</h2>
 <p>
   Cuando dos o más parámetros seguidos comparten tipo, puedes escribirlo una
   sola vez: <code>x, y int</code> significa lo mismo que
   <code>x int, y int</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/functions/main.go"}}
 <p>Salida:</p>
 <pre><code>55
 42</code></pre>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>
   La firma de una función es una promesa. Si dices que devuelves un
@@ -43,13 +54,20 @@ func main() {
 	add(1, 2)
 }</code></pre>
 <pre><code>./prog.go:4:9: cannot use "suma" (untyped string constant) as int value in return statement</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:4:9: cannot use "suma" (untyped string constant) as int value in return statement</code></pre>
 <p>
   En la línea 4, columna 9, el compilador encuentra un texto
   (<em>string constant</em>) donde esperaba un <code>int</code>, justo en el
   <code>return</code>. El error aparece antes de ejecutar nada: Go lo detecta
   al compilar.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Si vienes de C o de Java, tus dedos escribirán el tipo antes del nombre:
@@ -57,9 +75,12 @@ func main() {
   orden: primero el nombre, luego el tipo. Con declaraciones largas es más
   fácil de leer, porque el nombre siempre va primero.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio vas a escribir dos funciones pequeñas que reciben el ancho y
   el alto de un rectángulo: una devuelve su área y la otra su perímetro.
 </p>
+</section>

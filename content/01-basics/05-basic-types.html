@@ -1,9 +1,12 @@
+<section class="slide">
 <p>
   No es lo mismo guardar una edad que un precio o un nombre. La edad es un
   número entero, el precio lleva decimales y el nombre es texto. Cada valor de
   Go tiene un tipo, y el tipo decide qué operaciones puedes hacer con él.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>Estos son los tipos básicos que vas a usar casi siempre:</p>
 <ul>
@@ -15,6 +18,11 @@
     fijo, y sus versiones sin signo <code>uint</code>, <code>uint8</code>…
     que no admiten negativos.
   </li>
+</ul>
+</section>
+
+<section class="slide">
+<ul>
   <li><code>byte</code>: otro nombre para <code>uint8</code>. Se usa para datos en bruto.</li>
   <li>
     <code>rune</code>: otro nombre para <code>int32</code>. Representa un
@@ -22,6 +30,10 @@
   </li>
   <li><code>float64</code>: números con decimales.</li>
 </ul>
+</section>
+
+<section class="slide">
+<h2>Regla práctica</h2>
 <p>
   Go también tiene números complejos, <code>complex128</code>, pero no los
   necesitarás en este curso.
@@ -30,13 +42,21 @@
   Regla práctica: para enteros, usa <code>int</code> salvo que tengas una
   razón concreta para usar otro tamaño.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>
   <code>fmt.Printf</code> con <code>%T</code> imprime el tipo de un valor, y
   con <code>%v</code>, el valor:
 </p>
+</section>
+
+<section class="slide">
 {{code "examples/basic-types/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>bool: true
 string: Gopher
@@ -50,7 +70,9 @@ float64: 19.99</code></pre>
   sus nombres reales, <code>int32</code> y <code>uint8</code>, y el número
   que representa cada letra.
 </p>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>Sumar un <code>int</code> y un <code>float64</code> parece inofensivo:</p>
 <pre><code class="language-go">package main
@@ -63,12 +85,19 @@ func main() {
 	fmt.Println(apples + price)
 }</code></pre>
 <pre><code>./prog.go:8:14: invalid operation: apples + price (mismatched types int and float64)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:8:14: invalid operation: apples + price (mismatched types int and float64)</code></pre>
 <p>
   <em>Mismatched types</em> significa «tipos que no coinciden». Go no mezcla
   tipos numéricos por su cuenta: tienes que convertir uno de ellos. Lo verás
   en la lección de conversiones.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   La división entre enteros da un entero: <code>7 / 2</code> vale
@@ -76,3 +105,4 @@ func main() {
   necesitas el resultado exacto, trabaja con <code>float64</code>:
   <code>7.0 / 2</code> vale <code>3.5</code>.
 </p>
+</section>

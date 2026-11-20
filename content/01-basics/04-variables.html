@@ -1,14 +1,21 @@
+<section class="slide">
 <p>
   Un programa necesita recordar cosas mientras se ejecuta: un nombre, una
   puntuación, si el usuario ya ha iniciado sesión. Para eso están las
   variables, cajas con nombre donde guardas un valor.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   La forma completa usa <code>var</code>, el nombre y el tipo:
 </p>
 <pre><code class="language-go">var c, python, java bool</code></pre>
+</section>
+
+<section class="slide">
+<h2>Con valor inicial</h2>
 <p>
   Puedes declarar variables fuera de cualquier función, a nivel de paquete, o
   dentro de una función. Si les das un valor inicial, el tipo es opcional: Go
@@ -16,22 +23,32 @@
 </p>
 <pre><code class="language-go">var i, j int = 1, 2
 var language = "Go"</code></pre>
+</section>
+
+<section class="slide">
+<h2>La declaración corta</h2>
 <p>
   Dentro de una función existe un atajo, la <em>short variable declaration</em>
   (declaración corta): <code>:=</code> declara la variable y le da su valor en
   un solo paso, sin escribir <code>var</code> ni el tipo.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/variables/main.go"}}
 <p>Salida:</p>
 <pre><code>Go 1 2 false false false</code></pre>
+</section>
 
+<section class="slide">
 <p>Y con la declaración corta:</p>
 {{code "examples/short-declarations/main.go"}}
 <p>Salida:</p>
 <pre><code>Gopher 15 true</code></pre>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p><code>:=</code> solo funciona dentro de una función. Fíjate en qué pasa fuera:</p>
 <pre><code class="language-go">package main
@@ -44,6 +61,11 @@ func main() {
 	fmt.Println(name)
 }</code></pre>
 <pre><code>./prog.go:5:1: syntax error: non-declaration statement outside function body</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:5:1: syntax error: non-declaration statement outside function body</code></pre>
 <p>
   Fuera de las funciones, cada línea debe empezar por una palabra de
   declaración: <code>var</code>, <code>const</code>, <code>func</code>,
@@ -51,7 +73,9 @@ func main() {
   así que el compilador ni siquiera la entiende. Escribe
   <code>var name = "Gopher"</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>Declarar una variable dentro de una función y no usarla nunca:</p>
 <pre><code class="language-go">package main
@@ -60,8 +84,14 @@ func main() {
 	count := 10
 }</code></pre>
 <pre><code>./prog.go:4:2: declared and not used: count</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo arreglarlo</h2>
+<pre><code>./prog.go:4:2: declared and not used: count</code></pre>
 <p>
   Igual que con los imports, Go no deja pasar lo que sobra. Si una variable
   no se usa, casi siempre es un despiste: o te has olvidado de usarla o ya no
   la necesitas. Bórrala o úsala.
 </p>
+</section>
