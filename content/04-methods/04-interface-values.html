@@ -22,7 +22,18 @@
   <code>nil</code>, y llamar a un método sobre ella no puede funcionar: no hay
   tipo que diga qué método ejecutar.
 </p>
-<!-- animation: interface-demo scene=pair -->
+<interface-demo scene="pair">
+  <p>
+    Animación: <code>d</code> es una caja con dos celdas, tipo y valor. Con
+    <code>var d Describer</code> las dos están vacías, (nil, nil), y
+    <code>d == nil</code> es <code>true</code>. Con <code>d = Temp(21.5)</code>
+    la pareja pasa a ser (Temp, 21.5) y con <code>d = Word("gopher")</code>,
+    (Word, "gopher"). Después, <code>b</code> es un puntero <code>*Box</code>
+    que vale <code>nil</code>, y <code>d = b</code> deja la pareja
+    (*Box, nil). Ahora <code>d == nil</code> es <code>false</code>, porque la
+    celda del tipo ya no está vacía.
+  </p>
+</interface-demo>
 
 <h2>El ejemplo</h2>
 <p>La pareja, mostrada con <code>%v</code> y <code>%T</code>:</p>
