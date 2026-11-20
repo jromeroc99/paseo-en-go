@@ -1,9 +1,12 @@
+<section class="slide">
 <p>
   <code>strconv.Atoi</code> convierte un texto en un número. Pero si le das
   <code>"cuarenta"</code>, no hay número que devolver. ¿Cómo te avisa? En Go
   no hay excepciones: el fallo es un valor más que la función devuelve.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   <code>error</code> es una interfaz del lenguaje con un solo método:
@@ -11,6 +14,10 @@
 <pre><code class="language-go">type error interface {
 	Error() string
 }</code></pre>
+</section>
+
+<section class="slide">
+<h2>Comprobar el error</h2>
 <p>
   Una función que puede fallar devuelve un <code>error</code> como último
   resultado. Si vale <code>nil</code>, todo ha ido bien; si no, algo ha fallado
@@ -20,27 +27,40 @@
 if err != nil {
 	// handle the error and stop here
 }</code></pre>
+</section>
+
+<section class="slide">
+<h2>Tus propios errores</h2>
 <p>
   Para crear tus propios errores tienes <code>errors.New("mensaje")</code> y
   <code>fmt.Errorf</code>, que formatea como <code>Printf</code>. Y como
   <code>error</code> es una interfaz, cualquier tipo con un método
   <code>Error() string</code> es un error. Así puedes guardar datos en él.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>Un texto que se convierte y otro que no:</p>
 {{code "examples/errors/main.go"}}
 <p>Salida:</p>
 <pre><code>número: 42
 error: strconv.Atoi: parsing "cuarenta": invalid syntax</code></pre>
+</section>
 
-<p>Y un tipo de error propio junto a <code>errors.New</code>:</p>
+<section class="slide">
+<h2>Y un tipo de error propio junto a <code>errors.New</code></h2>
 {{code "examples/custom-error/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>falta el nombre
 demasiado joven: 15 años
 &lt;nil&gt;</code></pre>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>Recibe el error y no lo mires:</p>
 <pre><code class="language-go">package main
@@ -55,12 +75,19 @@ func main() {
 	fmt.Println(n)
 }</code></pre>
 <pre><code>./prog.go:9:5: declared and not used: err</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo arreglarlo</h2>
+<pre><code>./prog.go:9:5: declared and not used: err</code></pre>
 <p>
   Ya conoces este mensaje: toda variable declarada tiene que usarse, y
   <code>err</code> no es una excepción. Aquí Go te protege de ignorar un fallo
   sin darte cuenta. Compruébalo con <code>if err != nil</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Llamar a <code>fmt.Sprint(e)</code> dentro del propio método
@@ -70,10 +97,13 @@ func main() {
   con <code>fatal error: stack overflow</code>. <code>go vet</code> lo detecta.
   Convierte antes: <code>fmt.Sprint(float64(e))</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio, <code>Sqrt</code> devolverá un error de tipo
   <code>ErrNegativeSqrt</code> cuando le pidan la raíz de un número negativo.
   Recuerda convertir dentro de <code>Error()</code>.
 </p>
+</section>

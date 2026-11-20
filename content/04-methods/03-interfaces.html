@@ -1,9 +1,12 @@
+<section class="slide">
 <p>
   Tienes dos tipos, <code>MyFloat</code> y <code>Vertex</code>, y los dos
   tienen un método <code>Abs</code>. Quieres una variable que pueda guardar
   cualquiera de ellos y llamar a <code>Abs</code> sin preocuparte de cuál es.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Una <em>interface</em> (interfaz) es un tipo que se define por un conjunto de
@@ -17,28 +20,43 @@
   tenga un método <code>Abs() float64</code>. Al llamar a
   <code>a.Abs()</code>, se ejecuta el método del valor que haya dentro.
 </p>
+</section>
+
+<section class="slide">
+<h2>Sin <code>implements</code></h2>
 <p>
   En Go no existe la palabra <code>implements</code>. Un tipo cumple una
   interfaz solo por tener sus métodos, sin declararlo en ningún sitio. Eso
   tiene una ventaja enorme: puedes escribir una interfaz para tipos que ya
   existen, incluso de otros paquetes, sin tocarlos.
 </p>
+</section>
 
-<h2>El ejemplo</h2>
-<p>Dos tipos distintos en la misma variable:</p>
+<section class="slide">
+<h2>Dos tipos distintos en la misma variable</h2>
 {{code "examples/interfaces/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>1.5
 5</code></pre>
+</section>
 
-<p>
-  Y la implementación implícita: <code>Person</code> no menciona
-  <code>Greeter</code> en ningún momento.
-</p>
+<section class="slide">
+<h2>Y la implementación implícita</h2>
 {{code "examples/implicit-interfaces/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>Hola, soy Ana</code></pre>
+<p>
+  <code>Person</code> no menciona <code>Greeter</code> en ningún momento.
+</p>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>Aquí el método tiene receptor de puntero, y guardas un valor:</p>
 <pre><code class="language-go">package main
@@ -60,6 +78,11 @@ func main() {
 	fmt.Println(s.Speak())
 }</code></pre>
 <pre><code>./prog.go:16:18: cannot use Dog{} (value of struct type Dog) as Speaker value in variable declaration: Dog does not implement Speaker (method Speak has pointer receiver)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:16:18: cannot use Dog{} (value of struct type Dog) as Speaker value in variable declaration: Dog does not implement Speaker (method Speak has pointer receiver)</code></pre>
 <p>
   El mensaje es largo, pero léelo en dos partes. Antes de los dos puntos: en la
   línea 16 no puedes usar <code>Dog{}</code> como <code>Speaker</code>.
@@ -67,7 +90,9 @@ func main() {
   tiene receptor de puntero. Ese método es de <code>*Dog</code>, no de
   <code>Dog</code>. Guarda un puntero: <code>var s Speaker = &amp;Dog{}</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Declarar una interfaz al lado de cada tipo «por si acaso», como harías con
@@ -75,10 +100,13 @@ func main() {
   necesita, cuando la necesita, y suele tener uno o dos métodos. Si solo
   tienes un tipo, todavía no te hace falta una interfaz.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio darás un método <code>Area</code> a un rectángulo y a un
   círculo, y escribirás <code>TotalArea</code>, que suma las áreas de una lista
   de figuras sin saber de qué tipo es cada una.
 </p>
+</section>

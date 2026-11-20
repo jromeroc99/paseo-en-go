@@ -1,16 +1,23 @@
+<section class="slide">
 <p>
   En la lección anterior guardaste primero un <code>MyFloat</code> y después
   un <code>Vertex</code> en la misma variable. Pero entonces, cuando llamas a
   <code>a.Abs()</code>, ¿cómo sabe Go qué método ejecutar? La variable tiene
   que guardar algo más que el valor.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Un valor de interfaz es una pareja: <strong>(tipo concreto, valor)</strong>.
   El tipo concreto dice qué método se ejecuta; el valor es el que recibe ese
   método. Con <code>%v</code> ves el valor y con <code>%T</code>, el tipo.
 </p>
+</section>
+
+<section class="slide">
+<h2>Un valor <code>nil</code> dentro</h2>
 <p>
   El valor de dentro puede ser <code>nil</code>, por ejemplo un puntero
   <code>*Box</code> que no apunta a nada. La interfaz sigue sabiendo su tipo,
@@ -22,6 +29,10 @@
   <code>nil</code>, y llamar a un método sobre ella no puede funcionar: no hay
   tipo que diga qué método ejecutar.
 </p>
+</section>
+
+<section class="slide">
+<h2>Tipo y valor</h2>
 <interface-demo scene="pair">
   <p>
     Animación: <code>d</code> es una caja con dos celdas, tipo y valor. Con
@@ -34,21 +45,32 @@
     celda del tipo ya no está vacía.
   </p>
 </interface-demo>
+</section>
 
-<h2>El ejemplo</h2>
-<p>La pareja, mostrada con <code>%v</code> y <code>%T</code>:</p>
+<section class="slide">
+<h2>La pareja, mostrada con <code>%v</code> y <code>%T</code></h2>
 {{code "examples/interface-values/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>(21.5, main.Temp) 21.5 grados
 (gopher, main.Word) la palabra gopher</code></pre>
+</section>
 
-<p>Y una interfaz que guarda un puntero <code>nil</code>:</p>
+<section class="slide">
+<h2>Y una interfaz que guarda un puntero <code>nil</code></h2>
 {{code "examples/nil-underlying-value/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>true
 false
 &lt;caja vacía&gt;</code></pre>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>Este programa compila, pero falla al ejecutarlo:</p>
 <pre><code class="language-go">package main
@@ -62,13 +84,20 @@ func main() {
 	s.Speak()
 }</code></pre>
 <pre><code>panic: runtime error: invalid memory address or nil pointer dereference</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>panic: runtime error: invalid memory address or nil pointer dereference</code></pre>
 <p>
   Un <em>panic</em> es un error que ocurre con el programa ya en marcha, no al
   compilar. <code>s</code> no guarda nada, así que Go no tiene ningún método
   al que saltar. Antes de llamar a un método sobre una interfaz que puede
   estar vacía, comprueba que <code>s != nil</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Creer que una interfaz que guarda un puntero <code>nil</code> es
@@ -77,3 +106,4 @@ func main() {
   tiene tipo. Una interfaz solo es <code>nil</code> cuando no tiene ni tipo ni
   valor. Lo verás de nuevo con los errores, que también son interfaces.
 </p>
+</section>

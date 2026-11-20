@@ -1,3 +1,4 @@
+<section class="slide">
 <p>
   ROT13 es un cifrado muy sencillo: cambia cada letra por la que está 13
   posiciones más adelante en el alfabeto. La <code>a</code> pasa a ser
@@ -5,7 +6,9 @@
   cifrado que llega desde un <code>Reader</code> y quieres leerlo ya
   descifrado, sin cargarlo entero en memoria primero.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Un <code>Reader</code> puede envolver a otro. Guarda el de dentro en un
@@ -14,19 +17,32 @@
   devolverlos. Quien lee desde fuera no nota la diferencia: sigue teniendo un
   <code>io.Reader</code>.
 </p>
+</section>
+
+<section class="slide">
+<h2>Encadenar <code>Reader</code></h2>
 <p>
   La biblioteca estándar usa este patrón constantemente. Por ejemplo,
   <code>gzip.NewReader</code> envuelve un <code>Reader</code> de datos
   comprimidos y te da los datos ya descomprimidos. Y como el resultado es otro
   <code>Reader</code>, puedes encadenar tantos como quieras.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>
   Un <code>Reader</code> que pasa las letras a mayúsculas. <code>io.Copy</code>
   lee de él hasta el final y lo escribe en la salida estándar:
 </p>
+</section>
+
+<section class="slide">
+<h2><code>upperReader</code></h2>
 {{code "examples/upper-reader/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>HOLA, GOPHER</code></pre>
 <p>
@@ -35,7 +51,9 @@
   le dio el <code>Reader</code> de dentro. Así, cuando este avisa con
   <code>io.EOF</code>, el aviso llega intacto a quien está leyendo.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Transformar el <code>slice</code> entero en lugar de los <code>n</code> bytes
@@ -45,7 +63,9 @@
   desapercibido; con un <code>Reader</code> que entrega los datos de byte en
   byte, salta enseguida.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio escribirás <code>Rot13Reader</code>, que envuelve otro
@@ -53,3 +73,4 @@
   Los números, los espacios y los signos de puntuación pasan sin cambios. Los
   tests lo leerán también de byte en byte.
 </p>
+</section>

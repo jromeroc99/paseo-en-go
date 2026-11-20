@@ -1,10 +1,13 @@
+<section class="slide">
 <p>
   Imprimes una persona con <code>fmt.Println</code> y sale
   <code>{Ana 42}</code>. Es correcto, pero no dice mucho. Te gustaría que
   saliera <code>Ana (42 años)</code> sin tener que formatearlo a mano cada vez
   que la imprimes.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   El paquete <code>fmt</code> declara una interfaz muy pequeña:
@@ -19,6 +22,10 @@
   <code>%v</code>, primero mira si es un <code>Stringer</code>. Si lo es, llama
   a <code>String()</code> y usa lo que devuelve.
 </p>
+</section>
+
+<section class="slide">
+<h2>Basta con el método</h2>
 <p>
   No tienes que registrar nada ni importar nada nuevo. Como viste con las
   interfaces, basta con tener el método. Es una de las interfaces que más vas
@@ -26,12 +33,19 @@
   vez: en un mensaje de error, en un registro o mientras buscas un fallo.
   Darles un <code>String()</code> claro te ahorra mucho tiempo.
 </p>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/stringer/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>Ana (42 años) Zoe (9 años)</code></pre>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Declarar <code>String()</code> con receptor de puntero y después imprimir el
@@ -47,6 +61,10 @@ fmt.Println(&amp;p)</code></pre>
 <p>Salida:</p>
 <pre><code>{Ana}
 Persona: Ana</code></pre>
+</section>
+
+<section class="slide">
+<h2>Por qué pasa</h2>
 <p>
   El método es de <code>*Person</code>, no de <code>Person</code>. Al pasar el
   valor <code>p</code>, <code>fmt</code> recibe algo que no es un
@@ -54,10 +72,13 @@ Persona: Ana</code></pre>
   Para <code>String()</code>, usa receptor de valor salvo que tengas un buen
   motivo.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio harás que una dirección IP, guardada como cuatro bytes, se
   imprima como <code>127.0.0.1</code>. Con <code>fmt.Sprintf</code> y el verbo
   <code>%d</code> tienes todo lo que necesitas.
 </p>
+</section>

@@ -1,10 +1,13 @@
+<section class="slide">
 <p>
   Un archivo, una conexión de red, un texto en memoria, un archivo comprimido.
   Son cosas muy distintas, pero todas tienen datos que se leen poco a poco. En
   Go se leen todas de la misma manera, gracias a una interfaz de un solo
   método.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   El paquete <code>io</code> declara <code>io.Reader</code>:
@@ -18,6 +21,10 @@
   ha escrito de verdad, y un error. Cuando los datos se acaban, devuelve el
   error <code>io.EOF</code> (<em>end of file</em>, fin de los datos).
 </p>
+</section>
+
+<section class="slide">
+<h2>Leer en un bucle</h2>
 <p>
   Lo normal es leer en un bucle: llamas a <code>Read</code> una y otra vez y
   usas los <code>n</code> bytes de cada vuelta, hasta que llega
@@ -25,6 +32,10 @@
   esta interfaz: <code>strings.Reader</code>, <code>os.File</code>,
   <code>bytes.Buffer</code> y muchos más.
 </p>
+</section>
+
+<section class="slide">
+<h2>A trozos</h2>
 <reader-demo scene="chunks">
   <p>
     Animación: el texto «Hola, Reader!» son 13 bytes y <code>b</code> tiene
@@ -35,10 +46,15 @@
     nada: <code>n = 0</code> y <code>err = EOF</code>.
   </p>
 </reader-demo>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>Un texto de 13 bytes leído a trozos de 8:</p>
 {{code "examples/reader/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>n = 8 err = &lt;nil&gt; b[:n] = "Hola, Re"
 n = 5 err = &lt;nil&gt; b[:n] = "ader!"
@@ -48,7 +64,9 @@ n = 0 err = EOF b[:n] = ""</code></pre>
   encuentra 5 bytes. La tercera ya no encuentra nada y avisa con
   <code>EOF</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Usar <code>b</code> donde hace falta <code>b[:n]</code>. <code>Read</code>
@@ -57,15 +75,22 @@ n = 0 err = EOF b[:n] = ""</code></pre>
   entero vale <code>"ader! Re"</code>; los tres últimos bytes son restos de
   la vuelta anterior.
 </p>
+</section>
+
+<section class="slide">
+<h2><code>io.EOF</code> no es un fallo</h2>
 <p>
   El otro error es tratar <code>io.EOF</code> como un fallo. No lo es: es la
   forma normal de decir «ya no hay más». Compara con <code>io.EOF</code> y
   sal del bucle; cualquier otro error sí es un problema.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio crearás tu propio <code>Reader</code>: uno que nunca se acaba
   y llena todo el <code>slice</code> que le den con la letra
   <code>'A'</code>.
 </p>
+</section>
