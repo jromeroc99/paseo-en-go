@@ -22,7 +22,14 @@
   apunta a nada. A diferencia de C, Go no tiene aritmética de punteros: no
   puedes sumar 1 a una dirección para saltar al valor de al lado.
 </p>
-<!-- animation: pointer-demo scene=basics -->
+<pointer-demo scene="basics">
+  <p>
+    Animación: <code>i</code> guarda 42 en una caja de memoria con su
+    dirección. <code>p</code> guarda esa dirección y apunta a <code>i</code>.
+    Con <code>*p = 21</code> el 21 llega a <code>i</code> siguiendo la flecha.
+    <code>q</code> vale <code>nil</code> y no apunta a nada.
+  </p>
+</pointer-demo>
 
 <h2>El ejemplo</h2>
 {{code "examples/pointers/main.go"}}

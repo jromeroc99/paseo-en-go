@@ -364,6 +364,73 @@ pre {
   border-radius: var(--radius);
 }
 
+/* The frame around an animation: canvas, code, caption and controls. */
+
+.anim {
+  margin: 1.75rem 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.anim .pixel-canvas { margin: 0 auto; }
+
+.anim-code {
+  margin: 1rem 0 0;
+  padding: 0.75rem 0;
+  border-left: 1px solid var(--line);
+  background: var(--bg);
+  font-size: 0.875rem;
+}
+
+.anim-line {
+  display: block;
+  padding: 0 1rem;
+  border-left: 2px solid transparent;
+  color: var(--muted);
+}
+
+.anim-line.is-current {
+  border-left-color: var(--px-highlight);
+  background: var(--line);
+  color: var(--fg);
+}
+
+.anim-caption {
+  min-height: 3.4em; /* two lines, so the controls do not jump between steps */
+  margin: 0.75rem 0;
+}
+
+.anim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.anim-controls button {
+  padding: 0.35rem 0.85rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.anim-controls button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-soft); }
+
+.anim-controls button:disabled { color: var(--muted); cursor: default; opacity: 0.6; }
+
+.anim-controls .is-active { border-color: var(--accent); color: var(--accent); box-shadow: var(--glow); }
+
+.anim-icon { display: inline-block; min-width: 1.1em; }
+
+.anim-counter { margin-left: auto; color: var(--muted); font-size: 0.875rem; }
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
