@@ -1,0 +1,82 @@
+<p>
+  Hay valores que nunca cambian mientras el programa se ejecuta: el número
+  pi, los días de la semana, el nombre de tu aplicación. Si los guardas en una
+  variable, cualquier parte del código podría modificarlos por error. Para eso
+  existen las constantes.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Una constante se declara como una variable, pero con <code>const</code>.
+  Puede ser un texto, un carácter, un booleano o un número, y su valor tiene
+  que conocerse al compilar. Por eso no puedes usar <code>:=</code> con ellas.
+</p>
+<pre><code class="language-go">const Pi = 3.14</code></pre>
+<p>
+  Las constantes numéricas tienen una particularidad: si no les pones tipo,
+  son valores de alta precisión <em>untyped</em> (sin tipo). Toman el tipo que
+  necesita el sitio donde las usas. La misma constante puede ir a una función
+  que espera un <code>int</code> y a otra que espera un <code>float64</code>.
+</p>
+
+<h2>El ejemplo</h2>
+{{code "examples/constants/main.go"}}
+<p>Salida:</p>
+<pre><code>Hola mundo
+Feliz día de 3.14
+¿Te gusta Go? true</code></pre>
+
+<p>
+  Ahora una constante enorme. <code>1 &lt;&lt; 100</code> desplaza un 1 cien
+  posiciones a la izquierda en binario: un número que no cabe en ningún
+  <code>int</code>. Como constante sin tipo, Go puede trabajar con él:
+</p>
+{{code "examples/numeric-constants/main.go"}}
+<p>Salida:</p>
+<pre><code>21
+0.2
+1.2676506002282295e+29</code></pre>
+<p>
+  <code>Small</code> vale 2 y sirve tanto para <code>needInt</code> como para
+  <code>needFloat</code>. <code>Big</code> solo cabe en un
+  <code>float64</code>.
+</p>
+
+<h2>Un error a propósito</h2>
+<p>¿Y si pasas <code>Big</code> a una función que espera un <code>int</code>?</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+const Big = 1 &lt;&lt; 100
+
+func needInt(x int) int { return x*10 + 1 }
+
+func main() {
+	fmt.Println(needInt(Big))
+}</code></pre>
+<pre><code>./prog.go:10:22: cannot use Big (untyped int constant 1267650600228229401496703205376) as int value in argument to needInt (overflows)</code></pre>
+<p>
+  Lee el final del mensaje: <em>overflows</em>, «se desborda». El valor de la
+  constante no cabe en un <code>int</code>, y Go te avisa al compilar en vez
+  de dejar que el número se corrompa en silencio.
+</p>
+
+<h2>El error típico</h2>
+<p>Intentar cambiar el valor de una constante:</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+const Pi = 3.14
+
+func main() {
+	Pi = 3.1416
+	fmt.Println(Pi)
+}</code></pre>
+<pre><code>./prog.go:8:2: cannot assign to Pi (neither addressable nor a map index expression)</code></pre>
+<p>
+  El mensaje es algo técnico, pero la idea es simple: a <code>Pi</code> no se
+  le puede asignar nada. Si el valor tiene que cambiar, no es una constante:
+  usa una variable.
+</p>

@@ -1,0 +1,73 @@
+<p>
+  En la lección anterior viste que Go no deja sumar un <code>int</code> y un
+  <code>float64</code>. Pero a veces necesitas hacerlo: tienes los lados de un
+  triángulo como enteros y <code>math.Sqrt</code> solo acepta
+  <code>float64</code>. Tienes que decirle a Go, de forma explícita, que
+  quieres cambiar el tipo.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  La expresión <code>T(v)</code> convierte el valor <code>v</code> al tipo
+  <code>T</code>:
+</p>
+<pre><code class="language-go">i := 3
+f := float64(i) // 3.0
+n := int(f)     // 3</code></pre>
+<p>
+  Go nunca convierte por su cuenta, ni siquiera entre tipos numéricos. Al
+  principio parece incómodo, pero evita errores que en otros lenguajes pasan
+  desapercibidos.
+</p>
+<p>
+  Lo que sí hace Go es deducir el tipo cuando declaras con <code>:=</code> o
+  con <code>var</code> sin tipo. A eso se le llama <em>type inference</em>
+  (inferencia de tipos): la variable toma el tipo del valor de la derecha.
+  <code>42</code> da un <code>int</code> y <code>3.142</code>, un
+  <code>float64</code>.
+</p>
+
+<h2>El ejemplo</h2>
+<p>La hipotenusa de un triángulo de lados 3 y 4:</p>
+{{code "examples/type-conversions/main.go"}}
+<p>Salida:</p>
+<pre><code>3 4 5</code></pre>
+
+<p>Y la inferencia de tipos en acción:</p>
+{{code "examples/type-inference/main.go"}}
+<p>Salida:</p>
+<pre><code>int float64 string</code></pre>
+
+<h2>Un error a propósito</h2>
+<p>Guardar un <code>float64</code> en una variable <code>int</code> sin convertir:</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	var total int
+	price := 9.75
+	total = price
+	fmt.Println(total)
+}</code></pre>
+<pre><code>./prog.go:8:10: cannot use price (variable of type float64) as int value in assignment</code></pre>
+<p>
+  El compilador te dice qué tiene (<code>price</code>, de tipo
+  <code>float64</code>), qué esperaba (un <code>int</code>) y dónde (en una
+  asignación, línea 8). La solución es convertir: <code>total = int(price)</code>.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Pensar que <code>int(f)</code> redondea. No lo hace: <strong>trunca</strong>,
+  es decir, descarta los decimales. Si <code>price</code> vale
+  <code>9.75</code>, <code>int(price)</code> vale <code>9</code>, no
+  <code>10</code>. Si quieres redondear, usa <code>math.Round</code> antes de
+  convertir.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio calcularás la media de dos enteros. Ojo: la media de 1 y 2
+  es 1.5, así que tendrás que convertir antes de dividir, no después.
+</p>

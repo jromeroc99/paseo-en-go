@@ -324,7 +324,7 @@ Detailed when phase 3 starts. Required: `pointer-demo`, `slice-demo` (scenes `vi
 ## Tasks
 
 - [x] T0 — Plan (S1–S12). Route: inline. Commit: `docs: plan the tour modules feature`.
-- [ ] T1 — Module `01-basics` (S3–S7, S11), 9 lessons, 4 exercises. Route: inline (single unit, no writer reason). Then stop for the user's review.
+- [x] T1 — Module `01-basics` (S3–S7, S11), 9 lessons, 4 exercises. Route: inline (single unit, no writer reason). Commits: `c6d225a`, `feat(content): add basics lessons on types, conversions and constants`. Waiting for the user's review.
 - [ ] T2 — Module `02-flow-control` (S3–S6, S8, S11), 7 lessons, 6 exercises. Route: delegated.
 - [ ] T3 — Module `03-more-types` (S3–S6, S9, S11), 12 lessons, 8 exercises. Route: delegated.
 - [ ] T4 — Module `04-methods` (S3–S6, S10, S11), 11 lessons, 9 exercises. Route: delegated.
@@ -339,4 +339,6 @@ Commits: slices of 3–5 lessons with their examples, exercises and catalog entr
 - L1 (2026-11-20, user, original request): "quiero que implementes todos los modulos hasta que llegues a Los Reader de imagenes creo que era esta ruta: https://go.dev/tour/methods/26, quiero hacerlo con fablo que me recomiendas diseñar el plan con fable e implementar con opus medium?"
 - L2 (2026-11-20, user): "a que effort cambio? las animaciones las dejamos para el final, si te parece para cambiar de modelo, antes de cada fase que se hará del tirón plantea el modelo recomendado". Then: "Arranca a diseñar el plan".
 - L3 (2026-11-20): plan written on branch `feat/tour-modules`. Decisions: tour slides merged into 39 one-idea lessons; each module ends with a review lesson that holds the combined exercise (in `04-methods` the images exercise plays that role); stubs always compile, so feedback is a failing test; program output is pasted from a real run rather than checked by a test (a checked `output.txt` per example was considered and left out to avoid new infrastructure; revisit if outputs go stale). Risk: none of items 1–5; prose quality has no automated check, covered by the pilot review after T1.
-- Next step: user approves the plan and switches to Opus (effort medium); then T1.
+- L4 (2026-11-20, user): "Apruebo el plan".
+- L5 (2026-11-20, user): "Arranca con el plan". T1 done inline on Opus medium. RED: `TestEveryLessonHasBody` failed for the 9 new slugs; every stub test failed and every solution passed. S11 clean (gofmt, vet, tests, build, voseo grep with no hits). Compiler messages reproduced with go1.26.8. Findings: `int(4.9)` with a constant does not compile (`cannot convert 4.9 (untyped float constant) to type int`), so conversion examples use variables; lessons add a "Un error a propósito" `<h2>` between the example and "El error típico", and a "Tu turno" `<h2>` for the bridge; `06-zero-values` gained a paragraph on `var` versus `:=` to reach the length in S3. Subtests are unnamed (`#00`); the failure message carries the arguments.
+- Next step: user reviews `01-basics` (`go run ./cmd/paseo serve`). Fold corrections into S3–S5, then phase 2 (T2–T4) on Opus medium.

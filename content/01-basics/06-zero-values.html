@@ -1,0 +1,50 @@
+<p>
+  ¿Qué vale una variable que declaras sin darle valor? En algunos lenguajes,
+  cualquier cosa: lo que hubiera en esa zona de memoria, o un valor especial
+  como <code>undefined</code> que hace fallar el programa más adelante. En Go
+  la respuesta es siempre la misma y es predecible.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Toda variable declarada sin valor inicial recibe el <em>zero value</em>
+  (valor cero) de su tipo:
+</p>
+<ul>
+  <li><code>0</code> para los números.</li>
+  <li><code>false</code> para <code>bool</code>.</li>
+  <li><code>""</code>, el texto vacío, para <code>string</code>.</li>
+</ul>
+<p>
+  Así, una variable siempre está lista para usarse. Un contador empieza en
+  cero, una bandera empieza desactivada y un texto empieza vacío, sin que
+  tengas que escribirlo.
+</p>
+<p>
+  Esto te da una regla sencilla para elegir cómo declarar. Si ya tienes el
+  valor, usa <code>:=</code>: <code>name := "Gopher"</code>. Si quieres
+  empezar desde cero y rellenar la variable después, usa <code>var</code> sin
+  valor: <code>var total int</code>. Quien lea tu código entenderá que
+  <code>total</code> empieza en cero a propósito.
+</p>
+
+<h2>El ejemplo</h2>
+<p>
+  El verbo <code>%q</code> imprime el texto entre comillas, para que se vea
+  que está vacío:
+</p>
+{{code "examples/zero-values/main.go"}}
+<p>Salida:</p>
+<pre><code>0 0 false ""</code></pre>
+
+<h2>El error típico</h2>
+<p>
+  Escribir código defensivo para un valor que no puede existir. Esto sobra:
+</p>
+<pre><code class="language-go">var total int
+total = 0 // innecesario: total ya vale 0</code></pre>
+<p>
+  Aprovecha el valor cero. Muchos tipos de la biblioteca estándar están
+  diseñados para que su valor cero ya funcione, y verás que tus propios tipos
+  también pueden hacerlo.
+</p>
