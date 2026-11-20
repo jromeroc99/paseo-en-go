@@ -73,6 +73,15 @@ cd exercises && go test -tags solution ./...   # reference solutions must pass
 - One card must fit a 1280×720 screen without scrolling: at most about 90
   words of prose and one code block. A program and its output may share a
   card. If a card does not fit, split it; never shrink the text.
+- Cut a lesson into cards in this order: the problem (no heading), the
+  concept, the animation (alone, with at most a `<h2>`), the example, its
+  output and the "fíjate" note, "Un error a propósito" (the code and its
+  message), "Cómo leer el error" (the message again and how to read it),
+  "El error típico" and "Tu turno". An example over 20 lines gets a card
+  with only its heading; its output goes to the next card.
+- `TestSlideBudget` checks the budget: at most 90 words outside headings,
+  code and animations, one Go program and one output block per card. It
+  is a proxy; the real proof is that the card fits on screen.
 - Show errors on purpose: when a concept has a typical compiler error, show
   the exact message and explain how to read it.
 - Embed snippets with `{{code "examples/<name>/main.go"}}` instead of pasting
