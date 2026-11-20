@@ -1,0 +1,64 @@
+<p>
+  Quieres una función que lleve la cuenta: cada vez que la llamas con un
+  número, te devuelve la suma acumulada hasta ahora. Esa suma tiene que vivir
+  en algún sitio entre una llamada y la siguiente, pero no quieres una
+  variable global que cualquiera pueda tocar.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un <em>closure</em> (clausura) es una función que usa variables declaradas
+  fuera de ella, en el sitio donde se creó. La función recuerda esas
+  variables y puede leerlas y cambiarlas aunque el código que las declaró ya
+  haya terminado.
+</p>
+<pre><code class="language-go">func adder() func(int) int {
+	sum := 0
+	return func(x int) int {
+		sum += x
+		return sum
+	}
+}</code></pre>
+<p>
+  <code>adder</code> devuelve una función. Esa función usa
+  <code>sum</code>, que pertenece a <code>adder</code>. Cuando
+  <code>adder</code> termina, <code>sum</code> no desaparece: sigue viva
+  dentro del closure.
+</p>
+<p>
+  Lo más importante: cada llamada a <code>adder</code> crea una variable
+  <code>sum</code> nueva. Dos closures creados por dos llamadas distintas no
+  comparten nada.
+</p>
+<!-- animation: closure-demo scene=adder -->
+
+<h2>El ejemplo</h2>
+{{code "examples/closures/main.go"}}
+<p>Salida:</p>
+<pre><code>0 0
+1 -2
+3 -6
+6 -12
+10 -20</code></pre>
+<p>
+  <code>pos</code> va sumando 0, 1, 2, 3 y 4. <code>neg</code> va sumando 0,
+  -2, -4, -6 y -8. Cada uno lleva su propia cuenta.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Creer que dos closures comparten su estado porque salen de la misma
+  función. En el ejemplo, <code>pos</code> y <code>neg</code> vienen de
+  <code>adder</code>, pero cada uno tiene su <code>sum</code>. Si quisieras
+  que dos partes de tu programa usaran la misma cuenta, tendrías que
+  compartir el mismo closure, no llamar a <code>adder</code> dos veces.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio vas a escribir <code>Fibonacci</code>, que devuelve una
+  función. Cada vez que llames a esa función, te dará el siguiente número de
+  la sucesión de Fibonacci: 0, 1, 1, 2, 3, 5, 8… Cada número es la suma de
+  los dos anteriores. El closure tiene que recordar los dos últimos números,
+  y dos generadores distintos deben llevar cuentas independientes.
+</p>

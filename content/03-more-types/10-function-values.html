@@ -1,0 +1,79 @@
+<p>
+  Quieres duplicar cada número de una lista. Luego, elevar cada uno al
+  cuadrado. Luego, quitarle el signo. Son tres bucles casi iguales; solo
+  cambia la operación. Lo ideal sería escribir el bucle una vez y pasarle la
+  operación como si fuera un dato más.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  En Go, una función es un valor, igual que un <code>int</code> o un
+  <code>string</code>. Puedes guardarla en una variable, pasarla como
+  argumento y devolverla como resultado. Su tipo describe su firma:
+</p>
+<pre><code class="language-go">func(float64, float64) float64</code></pre>
+<p>
+  Se lee «una función que recibe dos <code>float64</code> y devuelve un
+  <code>float64</code>». Cualquier función con esa firma encaja, ya sea una
+  que declaraste con nombre, una de la biblioteca estándar como
+  <code>math.Pow</code> o una función anónima escrita en el momento:
+</p>
+<pre><code class="language-go">hypot := func(x, y float64) float64 {
+	return math.Sqrt(x*x + y*y)
+}</code></pre>
+
+<h2>El ejemplo</h2>
+{{code "examples/function-values/main.go"}}
+<p>Salida:</p>
+<pre><code>13
+5
+81</code></pre>
+<p>
+  <code>compute</code> no sabe qué función recibe. Con <code>hypot</code>
+  calcula la hipotenusa de 3 y 4; con <code>math.Pow</code>, 3 elevado a 4.
+</p>
+
+<h2>Un error a propósito</h2>
+<p>
+  El tipo de una función incluye sus parámetros y sus resultados. Si la firma
+  no coincide, no encaja:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func apply(f func(int) int, x int) int {
+	return f(x)
+}
+
+func shout(s string) string {
+	return s + "!"
+}
+
+func main() {
+	fmt.Println(apply(shout, 3))
+}</code></pre>
+<pre><code>./prog.go:14:20: cannot use shout (value of type func(s string) string) as func(int) int value in argument to apply</code></pre>
+<p>
+  En la línea 14, el compilador compara los dos tipos: <code>shout</code> es
+  <code>func(s string) string</code>, pero <code>apply</code> espera
+  <code>func(int) int</code>. Recibe y devuelve tipos distintos, así que no
+  sirve.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Confundir llamar a una función con pasarla. <code>hypot</code> es la
+  función; <code>hypot(5, 12)</code> es su resultado, un
+  <code>float64</code>. Si escribes <code>compute(math.Pow())</code>, Go
+  intenta llamar a <code>math.Pow</code> sin argumentos y protesta con
+  <code>not enough arguments in call to math.Pow</code>. Para pasar la
+  función, quita los paréntesis: <code>compute(math.Pow)</code>.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio vas a escribir <code>Apply</code>, que recibe una lista y
+  una función, y devuelve una lista nueva con la función aplicada a cada
+  elemento. Es el bucle que solo se escribe una vez.
+</p>

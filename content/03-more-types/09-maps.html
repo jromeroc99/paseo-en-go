@@ -1,0 +1,89 @@
+<p>
+  Quieres guardar la edad de cada persona por su nombre, o el número de
+  unidades de cada producto. Con un slice tendrías que recorrerlo entero cada
+  vez para encontrar a «Ana». Necesitas buscar directamente por el nombre.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un <em>map</em> (mapa) asocia claves con valores. Su tipo es
+  <code>map[K]V</code>: <code>map[string]int</code> asocia textos con
+  enteros. Lo creas con <code>make</code> o con un literal:
+</p>
+<pre><code class="language-go">ages := make(map[string]int)
+stock := map[string]int{"manzanas": 3, "peras": 5}</code></pre>
+<p>Las operaciones básicas:</p>
+<ul>
+  <li>Insertar o actualizar: <code>m[key] = value</code>.</li>
+  <li>Leer: <code>v := m[key]</code>. Si la clave no está, obtienes el valor
+    cero del tipo.</li>
+  <li>Borrar: <code>delete(m, key)</code>.</li>
+  <li>Preguntar si está: <code>v, ok := m[key]</code>. <code>ok</code> es
+    <code>true</code> si la clave existe.</li>
+</ul>
+<p>
+  El valor cero de un map es <code>nil</code>. Un map <code>nil</code> no
+  tiene claves, y no puedes añadirle ninguna.
+</p>
+
+<h2>El ejemplo</h2>
+{{code "examples/maps/main.go"}}
+<p>Salida:</p>
+<pre><code>31
+2</code></pre>
+
+<p>
+  En un literal cuyos valores son structs, puedes omitir el nombre del tipo
+  en cada valor:
+</p>
+{{code "examples/map-literals/main.go"}}
+<p>Salida:</p>
+<pre><code>{40.4168 -3.7038}
+map[Madrid:{40.4168 -3.7038} Sevilla:{37.3891 -5.9845}]</code></pre>
+
+<p>Insertar, actualizar, borrar y preguntar:</p>
+{{code "examples/mutating-maps/main.go"}}
+<p>Salida:</p>
+<pre><code>manzanas: 42
+manzanas: 48
+manzanas: 0
+manzanas: 0 ¿existe? false</code></pre>
+<p>
+  Si recorres un map con <code>range</code>, el orden no está fijado: puede
+  cambiar de una ejecución a otra. <code>fmt.Println</code> sí ordena las
+  claves al imprimir un map entero.
+</p>
+
+<h2>Un error a propósito</h2>
+<p>Escribir en un map que nunca creaste:</p>
+<pre><code class="language-go">package main
+
+func main() {
+	var ages map[string]int
+	ages["Ana"] = 30
+}</code></pre>
+<pre><code>panic: assignment to entry in nil map</code></pre>
+<p>
+  El mensaje es directo: has asignado una entrada en un map
+  <code>nil</code>. <code>var</code> solo declara la variable; para poder
+  escribir, crea el map con <code>make(map[string]int)</code> o con un
+  literal.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Leer una clave que no existe y no darte cuenta. En el ejemplo,
+  <code>stock["manzanas"]</code> devuelve 0 después de borrarla, igual que si
+  hubiera 0 manzanas. Cuando necesites distinguir los dos casos, pregunta con
+  <code>ok</code>.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio vas a contar las palabras de un texto. La función
+  <code>strings.Fields</code>, del paquete <code>strings</code>, parte un
+  texto por los espacios y te devuelve un <code>[]string</code> con las
+  palabras: <code>strings.Fields("  hola  mundo ")</code> da
+  <code>[hola mundo]</code>. Recorre ese slice y suma 1 en el map por cada
+  palabra.
+</p>

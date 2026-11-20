@@ -176,6 +176,38 @@ var Course = course.Course{
 						Goal: "Construye una cuadrícula de dy filas y dx columnas.",
 					},
 				},
+				{
+					Slug:  "09-maps",
+					Title: "Maps",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/wordcount",
+						Goal: "Cuenta cuántas veces aparece cada palabra en un texto.",
+					},
+				},
+				{
+					Slug:  "10-function-values",
+					Title: "Funciones como valores",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/apply",
+						Goal: "Aplica una función a cada elemento de una lista.",
+					},
+				},
+				{
+					Slug:  "11-closures",
+					Title: "Closures",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/fibonacci",
+						Goal: "Devuelve una función que genera la sucesión de Fibonacci.",
+					},
+				},
+				{
+					Slug:  "12-review",
+					Title: "Repaso: el inventario",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/inventory",
+						Goal: "Gestiona un inventario con structs, slices, maps y funciones.",
+					},
+				},
 			},
 		},
 	},
