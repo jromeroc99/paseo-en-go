@@ -1,0 +1,75 @@
+<p>
+  Tienes un tipo <code>Vertex</code> con dos campos, <code>X</code> e
+  <code>Y</code>, y quieres saber a qué distancia está del origen. Puedes
+  escribir una función que reciba el vértice. Pero esa operación pertenece al
+  tipo, y te gustaría escribirla así: <code>v.Abs()</code>.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un <em>método</em> (una función asociada a un tipo) es una función con un
+  argumento especial, el <em>receiver</em> (receptor), que va entre
+  <code>func</code> y el nombre:
+</p>
+<pre><code class="language-go">func (v Vertex) Abs() float64</code></pre>
+<p>
+  Dentro del método, <code>v</code> es el valor sobre el que lo llamas. Y no
+  hay magia: un método es solo una función. <code>v.Abs()</code> hace lo mismo
+  que <code>AbsFunc(v)</code>; cambia la forma de llamarlo, no lo que hace.
+</p>
+<p>
+  Los métodos no son solo para los <code>struct</code>. Puedes declararlos
+  sobre cualquier tipo que definas en tu paquete, por ejemplo
+  <code>type MyFloat float64</code>. La única condición es que el tipo del
+  receptor esté declarado en el mismo paquete que el método.
+</p>
+
+<h2>El ejemplo</h2>
+<p>El mismo cálculo como método y como función:</p>
+{{code "examples/methods/main.go"}}
+<p>Salida:</p>
+<pre><code>5
+5</code></pre>
+
+<p>Y un método sobre un tipo que no es un <code>struct</code>:</p>
+{{code "examples/methods-on-any-type/main.go"}}
+<p>Salida:</p>
+<pre><code>2.5</code></pre>
+
+<h2>Un error a propósito</h2>
+<p>Intenta añadir un método directamente a <code>int</code>:</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func (n int) Double() int {
+	return n * 2
+}
+
+func main() {
+	fmt.Println(3)
+}</code></pre>
+<pre><code>./prog.go:5:9: cannot define new methods on non-local type int</code></pre>
+<p>
+  La línea 5, columna 9, es donde está <code>int</code>, el tipo del receptor.
+  <em>Non-local</em> significa «que no es de tu paquete»: <code>int</code> es
+  del lenguaje, así que no puedes tocarlo. La solución es definir tu propio
+  tipo, <code>type MyInt int</code>, y declarar el método sobre él.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Buscar clases. Go no tiene <code>class</code>, ni herencia, ni
+  <code>this</code>. Tiene tipos, y los tipos tienen métodos. El receptor se
+  llama como tú quieras; lo habitual es una o dos letras del tipo:
+  <code>v</code> para <code>Vertex</code>, <code>f</code> para
+  <code>MyFloat</code>.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio darás métodos a un tipo <code>Celsius</code>: uno que
+  convierte a grados Fahrenheit (multiplica por 9, divide entre 5 y suma 32) y
+  otro que dice si el agua se congela. Ojo: <code>Fahrenheit</code> devuelve un
+  <code>float64</code>, así que convierte <code>c</code> antes de operar.
+</p>

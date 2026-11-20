@@ -1,0 +1,83 @@
+<p>
+  Quieres un método que multiplique las coordenadas de un vértice por un
+  número. Lo escribes como en la lección anterior, lo llamas y… el vértice
+  sigue igual. No hay ningún error, simplemente no ha cambiado nada. ¿Por qué?
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un receptor de valor, <code>(v Vertex)</code>, recibe una <strong>copia</strong>
+  del vértice. Todo lo que cambies dentro del método se pierde al salir. Un
+  receptor de puntero, <code>(v *Vertex)</code>, recibe la dirección del
+  original, así que los cambios se quedan.
+</p>
+<p>
+  Con funciones tendrías que pasar el puntero a mano: <code>Scale(&amp;v, 10)</code>.
+  Con métodos, Go lo hace por ti. Si <code>v</code> es una variable y
+  <code>Scale</code> tiene receptor de puntero, <code>v.Scale(10)</code> se lee
+  como <code>(&amp;v).Scale(10)</code>. Al revés también: si <code>p</code> es
+  un puntero y <code>Sum</code> tiene receptor de valor, <code>p.Sum()</code>
+  se lee como <code>(*p).Sum()</code>.
+</p>
+<p>
+  ¿Cuál eliges? Usa un receptor de puntero cuando el método tenga que cambiar
+  el valor, o cuando el <code>struct</code> sea grande y copiarlo en cada
+  llamada salga caro. Y elige una sola clase de receptor por tipo: si un método
+  de <code>Vertex</code> usa puntero, que lo usen todos.
+</p>
+<!-- animation: pointer-demo scene=receivers -->
+
+<h2>El ejemplo</h2>
+<p>Los dos receptores, uno detrás de otro:</p>
+{{code "examples/pointer-receivers/main.go"}}
+<p>Salida:</p>
+<pre><code>{3 4}
+{30 40}</code></pre>
+
+<p>Y Go poniendo el <code>&amp;</code> y el <code>*</code> por ti:</p>
+{{code "examples/indirection/main.go"}}
+<p>Salida:</p>
+<pre><code>{6 8}
+3</code></pre>
+
+<h2>Un error a propósito</h2>
+<p>Llama a un método de puntero sobre un valor que no está guardado en ninguna variable:</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v *Vertex) Scale(f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+func main() {
+	Vertex{3, 4}.Scale(2)
+	fmt.Println("hecho")
+}</code></pre>
+<pre><code>./prog.go:15:15: cannot call pointer method Scale on Vertex</code></pre>
+<p>
+  Para añadir el <code>&amp;</code>, Go necesita una dirección. Pero
+  <code>Vertex{3, 4}</code> es un valor de paso que no vive en ninguna
+  variable, y no tiene dirección. Guárdalo antes en una variable,
+  <code>v := Vertex{3, 4}</code>, y llama a <code>v.Scale(2)</code>.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Escribir un receptor de valor en un método que cambia un campo. Es lo que
+  hace <code>ScaleCopy</code> en el ejemplo: compila, se ejecuta y no cambia
+  nada, porque trabaja sobre una copia. El compilador no te avisa. Si el
+  método modifica el valor, el receptor lleva <code>*</code>.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio crearás un contador con tres métodos. <code>Increment</code>
+  y <code>Reset</code> cambian la cuenta, así que necesitan receptor de puntero;
+  <code>Value</code> solo la lee.
+</p>

@@ -210,5 +210,36 @@ var Course = course.Course{
 				},
 			},
 		},
+		{
+			Slug:    "04-methods",
+			Title:   "Métodos e interfaces",
+			Summary: "Métodos, interfaces y las más usadas de la biblioteca estándar: Stringer, error, Reader e Image.",
+			Lessons: []course.Lesson{
+				{
+					Slug:  "01-methods",
+					Title: "Métodos",
+					Exercise: &course.Exercise{
+						Path: "04-methods/temperature",
+						Goal: "Añade métodos a un tipo para convertir temperaturas.",
+					},
+				},
+				{
+					Slug:  "02-pointer-receivers",
+					Title: "Receptores de puntero",
+					Exercise: &course.Exercise{
+						Path: "04-methods/counter",
+						Goal: "Crea un contador que se incrementa y se reinicia.",
+					},
+				},
+				{
+					Slug:  "03-interfaces",
+					Title: "Interfaces",
+					Exercise: &course.Exercise{
+						Path: "04-methods/shapes",
+						Goal: "Calcula el área total de varias figuras con una interfaz.",
+					},
+				},
+			},
+		},
 	},
 }
