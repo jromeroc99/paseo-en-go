@@ -1,10 +1,13 @@
+<section class="slide">
 <p>
   Cuando llamas a una función, Go le pasa una copia de cada argumento. Si la
   función cambia esa copia, tu variable no se entera. A veces eso es justo lo
   que quieres. Otras veces necesitas que la función cambie tu variable, y para
   eso tiene que saber dónde vive.
 </p>
+</section>
 
+<section class="slide">
 <h2>El concepto</h2>
 <p>
   Cada variable ocupa un sitio en la memoria del ordenador, y ese sitio tiene
@@ -17,11 +20,19 @@
   <li><code>*p</code> sigue el puntero y te da el valor al que apunta. Con
     <code>*p = 21</code> cambias ese valor.</li>
 </ul>
+</section>
+
+<section class="slide">
+<h2>El valor cero</h2>
 <p>
   El valor cero de un puntero es <code>nil</code>: un puntero que todavía no
   apunta a nada. A diferencia de C, Go no tiene aritmética de punteros: no
   puedes sumar 1 a una dirección para saltar al valor de al lado.
 </p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
 <pointer-demo scene="basics">
   <p>
     Animación: <code>i</code> guarda 42 en una caja de memoria con su
@@ -30,9 +41,14 @@
     <code>q</code> vale <code>nil</code> y no apunta a nada.
   </p>
 </pointer-demo>
+</section>
 
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/pointers/main.go"}}
+</section>
+
+<section class="slide">
 <p>Salida:</p>
 <pre><code>42
 21
@@ -41,7 +57,9 @@ true</code></pre>
   Fíjate en que nunca escribes <code>i = 21</code>. Cambias <code>i</code> a
   través de <code>p</code>, porque <code>p</code> sabe dónde está.
 </p>
+</section>
 
+<section class="slide">
 <h2>Un error a propósito</h2>
 <p>
   Seguir un puntero que vale <code>nil</code> no tiene sentido: no hay ningún
@@ -56,6 +74,11 @@ func main() {
 	fmt.Println(*p)
 }</code></pre>
 <pre><code>panic: runtime error: invalid memory address or nil pointer dereference</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>panic: runtime error: invalid memory address or nil pointer dereference</code></pre>
 <p>
   Un <em>panic</em> es un error que detiene el programa mientras se ejecuta.
   El mensaje se lee así: <em>runtime error</em> (error en ejecución),
@@ -63,7 +86,9 @@ func main() {
   seguido un puntero <code>nil</code>). Cuando lo veas, busca qué puntero no
   apuntaba a nada.
 </p>
+</section>
 
+<section class="slide">
 <h2>El error típico</h2>
 <p>
   Pasar el valor cuando querías pasar la dirección. Si una función recibe un
@@ -76,10 +101,13 @@ func incrementPtr(n *int) { *n++ } // cambia el original</code></pre>
   <code>&amp;</code>. Si te olvidas, el compilador te avisa, porque un
   <code>int</code> no es un <code>*int</code>.
 </p>
+</section>
 
+<section class="slide">
 <h2>Tu turno</h2>
 <p>
   En el ejercicio vas a escribir <code>Swap</code>, que recibe dos punteros a
   enteros e intercambia sus valores. La función no devuelve nada: el cambio se
   ve en las variables de quien la llama.
 </p>
+</section>

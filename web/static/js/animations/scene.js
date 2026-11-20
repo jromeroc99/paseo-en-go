@@ -10,7 +10,8 @@
 // backticks); the rest of the step is whatever the component's draw needs.
 // draw renders one step at progress t, which goes from 0 to 1 while the
 // step moves. Everything else lives here, so every animation looks and
-// behaves the same: canvas, caption, code panel and the endless loop.
+// behaves the same: canvas, caption, code panel and the steps the reader
+// walks through with the deck's arrows.
 //
 // Components draw on a 160×96 grid of logical units; the canvas stretches
 // that grid to the width of the page and stays sharp on any screen.
@@ -19,9 +20,6 @@ const WIDTH = 160;
 const HEIGHT = 96;
 
 const MOVE_MS = 450; // the step's motion
-const HOLD_MS = 2600; // time to read the caption before the next step
-const END_HOLD_MS = 4000; // the last step stays a little longer
-const FADE_MS = 400; // fade out before the loop starts again
 
 const FONT_SIZE = 6.5; // logical units; a character is about 4 units wide
 const ARROW_HEAD = 3; // length of an arrow head, in logical units
@@ -212,24 +210,21 @@ function readPalette() {
 }
 
 /**
- * Scene is the custom element every animation extends. It plays its steps
- * in an endless loop while it is on screen, and pauses while the reader
- * points at it or focuses it, so nobody has to read against the clock.
+ * Scene is the custom element every animation extends. Nothing moves on its
+ * own: the deck calls next() and prev() on every arrow press, and a click on
+ * the canvas plays the next step, so the reader sets the pace.
  */
 export class Scene extends HTMLElement {
   #scene = null;
   #paint = null;
   #ui = {};
   #index = 0;
-  #phase = "hold"; // "move", then "hold", then "fade" after the last step
-  #elapsed = 0;
-  #lastFrame = 0;
+  #reached = 0; // the furthest step shown; the code after it is still to come
+  #progress = 1; // how far the current step has moved, from 0 to 1
+  #moveStart = 0;
   #frameRequest = 0;
-  #onScreen = false;
-  #held = new Set(); // why the reader paused it: "pointer", "focus"
-  #observers = [];
+  #resize = null;
   #reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  #onVisibility = () => this.#update();
 
   connectedCallback() {
     if (!this.#paint) {
@@ -243,19 +238,45 @@ export class Scene extends HTMLElement {
       this.#build();
       this.#showText();
     }
-    this.#observe();
+    // CSS gives the canvas its width; the drawing follows it.
+    this.#resize = new ResizeObserver(() => this.#fitCanvas());
+    this.#resize.observe(this.#ui.canvas);
   }
 
   disconnectedCallback() {
-    for (const observer of this.#observers) observer.disconnect();
-    this.#observers = [];
-    document.removeEventListener("visibilitychange", this.#onVisibility);
-    this.#onScreen = false;
-    this.#update();
+    this.#resize?.disconnect();
+    this.#stopMoving();
   }
 
   /** draw renders one step at progress t (0 to 1). Components override it. */
   draw(paint, step, t) {}
+
+  /** next plays the next step, or returns false when there is none left. */
+  next() {
+    if (!this.#scene || this.#index === this.#lastIndex()) return false;
+    this.#show(this.#index + 1, { move: true });
+    return true;
+  }
+
+  /** prev shows the previous step at once, or returns false on the first. */
+  prev() {
+    if (!this.#scene || this.#index === 0) return false;
+    this.#show(this.#index - 1);
+    return true;
+  }
+
+  /** rewind plays the scene from its first step, for a reader arriving forwards. */
+  rewind() {
+    if (!this.#scene) return;
+    this.#reached = 0;
+    this.#show(0, { move: true });
+  }
+
+  /** skipToEnd shows the last step, for a reader coming back from the next card. */
+  skipToEnd() {
+    if (!this.#scene) return;
+    this.#show(this.#lastIndex());
+  }
 
   #build() {
     // The fallback paragraph becomes the description of the whole scene.
@@ -267,6 +288,7 @@ export class Scene extends HTMLElement {
     canvas.height = HEIGHT;
     canvas.setAttribute("role", "img");
     canvas.setAttribute("aria-label", description);
+    canvas.addEventListener("click", () => this.next());
 
     const code = element("pre", "anim-code");
     const lines = element("code");
@@ -278,33 +300,16 @@ export class Scene extends HTMLElement {
     });
     code.append(lines);
 
+    // The caption changes only when the reader moves, so it is announced.
     const caption = element("p", "anim-caption");
+    caption.setAttribute("aria-live", "polite");
 
     const root = element("div", "anim");
-    root.tabIndex = 0;
-    root.append(canvas, code, caption);
+    root.append(code, canvas, caption);
     this.replaceChildren(root);
-
-    root.addEventListener("pointerenter", () => this.#hold("pointer", true));
-    root.addEventListener("pointerleave", () => this.#hold("pointer", false));
-    root.addEventListener("focusin", () => this.#hold("focus", true));
-    root.addEventListener("focusout", () => this.#hold("focus", false));
 
     Object.assign(this.#ui, { root, canvas, caption });
     this.#paint = new Paint(canvas.getContext("2d"), readPalette(), {});
-  }
-
-  #observe() {
-    // CSS gives the canvas its width; the drawing follows it.
-    const resize = new ResizeObserver(() => this.#fitCanvas());
-    resize.observe(this.#ui.canvas);
-    const visible = new IntersectionObserver(([entry]) => {
-      this.#onScreen = entry.isIntersecting;
-      this.#update();
-    });
-    visible.observe(this.#ui.root);
-    this.#observers = [resize, visible];
-    document.addEventListener("visibilitychange", this.#onVisibility);
   }
 
   // fitCanvas sizes the canvas to its frame and to the screen's pixel
@@ -330,84 +335,60 @@ export class Scene extends HTMLElement {
     this.#render();
   }
 
-  #hold(reason, on) {
-    if (on) this.#held.add(reason);
-    else this.#held.delete(reason);
-    this.#update();
+  #lastIndex() {
+    return this.#scene.steps.length - 1;
   }
 
-  #isPlaying() {
-    return this.#onScreen && this.#held.size === 0 && !document.hidden;
-  }
-
-  // update starts or stops the frame loop to match #isPlaying.
-  #update() {
-    if (this.#isPlaying() && !this.#frameRequest) {
-      this.#lastFrame = performance.now();
+  // show moves to a step. Going forwards the step plays its motion; going
+  // back, or with reduced motion, it appears already finished.
+  #show(index, { move = false } = {}) {
+    this.#stopMoving();
+    this.#index = index;
+    this.#reached = Math.max(this.#reached, index);
+    this.#showText();
+    if (move && !this.#reducedMotion.matches) {
+      this.#progress = 0;
+      this.#moveStart = performance.now();
       this.#frameRequest = requestAnimationFrame((now) => this.#frame(now));
-    }
-    if (!this.#isPlaying() && this.#frameRequest) {
-      cancelAnimationFrame(this.#frameRequest);
-      this.#frameRequest = 0;
+    } else {
+      this.#progress = 1;
+      this.#render();
     }
   }
 
   #frame(now) {
-    this.#elapsed += now - this.#lastFrame;
-    this.#lastFrame = now;
-    while (this.#elapsed >= this.#duration()) {
-      this.#elapsed -= this.#duration();
-      this.#nextPhase();
-    }
+    this.#progress = Math.min(1, (now - this.#moveStart) / MOVE_MS);
     this.#render();
-    this.#frameRequest = requestAnimationFrame((next) => this.#frame(next));
+    this.#frameRequest = this.#progress < 1 ? requestAnimationFrame((next) => this.#frame(next)) : 0;
   }
 
-  #duration() {
-    const smooth = !this.#reducedMotion.matches;
-    if (this.#phase === "move") return smooth ? MOVE_MS : 0;
-    if (this.#phase === "fade") return smooth ? FADE_MS : 0;
-    return this.#isLast() ? END_HOLD_MS : HOLD_MS;
-  }
-
-  #nextPhase() {
-    if (this.#phase === "move") {
-      this.#phase = "hold";
-    } else if (this.#phase === "hold" && this.#isLast()) {
-      this.#phase = "fade";
-    } else {
-      // After the fade the loop starts again at the first step.
-      this.#index = this.#phase === "fade" ? 0 : this.#index + 1;
-      this.#phase = "move";
-      this.#showText();
-    }
-  }
-
-  #isLast() {
-    return this.#index === this.#scene.steps.length - 1;
+  #stopMoving() {
+    cancelAnimationFrame(this.#frameRequest);
+    this.#frameRequest = 0;
   }
 
   #render() {
     if (!this.#paint.style.font) return; // not measured yet; fitCanvas renders
-    const progress = this.#duration() === 0 ? 1 : Math.min(1, this.#elapsed / this.#duration());
-    const t = this.#phase === "move" ? easeInOut(progress) : 1;
-    // Fade out after the last step, and back in while the first one moves.
-    let opacity = 1;
-    if (this.#phase === "fade") opacity = 1 - progress;
-    if (this.#phase === "move" && this.#index === 0) opacity = progress;
-    this.#ui.canvas.style.opacity = opacity;
-
+    // The first step fades in, so the scene starts from an empty frame.
+    this.#ui.canvas.style.opacity = this.#index === 0 ? this.#progress : 1;
     this.#paint.clear();
-    this.draw(this.#paint, this.#scene.steps[this.#index], t);
+    this.draw(this.#paint, this.#scene.steps[this.#index], easeInOut(this.#progress));
   }
 
   #showText() {
-    const step = this.#scene.steps[this.#index];
+    const steps = this.#scene.steps;
+    const step = steps[this.#index];
     const parts = step.caption.split("`");
     this.#ui.caption.replaceChildren(
       ...parts.map((part, i) => (i % 2 === 1 ? element("code", "", part) : document.createTextNode(part))),
     );
-    this.#ui.lines.forEach((line, i) => line.classList.toggle("is-current", i === step.line));
+    // A loop in the Go code jumps back up, so the code still to come is what
+    // lies below the furthest line any step shown so far has reached.
+    const lastRun = Math.max(...steps.slice(0, this.#reached + 1).map((s) => s.line));
+    this.#ui.lines.forEach((line, i) => {
+      line.classList.toggle("is-current", i === step.line);
+      line.classList.toggle("is-ahead", i > lastRun);
+    });
   }
 }
 

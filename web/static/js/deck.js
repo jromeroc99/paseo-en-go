@@ -18,6 +18,13 @@ function start(deck) {
   let current = -1;
 
   function show(index, { focus = true } = {}) {
+    // Arriving forwards plays the card's animation from its start; coming
+    // back shows where it ended, so reading backwards makes sense.
+    if (index !== current) {
+      const scene = sceneOf(slides[index]);
+      if (index > current) scene?.rewind();
+      else scene?.skipToEnd();
+    }
     current = index;
     visited.add(index);
     slides.forEach((slide, i) => {
@@ -31,12 +38,16 @@ function start(deck) {
     if (focus) slides[index].focus({ preventScroll: true });
   }
 
+  // next and prev let the card's animation take the step first; the card
+  // moves only when the animation has no step left in that direction.
   function next() {
+    if (sceneOf(slides[current])?.next()) return;
     if (current < slides.length - 1) show(current + 1);
     else follow("next");
   }
 
   function prev() {
+    if (sceneOf(slides[current])?.prev()) return;
     if (current > 0) show(current - 1);
     else follow("prev", LAST_HASH);
   }
@@ -83,6 +94,13 @@ function start(deck) {
   onSwipe(deck, { left: next, right: prev });
 
   show(indexFromHash(), { focus: false });
+}
+
+// sceneOf returns the animation on a card, once its component has loaded;
+// until then the tag is only its text fallback.
+function sceneOf(slide) {
+  const scene = slide.querySelector("[scene]");
+  return typeof scene?.next === "function" ? scene : null;
 }
 
 // label gives the deck and every card the names a screen reader announces.

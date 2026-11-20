@@ -114,20 +114,25 @@ values, buffers, channels). If text explains it just as well, do not animate it.
   width (max 640 px) and drawn at `devicePixelRatio`, so it stays sharp.
   Components draw through `Paint` (`rect`, `dot`, `frame`, `line`, `arrow`,
   `text`, `centerText`) and never touch the canvas directly.
-- **Motion:** an endless loop with no player controls. Each step eases in,
-  holds long enough to read its caption, and after the last step the scene
-  fades out and starts again. One thing moves at a time, so the eye knows
-  where to look. It plays only while it is on screen and the tab is visible.
+- **Motion:** the reader sets the pace. Nothing moves on its own: each → in
+  the deck (or a click on the canvas) plays the next step with a short ease,
+  ← shows the previous one at once, and only after the last step does → move
+  to the next card. Arriving forwards starts at the first step; coming back
+  shows the last. One thing moves at a time, so the eye knows where to look.
+- **Layout:** the code on the left, the canvas on the right and the caption
+  under both; on a narrow screen the code goes above. An animation card holds
+  the animation and at most a `<h2>`.
 - **Captions:** each step shows a one-line Spanish caption and highlights the
-  line of Go code it represents.
+  line of Go code it represents. Lines already run read normally; lines still
+  to come are dimmed, so the reader sees how much is left.
 - **Code:** one vanilla JS Web Component per file in
   `web/static/js/animations/<name>.js`, extending `Scene` from `scene.js` and
   used as a tag in the lesson body (`<pointer-demo>`). No libraries. The scene
   is plain data (a list of steps); `draw` just renders the current step.
-- **Accessibility:** the loop pauses while the pointer is over it or it has
-  keyboard focus (WCAG 2.2.2). Respect `prefers-reduced-motion` (no tweening,
-  no fade). The canvas is an image labelled with the text fallback inside the
-  tag, so the lesson still makes sense without JS.
+- **Accessibility:** the caption is `aria-live="polite"`, so a screen reader
+  announces each step the reader asks for. Respect `prefers-reduced-motion`
+  (no tweening). The canvas is an image labelled with the text fallback inside
+  the tag, so the lesson still makes sense without JS.
 
 ## Exercises
 
