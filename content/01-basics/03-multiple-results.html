@@ -1,0 +1,66 @@
+<p>
+  Imagina que divides 7 entre 2. Te interesa el cociente, 3, pero también el
+  resto, 1. En muchos lenguajes tendrías que escribir dos funciones o meter
+  los dos números en una estructura. En Go una función puede devolver los dos
+  a la vez.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Para devolver varios valores, escribe sus tipos entre paréntesis y sepáralos
+  con comas en el <code>return</code>. Quien llama a la función recibe cada
+  valor en su propia variable:
+</p>
+<pre><code class="language-go">a, b := swap("hola", "mundo")</code></pre>
+<p>
+  Los resultados también pueden tener nombre. Entonces funcionan como
+  variables declaradas al principio de la función, y un <code>return</code>
+  sin nada detrás devuelve sus valores actuales. A eso se le llama un
+  <code>return</code> desnudo.
+</p>
+
+<h2>El ejemplo</h2>
+{{code "examples/multiple-results/main.go"}}
+<p>Salida:</p>
+<pre><code>mundo hola</code></pre>
+
+<p>Y con resultados con nombre:</p>
+{{code "examples/named-results/main.go"}}
+<p>Salida:</p>
+<pre><code>7 10</code></pre>
+
+<h2>Un error a propósito</h2>
+<p>Si la función devuelve dos valores, necesitas dos variables para recibirlos:</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func swap(x, y string) (string, string) {
+	return y, x
+}
+
+func main() {
+	a := swap("hola", "mundo")
+	fmt.Println(a)
+}</code></pre>
+<pre><code>./prog.go:10:7: assignment mismatch: 1 variable but swap returns 2 values</code></pre>
+<p>
+  El mensaje es muy literal: en la línea 10 hay una variable a la izquierda,
+  pero <code>swap</code> devuelve dos valores. Añade la segunda variable y
+  compila.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  El <code>return</code> desnudo es cómodo, pero esconde qué se devuelve. En
+  una función de tres líneas se ve de un vistazo; en una de cincuenta tienes
+  que buscar dónde se asignó cada resultado. Úsalo solo en funciones cortas y,
+  ante la duda, escribe los valores: <code>return x, y</code>.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio escribirás una función que devuelve el cociente y el resto
+  de una división entera. Los operadores que necesitas son <code>/</code> y
+  <code>%</code>.
+</p>

@@ -35,5 +35,30 @@ var Course = course.Course{
 				},
 			},
 		},
+		{
+			Slug:    "01-basics",
+			Title:   "Lo básico",
+			Summary: "Paquetes, funciones, variables, tipos y constantes: las piezas de cualquier programa.",
+			Lessons: []course.Lesson{
+				{Slug: "01-packages", Title: "Paquetes e imports"},
+				{
+					Slug:  "02-functions",
+					Title: "Funciones",
+					Exercise: &course.Exercise{
+						Path: "01-basics/rectangle",
+						Goal: "Calcula el área y el perímetro de un rectángulo.",
+					},
+				},
+				{
+					Slug:  "03-multiple-results",
+					Title: "Varios resultados",
+					Exercise: &course.Exercise{
+						Path: "01-basics/divmod",
+						Goal: "Devuelve el cociente y el resto de una división entera.",
+					},
+				},
+				{Slug: "04-variables", Title: "Variables"},
+			},
+		},
 	},
 }
