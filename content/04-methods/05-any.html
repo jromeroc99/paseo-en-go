@@ -1,0 +1,70 @@
+<p>
+  <code>fmt.Println</code> acepta un número, un texto, un <code>struct</code>…
+  lo que le des. ¿Cómo se declara un parámetro así, que acepte valores de
+  cualquier tipo? Y una vez dentro, ¿cómo recuperas el valor con su tipo?
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Una interfaz pide una lista de métodos. Si la lista está vacía,
+  <code>interface{}</code>, cualquier tipo la cumple, porque todos tienen al
+  menos cero métodos. Es la <em>empty interface</em> (interfaz vacía). Desde
+  Go 1.18 tiene un nombre más corto: <code>any</code>. Los dos son
+  exactamente lo mismo.
+</p>
+<p>
+  Para sacar el valor concreto usas una <em>type assertion</em> (aserción de
+  tipo): <code>t := i.(T)</code> afirma que <code>i</code> guarda un
+  <code>T</code> y te lo da. Si te equivocas, el programa se detiene con un
+  <em>panic</em>.
+</p>
+<p>
+  Si no estás seguro, pide también un segundo resultado:
+  <code>t, ok := i.(T)</code>. Si <code>i</code> guarda un <code>T</code>,
+  <code>ok</code> es <code>true</code>; si no, <code>ok</code> es
+  <code>false</code>, <code>t</code> es el valor cero de <code>T</code> y no
+  hay <em>panic</em>.
+</p>
+
+<h2>El ejemplo</h2>
+<p>Una variable vacía que recibe valores de varios tipos:</p>
+{{code "examples/empty-interface/main.go"}}
+<p>Salida:</p>
+<pre><code>(&lt;nil&gt;, &lt;nil&gt;)
+(42, int)
+(hola, string)
+(3.5, float64)</code></pre>
+
+<p>Y las dos formas de la aserción:</p>
+{{code "examples/type-assertions/main.go"}}
+<p>Salida:</p>
+<pre><code>hola
+hola true
+0 false</code></pre>
+
+<h2>Un error a propósito</h2>
+<p>Afirma que la interfaz guarda un <code>int</code> cuando guarda un <code>string</code>:</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	var i any = "hola"
+	n := i.(int)
+	fmt.Println(n)
+}</code></pre>
+<pre><code>panic: interface conversion: interface {} is string, not int</code></pre>
+<p>
+  Se lee tal cual: la interfaz guarda un <code>string</code>, no un
+  <code>int</code>. Fíjate en que el mensaje escribe <code>interface {}</code>
+  aunque en el código pusiste <code>any</code>: es el mismo tipo con otro
+  nombre.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Usar la forma sin <code>ok</code> cuando el valor viene de fuera y no sabes
+  qué tipo tiene. Esa forma es para cuando estás seguro; si te equivocas, el
+  programa entero se detiene. Ante la duda, escribe <code>v, ok := i.(T)</code>
+  y comprueba <code>ok</code>.
+</p>

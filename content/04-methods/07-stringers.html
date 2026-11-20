@@ -1,0 +1,63 @@
+<p>
+  Imprimes una persona con <code>fmt.Println</code> y sale
+  <code>{Ana 42}</code>. Es correcto, pero no dice mucho. Te gustaría que
+  saliera <code>Ana (42 años)</code> sin tener que formatearlo a mano cada vez
+  que la imprimes.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  El paquete <code>fmt</code> declara una interfaz muy pequeña:
+</p>
+<pre><code class="language-go">type Stringer interface {
+	String() string
+}</code></pre>
+<p>
+  Un tipo con un método <code>String() string</code> es un
+  <em>Stringer</em>: sabe describirse como texto. Cuando <code>fmt</code> va a
+  imprimir un valor con <code>Println</code>, <code>Print</code> o
+  <code>%v</code>, primero mira si es un <code>Stringer</code>. Si lo es, llama
+  a <code>String()</code> y usa lo que devuelve.
+</p>
+<p>
+  No tienes que registrar nada ni importar nada nuevo. Como viste con las
+  interfaces, basta con tener el método. Es una de las interfaces que más vas
+  a encontrar en Go, porque casi todos los tipos acaban imprimiéndose alguna
+  vez: en un mensaje de error, en un registro o mientras buscas un fallo.
+  Darles un <code>String()</code> claro te ahorra mucho tiempo.
+</p>
+
+<h2>El ejemplo</h2>
+{{code "examples/stringer/main.go"}}
+<p>Salida:</p>
+<pre><code>Ana (42 años) Zoe (9 años)</code></pre>
+
+<h2>El error típico</h2>
+<p>
+  Declarar <code>String()</code> con receptor de puntero y después imprimir el
+  valor:
+</p>
+<pre><code class="language-go">func (p *Person) String() string {
+	return "Persona: " + p.Name
+}
+
+p := Person{"Ana"}
+fmt.Println(p)
+fmt.Println(&amp;p)</code></pre>
+<p>Salida:</p>
+<pre><code>{Ana}
+Persona: Ana</code></pre>
+<p>
+  El método es de <code>*Person</code>, no de <code>Person</code>. Al pasar el
+  valor <code>p</code>, <code>fmt</code> recibe algo que no es un
+  <code>Stringer</code> y lo imprime a su manera. No hay ningún error ni aviso.
+  Para <code>String()</code>, usa receptor de valor salvo que tengas un buen
+  motivo.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio harás que una dirección IP, guardada como cuatro bytes, se
+  imprima como <code>127.0.0.1</code>. Con <code>fmt.Sprintf</code> y el verbo
+  <code>%d</code> tienes todo lo que necesitas.
+</p>

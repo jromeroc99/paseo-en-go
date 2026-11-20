@@ -1,0 +1,70 @@
+<p>
+  Con las aserciones de la lección anterior puedes preguntar si una interfaz
+  guarda un <code>int</code>. Pero si quieres hacer algo distinto para un
+  <code>int</code>, para un <code>string</code> y para el resto, acabas con una
+  cadena de <code>if</code> que repite la misma pregunta una y otra vez.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un <em>type switch</em> (un <code>switch</code> que compara tipos) prueba
+  varios tipos en orden:
+</p>
+<pre><code class="language-go">switch v := i.(type) {
+case int:
+	// here v is an int
+case string:
+	// here v is a string
+default:
+	// here v has the same type as i
+}</code></pre>
+<p>
+  Se escribe como una aserción, pero con la palabra <code>type</code> entre
+  paréntesis. Cada <code>case</code> nombra un tipo, y dentro de ese caso
+  <code>v</code> ya tiene ese tipo, así que puedes usarlo sin convertir nada.
+  También existe <code>case nil</code>, que se cumple cuando la interfaz está
+  vacía.
+</p>
+
+<h2>El ejemplo</h2>
+{{code "examples/type-switches/main.go"}}
+<p>Salida:</p>
+<pre><code>el doble de 21 es 42
+"hola" tiene 4 bytes
+no sé qué hacer con bool</code></pre>
+
+<h2>Un error a propósito</h2>
+<p>Usa <code>i.(type)</code> fuera de un <code>switch</code>:</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	var i any = 42
+	t := i.(type)
+	fmt.Println(t)
+}</code></pre>
+<pre><code>./prog.go:7:7: invalid syntax tree: use of .(type) outside type switch</code></pre>
+<p>
+  El principio del mensaje, <em>invalid syntax tree</em>, suena raro; lo
+  importante está al final: <code>.(type)</code> solo vale en la cabecera de
+  un <code>switch</code>. Si solo necesitas saber el tipo para imprimirlo, usa
+  <code>fmt.Printf("%T", i)</code>.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Usar <code>any</code> cuando un tipo concreto basta. Si tu función solo
+  trabaja con números, recibe un <code>int</code>: el compilador comprueba
+  cada llamada por ti. Con <code>any</code> pierdes esa ayuda y tienes que
+  repetir la comprobación con un <em>type switch</em>. Resérvalo para cuando
+  de verdad puede llegar cualquier cosa.
+</p>
+
+<h2>Tu turno</h2>
+<p>
+  En el ejercicio escribirás <code>Describe</code>, que recibe un
+  <code>any</code> y devuelve un texto según su tipo. Necesitas un caso por
+  tipo, <code>case nil</code> para la interfaz vacía y un <code>default</code>
+  para todo lo demás.
+</p>

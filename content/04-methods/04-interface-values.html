@@ -1,0 +1,68 @@
+<p>
+  En la lección anterior guardaste primero un <code>MyFloat</code> y después
+  un <code>Vertex</code> en la misma variable. Pero entonces, cuando llamas a
+  <code>a.Abs()</code>, ¿cómo sabe Go qué método ejecutar? La variable tiene
+  que guardar algo más que el valor.
+</p>
+
+<h2>El concepto</h2>
+<p>
+  Un valor de interfaz es una pareja: <strong>(tipo concreto, valor)</strong>.
+  El tipo concreto dice qué método se ejecuta; el valor es el que recibe ese
+  método. Con <code>%v</code> ves el valor y con <code>%T</code>, el tipo.
+</p>
+<p>
+  El valor de dentro puede ser <code>nil</code>, por ejemplo un puntero
+  <code>*Box</code> que no apunta a nada. La interfaz sigue sabiendo su tipo,
+  así que el método se llama igual, con un receptor <code>nil</code>. Si el
+  método lo comprueba, no pasa nada malo.
+</p>
+<p>
+  Otra cosa es una interfaz sin nada dentro, ni tipo ni valor. Esa sí es
+  <code>nil</code>, y llamar a un método sobre ella no puede funcionar: no hay
+  tipo que diga qué método ejecutar.
+</p>
+<!-- animation: interface-demo scene=pair -->
+
+<h2>El ejemplo</h2>
+<p>La pareja, mostrada con <code>%v</code> y <code>%T</code>:</p>
+{{code "examples/interface-values/main.go"}}
+<p>Salida:</p>
+<pre><code>(21.5, main.Temp) 21.5 grados
+(gopher, main.Word) la palabra gopher</code></pre>
+
+<p>Y una interfaz que guarda un puntero <code>nil</code>:</p>
+{{code "examples/nil-underlying-value/main.go"}}
+<p>Salida:</p>
+<pre><code>true
+false
+&lt;caja vacía&gt;</code></pre>
+
+<h2>Un error a propósito</h2>
+<p>Este programa compila, pero falla al ejecutarlo:</p>
+<pre><code class="language-go">package main
+
+type Speaker interface {
+	Speak() string
+}
+
+func main() {
+	var s Speaker
+	s.Speak()
+}</code></pre>
+<pre><code>panic: runtime error: invalid memory address or nil pointer dereference</code></pre>
+<p>
+  Un <em>panic</em> es un error que ocurre con el programa ya en marcha, no al
+  compilar. <code>s</code> no guarda nada, así que Go no tiene ningún método
+  al que saltar. Antes de llamar a un método sobre una interfaz que puede
+  estar vacía, comprueba que <code>s != nil</code>.
+</p>
+
+<h2>El error típico</h2>
+<p>
+  Creer que una interfaz que guarda un puntero <code>nil</code> es
+  <code>nil</code>. No lo es: en el ejemplo, <code>d == nil</code> da
+  <code>false</code> en cuanto guardas <code>b</code>, porque la pareja ya
+  tiene tipo. Una interfaz solo es <code>nil</code> cuando no tiene ni tipo ni
+  valor. Lo verás de nuevo con los errores, que también son interfaces.
+</p>

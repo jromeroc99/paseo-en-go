@@ -239,6 +239,24 @@ var Course = course.Course{
 						Goal: "Calcula el área total de varias figuras con una interfaz.",
 					},
 				},
+				{Slug: "04-interface-values", Title: "Valores de interfaz"},
+				{Slug: "05-any", Title: "La interfaz vacía y las type assertions"},
+				{
+					Slug:  "06-type-switches",
+					Title: "Type switches",
+					Exercise: &course.Exercise{
+						Path: "04-methods/describe",
+						Goal: "Describe un valor según su tipo.",
+					},
+				},
+				{
+					Slug:  "07-stringers",
+					Title: "Stringer",
+					Exercise: &course.Exercise{
+						Path: "04-methods/ipaddr",
+						Goal: "Haz que una dirección IP se imprima como 127.0.0.1.",
+					},
+				},
 			},
 		},
 	},
