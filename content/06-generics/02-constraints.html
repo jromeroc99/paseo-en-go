@@ -1,0 +1,175 @@
+<section class="slide">
+<p>
+  Ya sabes escribir una función para cualquier tipo. Ahora quieres
+  <code>Max</code>, que devuelve el mayor de dos valores, y sirva igual para
+  enteros, decimales y textos. Pero <code>any</code> no basta: con un
+  <code>T</code> cualquiera solo puedes hacer lo que todos los tipos
+  permiten, y no todos se pueden ordenar con <code>&gt;</code>. Tienes que
+  decirle a Go qué sabe hacer <code>T</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Una <em>restricción</em> es una interfaz que dice qué tipos acepta un
+  parámetro de tipo y, por tanto, qué puedes hacer con él. Go trae tres que
+  usarás a menudo:
+</p>
+<ul>
+  <li><code>any</code>: cualquier tipo; no puedes compararlo ni ordenarlo.</li>
+  <li><code>comparable</code>: los tipos que admiten <code>==</code> y <code>!=</code>.</li>
+  <li>
+    <code>cmp.Ordered</code>, del paquete <code>cmp</code>: números y textos,
+    que admiten <code>&lt;</code> y <code>&gt;</code>.
+  </li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>La restricción es una puerta</h2>
+<generic-demo scene="constraints">
+  <p>
+    Animación: la restricción <code>comparable</code> es una puerta.
+    <code>int</code>, <code>string</code> y <code>bool</code> pasan porque se
+    pueden comparar con <code>==</code>. <code>[]int</code> se queda fuera, y
+    el compilador avisa: <code>[]int does not satisfy comparable</code>.
+  </p>
+</generic-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/max/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>7 2.5 pera</code></pre>
+<p>
+  Fíjate en que una sola <code>Max</code> sirve para <code>int</code>,
+  <code>float64</code> y <code>string</code>. Los textos se ordenan
+  letra a letra, como en un diccionario: <code>"pera"</code> va después de
+  <code>"manzana"</code>, así que es la mayor.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu propia restricción</h2>
+<p>
+  También puedes escribir la tuya. Una interfaz con una <em>unión</em> de
+  tipos, separados por <code>|</code>, acepta solo esos tipos:
+</p>
+<pre><code class="language-go">type Number interface {
+	~int | ~float64
+}</code></pre>
+<p>
+  Con <code>T Number</code>, Go sabe que <code>T</code> es un número y te
+  deja usar <code>+</code>, <code>-</code>, <code>*</code> y
+  <code>/</code>. Una interfaz con una unión solo sirve como restricción: no
+  puedes declarar una variable de tipo <code>Number</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Qué significa ~</h2>
+<p>
+  Puedes crear tus propios tipos a partir de otros, como
+  <code>type Celsius float64</code>. <code>Celsius</code> es un tipo nuevo,
+  pero por debajo es un <code>float64</code>: ese es su <em>tipo
+  subyacente</em>.
+</p>
+<p>
+  <code>float64</code> sin más acepta solo <code>float64</code>.
+  <code>~float64</code> acepta cualquier tipo cuyo tipo subyacente sea
+  <code>float64</code>, así que <code>Celsius</code> también vale.
+</p>
+</section>
+
+<section class="slide">
+<h2>Con ~ en el ejemplo</h2>
+{{code "examples/double/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>42 2.5 37</code></pre>
+<p>
+  Fíjate en que <code>Double(Celsius(18.5))</code> devuelve un
+  <code>Celsius</code>, no un <code>float64</code>: <code>T</code> es el tipo
+  que le pasas, con su nombre. Sin el <code>~</code>, esa llamada no
+  compilaría.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Prueba a escribir <code>Max</code> con <code>any</code>:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func Max[T any](a, b T) T {
+	if a &gt; b {
+		return a
+	}
+	return b
+}</code></pre>
+</section>
+
+<section class="slide">
+<pre><code class="language-go">func main() {
+	fmt.Println(Max(3, 7))
+}</code></pre>
+<pre><code>./prog.go:6:5: invalid operation: a &gt; b (type parameter T cannot use operator &gt;)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:6:5: invalid operation: a &gt; b (type parameter T cannot use operator &gt;)</code></pre>
+<p>
+  Línea 6: <code>a &gt; b</code> no es válido. El motivo va entre
+  paréntesis: el parámetro de tipo <code>T</code> no puede usar el operador
+  <code>&gt;</code>. Da igual que tú lo llames con números: la restricción
+  <code>any</code> no promete que <code>T</code> se pueda ordenar. Cambia
+  <code>any</code> por <code>cmp.Ordered</code> y compila.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Olvidar el <code>~</code>. En el ejemplo, quita los dos de
+  <code>Number</code>:
+</p>
+<pre><code class="language-go">type Number interface {
+	int | float64
+}</code></pre>
+<pre><code>./prog.go:16:46: Celsius does not satisfy Number (possibly missing ~ for float64 in Number)</code></pre>
+<p>
+  <code>Celsius</code> no es <code>float64</code>, solo lo es por debajo. El
+  propio compilador te sugiere la solución: falta el <code>~</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>sum.go</code> la restricción <code>Number</code> y la
+  función <code>Sum</code>, que suma todos los números del slice. Si el slice
+  está vacío, devuelve <code>0</code>. Los tests la prueban con
+  <code>int</code>, con <code>float64</code> y con un tipo propio,
+  <code>Euros</code>.
+</p>
+<pre><code class="language-go">type Number interface {
+	~int | ~float64
+}
+
+func Sum[T Number](nums []T) T</code></pre>
+<p>
+  Pista: <code>var total T</code> empieza valiendo 0. Hasta que lo
+  escribas, <code>go test</code> falla con <code>undefined: Sum</code>.
+</p>
+</section>

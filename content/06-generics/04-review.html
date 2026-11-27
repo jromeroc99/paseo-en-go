@@ -1,0 +1,62 @@
+<section class="slide">
+<p>
+  Has terminado el módulo. Antes de seguir, repasa lo que ya sabes:
+</p>
+<ul>
+  <li><a href="../01-type-parameters/">Parámetros de tipo</a>: <code>[T comparable]</code> deja un hueco para el tipo, y el compilador lo deduce de los argumentos.</li>
+  <li><a href="../02-constraints/">Restricciones</a>: <code>any</code>, <code>comparable</code>, <code>cmp.Ordered</code> o tu propia unión deciden qué puedes hacer con <code>T</code>; <code>~</code> acepta también tus tipos propios.</li>
+  <li><a href="../03-generic-types/">Tipos genéricos</a>: <code>List[T]</code> es un molde; los métodos repiten <code>[T]</code> en el receptor y <code>var zero T</code> da el valor cero.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Vas a escribir tus propias colecciones, como las que trae la biblioteca
+  estándar:
+</p>
+<ul>
+  <li>Un <em>conjunto</em>, <code>Set</code>: guarda cada valor una sola vez.
+    Pista: un <code>map</code> ya tiene claves únicas.</li>
+  <li><code>Map</code>: aplica una función a cada elemento y devuelve los
+    resultados, en el mismo orden.</li>
+  <li><code>Filter</code>: devuelve solo los elementos para los que
+    <code>keep</code> devuelve <code>true</code>.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Lo que escribes</h2>
+<p>
+  Escribe todo en <code>set.go</code>. Los campos de <code>Set</code> los
+  decides tú; los tests solo usan los métodos.
+</p>
+<pre><code class="language-go">type Set[T comparable] struct {
+	// tus campos
+}
+
+func NewSet[T comparable]() *Set[T]
+func (s *Set[T]) Add(v T)
+func (s *Set[T]) Has(v T) bool
+func (s *Set[T]) Len() int
+
+func Map[T, U any](s []T, f func(T) U) []U
+func Filter[T any](s []T, keep func(T) bool) []T</code></pre>
+</section>
+
+<section class="slide">
+<h2>Dos parámetros de tipo</h2>
+<p>
+  <code>Map</code> tiene dos: <code>T</code> es el tipo de lo que entra y
+  <code>U</code>, el de lo que sale. Así puede convertir un
+  <code>[]int</code> en un <code>[]string</code>:
+  <code>Map([]int{1, 2}, strconv.Itoa)</code> devuelve
+  <code>["1" "2"]</code>.
+</p>
+<p>
+  <code>NewSet</code> no recibe argumentos, así que Go no puede deducir
+  <code>T</code>: escríbelo tú, <code>NewSet[string]()</code>. Hasta que lo
+  escribas todo, <code>go test</code> falla con
+  <code>undefined: NewSet</code>.
+</p>
+</section>

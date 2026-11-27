@@ -354,5 +354,44 @@ var Course = course.Course{
 				},
 			},
 		},
+		{
+			Slug:    "06-generics",
+			Title:   "Genéricos",
+			Summary: "Funciones y tipos que sirven para cualquier tipo: parámetros de tipo, restricciones y colecciones genéricas.",
+			Lessons: []course.Lesson{
+				{
+					Slug:  "01-type-parameters",
+					Title: "Parámetros de tipo",
+					Exercise: &course.Exercise{
+						Path: "06-generics/index",
+						Goal: "Busca la posición de un valor en un slice de cualquier tipo.",
+					},
+				},
+				{
+					Slug:  "02-constraints",
+					Title: "Restricciones",
+					Exercise: &course.Exercise{
+						Path: "06-generics/sum",
+						Goal: "Suma un slice de números, sean enteros o decimales.",
+					},
+				},
+				{
+					Slug:  "03-generic-types",
+					Title: "Tipos genéricos",
+					Exercise: &course.Exercise{
+						Path: "06-generics/stack",
+						Goal: "Construye una pila que guarde valores de cualquier tipo.",
+					},
+				},
+				{
+					Slug:  "04-review",
+					Title: "Repaso: tus propias colecciones",
+					Exercise: &course.Exercise{
+						Path: "06-generics/set",
+						Goal: "Crea un conjunto genérico y las funciones Map y Filter para cualquier tipo.",
+					},
+				},
+			},
+		},
 	},
 }

@@ -1,0 +1,127 @@
+<section class="slide">
+<p>
+  Quieres buscar un número en un slice de <code>int</code>. Escribes la
+  función, y funciona. Luego necesitas lo mismo para un slice de
+  <code>string</code>, y escribes otra igual, cambiando solo los tipos. Y
+  otra para <code>float64</code>. Tres copias del mismo código: si arreglas
+  un fallo en una, tienes que acordarte de las otras dos.
+</p>
+<pre><code class="language-go">func IndexInts(s []int, x int) int
+func IndexStrings(s []string, x string) int
+func IndexFloats(s []float64, x float64) int</code></pre>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Con un <em>parámetro de tipo</em> escribes la función una vez y el tipo
+  queda como un hueco. Va entre corchetes, antes de los parámetros normales:
+</p>
+<pre><code class="language-go">func Index[T comparable](s []T, x T) int</code></pre>
+<p>
+  Léelo así: <code>T</code> es un tipo que aún no sabes, y
+  <code>comparable</code> es su <em>restricción</em>: <code>T</code> tiene
+  que poder compararse con <code>==</code>. Después, <code>s</code> es un
+  slice de <code>T</code> y <code>x</code> es un <code>T</code>. Una función
+  así se llama <em>genérica</em>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Lo que hace el compilador</h2>
+<generic-demo scene="instantiate">
+  <p>
+    Animación: <code>Index[T]</code> es un molde con un hueco para
+    <code>T</code>. Al llamarla con un <code>[]int</code>, el compilador
+    deduce que <code>T</code> es <code>int</code> y escribe la función
+    <code>Index[int]</code>, que imprime 1. Al llamarla con un
+    <code>[]string</code>, escribe otra, <code>Index[string]</code>, que
+    imprime 2. De un molde salen dos funciones.
+  </p>
+</generic-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/contains/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>true
+false</code></pre>
+<p>
+  Fíjate en que nunca escribes el tipo: el compilador lo deduce de los
+  argumentos. Es la <em>inferencia de tipos</em>. Si quieres, puedes
+  escribirlo tú: <code>Contains[int]([]int{10, 20, 30}, 20)</code> hace lo
+  mismo.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  ¿Por qué <code>comparable</code> y no <code>any</code>, que acepta
+  cualquier tipo? Pruébalo:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func Contains[T any](s []T, x T) bool {
+	for _, v := range s {
+		if v == x {
+			return true
+		}
+	}
+	return false
+}</code></pre>
+</section>
+
+<section class="slide">
+<pre><code class="language-go">func main() {
+	fmt.Println(Contains([]int{10, 20, 30}, 20))
+}</code></pre>
+<pre><code>./prog.go:7:6: invalid operation: v == x (incomparable types in type set)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:7:6: invalid operation: v == x (incomparable types in type set)</code></pre>
+<p>
+  Línea 7: <code>v == x</code> es una operación no válida. El motivo va
+  entre paréntesis: entre los tipos que acepta <code>any</code> hay algunos
+  que no se pueden comparar, como los slices o los maps. Go comprueba la
+  función genérica para todos los <code>T</code> posibles, no solo para el
+  <code>int</code> que le pasas. Con <code>comparable</code> compila.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Pensar que cada argumento puede llevar su propio tipo. En el ejemplo,
+  cambia la primera llamada por esta:
+</p>
+<pre><code class="language-go">fmt.Println(Contains([]int{10, 20, 30}, "20"))</code></pre>
+<pre><code>./prog.go:15:42: cannot use "20" (untyped string constant) as int value in argument to Contains</code></pre>
+<p>
+  El slice ya ha decidido que <code>T</code> es <code>int</code>, así que
+  <code>x</code> también tiene que ser un <code>int</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>index.go</code> la función genérica
+  <code>Index</code>: devuelve la posición del primer elemento de
+  <code>s</code> igual a <code>x</code>, o <code>-1</code> si no está. Los
+  tests la prueban con <code>int</code> y con <code>string</code>.
+</p>
+<pre><code class="language-go">func Index[T comparable](s []T, x T) int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Index</code>.
+</p>
+</section>

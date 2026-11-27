@@ -1,0 +1,160 @@
+<section class="slide">
+<p>
+  Las funciones genéricas evitan copiar código, pero los tipos también se
+  repiten. En el módulo anterior escribiste una lista enlazada de
+  <code>int</code>. Si mañana necesitas una de <code>string</code>, ¿escribes
+  otro <code>struct</code> igual, con otros métodos iguales? Lo que cambia es
+  solo el tipo del valor que guarda cada nodo.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Un tipo también puede tener parámetros de tipo. Esta lista guarda valores
+  de cualquier tipo <code>T</code>:
+</p>
+<pre><code class="language-go">type List[T any] struct {
+	next *List[T]
+	val  T
+}</code></pre>
+<p>
+  Dentro, <code>T</code> se usa como cualquier otro tipo. Fuera, tienes que
+  decir cuál es: <code>List[int]</code> y <code>List[string]</code> son dos
+  tipos distintos, hechos con el mismo molde.
+</p>
+</section>
+
+<section class="slide">
+<h2>Los métodos</h2>
+<p>
+  Un método de un tipo genérico repite el parámetro de tipo en el
+  <em>receptor</em>, sin la restricción:
+</p>
+<pre><code class="language-go">func (l *List[T]) Push(v T) *List[T]</code></pre>
+<p>
+  Así el método sabe qué es <code>T</code> y puede usarlo en sus parámetros
+  y en lo que devuelve. Cuando llamas a <code>Push</code> en una
+  <code>*List[int]</code>, <code>T</code> es <code>int</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El valor cero de T</h2>
+<p>
+  A veces un método tiene que devolver un <code>T</code> que no existe; por
+  ejemplo, al sacar un valor de una pila vacía. No puedes escribir
+  <code>0</code> ni <code>""</code>, porque no sabes qué tipo es
+  <code>T</code>. Declara una variable sin valor y Go le da el
+  <em>valor cero</em> de su tipo:
+</p>
+<pre><code class="language-go">var zero T
+return zero, false</code></pre>
+<p>
+  Si <code>T</code> es <code>int</code>, <code>zero</code> vale
+  <code>0</code>; si es <code>string</code>, vale <code>""</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{codeLines "examples/list/main.go" 1 14}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/list/main.go" 16 23}}
+<p>
+  Una lista <code>nil</code> es una lista vacía, así que
+  <code>Values</code> recorre los nodos hasta llegar a <code>nil</code>.
+</p>
+</section>
+
+<section class="slide">
+{{codeLines "examples/list/main.go" 25 33}}
+<p>Salida:</p>
+<pre><code>[1 2 3]
+[hola mundo]</code></pre>
+</section>
+
+<section class="slide">
+<h2>Fíjate</h2>
+<p>
+  Has escrito <code>List</code> una sola vez y la has usado con dos tipos.
+  Cada <code>Push</code> pone el valor delante, por eso el último que metes
+  es el primero que sale. Y Go comprueba los tipos: en
+  <code>nums</code> no puedes meter un <code>string</code>, porque es una
+  <code>List[int]</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  ¿Qué pasa si usas <code>List</code> sin decir de qué tipo es?
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+type List[T any] struct {
+	next *List[T]
+	val  T
+}</code></pre>
+</section>
+
+<section class="slide">
+<pre><code class="language-go">func main() {
+	var l List
+	fmt.Println(l)
+}</code></pre>
+<pre><code>./prog.go:11:8: cannot use generic type List[T any] without instantiation</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:11:8: cannot use generic type List[T any] without instantiation</code></pre>
+<p>
+  Línea 11: no puedes usar el tipo genérico <code>List[T any]</code> sin
+  <em>instanciarlo</em>, es decir, sin darle un tipo a <code>T</code>.
+  <code>List</code> a secas es solo el molde. Escribe
+  <code>var l List[int]</code> y compila.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Olvidar el <code>[T]</code> en el receptor. En el ejemplo, cambia la
+  primera línea de <code>Push</code> por esta:
+</p>
+<pre><code class="language-go">func (l *List) Push(v T) *List[T] {</code></pre>
+<pre><code>./prog.go:12:10: cannot use generic type List[T any] without instantiation
+./prog.go:12:23: undefined: T
+./prog.go:13:15: undefined: T</code></pre>
+<p>
+  Es el mismo error de antes, ahora en el receptor. Y como el receptor no
+  nombra <code>T</code>, el método no sabe qué es: <code>undefined: T</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>stack.go</code> una pila genérica: el último valor que
+  metes con <code>Push</code> es el primero que sale con <code>Pop</code>.
+  En una pila vacía, <code>Pop</code> devuelve el valor cero de
+  <code>T</code> y <code>false</code>. Tú eliges los campos; con
+  <code>var s Stack[int]</code> la pila tiene que estar lista para usarse.
+</p>
+<pre><code class="language-go">type Stack[T any] struct {
+	// tus campos
+}
+
+func (s *Stack[T]) Push(v T)
+func (s *Stack[T]) Pop() (T, bool)
+func (s *Stack[T]) Len() int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Stack</code>.
+</p>
+</section>
