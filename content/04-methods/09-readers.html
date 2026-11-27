@@ -93,8 +93,15 @@ n = 0 err = EOF b[:n] = ""</code></pre>
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio crearás tu propio <code>Reader</code>: uno que nunca se acaba
-  y llena todo el <code>slice</code> que le den con la letra
+  Escribe en <code>areader.go</code> tu propio <code>Reader</code>: uno que
+  nunca se acaba y llena todo el <code>slice</code> que le den con la letra
   <code>'A'</code>.
+</p>
+<pre><code class="language-go">type AReader struct{}
+
+func (AReader) Read(b []byte) (int, error)</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: AReader</code>.
 </p>
 </section>

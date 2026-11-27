@@ -309,8 +309,22 @@ var Course = course.Course{
 						Goal: "Calcula el área total de varias figuras con una interfaz.",
 					},
 				},
-				{Slug: "04-interface-values", Title: "Valores de interfaz"},
-				{Slug: "05-any", Title: "La interfaz vacía y las type assertions"},
+				{
+					Slug:  "04-interface-values",
+					Title: "Valores de interfaz",
+					Exercise: &course.Exercise{
+						Path: "04-methods/robot",
+						Goal: "Distingue una interfaz vacía de una que guarda un puntero nil.",
+					},
+				},
+				{
+					Slug:  "05-any",
+					Title: "La interfaz vacía y las type assertions",
+					Exercise: &course.Exercise{
+						Path: "04-methods/sumints",
+						Goal: "Suma solo los enteros de una lista con valores de cualquier tipo.",
+					},
+				},
 				{
 					Slug:  "06-type-switches",
 					Title: "Type switches",

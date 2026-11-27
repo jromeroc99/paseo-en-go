@@ -115,8 +115,29 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio darás un método <code>Area</code> a un rectángulo y a un
-  círculo, y escribirás <code>TotalArea</code>, que suma las áreas de una lista
-  de figuras sin saber de qué tipo es cada una.
+  Escribe en <code>shapes.go</code> la interfaz, las dos figuras con su método
+  <code>Area</code> y <code>TotalArea</code>, que suma las áreas sin saber de
+  qué tipo es cada figura.
+</p>
+<pre><code class="language-go">type Shape interface {
+	Area() float64
+}
+
+type Rectangle struct {
+	Width, Height float64
+}
+
+func (r Rectangle) Area() float64
+
+type Circle struct {
+	Radius float64
+}
+
+func (c Circle) Area() float64
+
+func TotalArea(shapes []Shape) float64</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: Shape</code>.
 </p>
 </section>

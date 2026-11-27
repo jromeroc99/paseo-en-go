@@ -103,9 +103,18 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio darás métodos a un tipo <code>Celsius</code>: uno que
-  convierte a grados Fahrenheit (multiplica por 9, divide entre 5 y suma 32) y
-  otro que dice si el agua se congela. Ojo: <code>Fahrenheit</code> devuelve un
-  <code>float64</code>, así que convierte <code>c</code> antes de operar.
+  Escribe en <code>temperature.go</code> el tipo <code>Celsius</code> y dos
+  métodos: uno convierte a grados Fahrenheit (multiplica por 9, divide entre 5
+  y suma 32) y otro dice si el agua se congela. Ojo:
+  <code>Fahrenheit</code> devuelve un <code>float64</code>, así que convierte
+  <code>c</code> antes de operar.
+</p>
+<pre><code class="language-go">type Celsius float64
+
+func (c Celsius) Fahrenheit() float64
+func (c Celsius) IsFreezing() bool</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: Celsius</code>.
 </p>
 </section>

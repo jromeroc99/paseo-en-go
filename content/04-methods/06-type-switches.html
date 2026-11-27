@@ -90,9 +90,13 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio escribirás <code>Describe</code>, que recibe un
-  <code>any</code> y devuelve un texto según su tipo. Necesitas un caso por
-  tipo, <code>case nil</code> para la interfaz vacía y un <code>default</code>
-  para todo lo demás.
+  Escribe en <code>describe.go</code> una función que devuelve un texto según
+  el tipo de <code>v</code>. Necesitas un caso por tipo, <code>case nil</code>
+  para la interfaz vacía y un <code>default</code> para todo lo demás.
+</p>
+<pre><code class="language-go">func Describe(v any) string</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Describe</code>.
 </p>
 </section>

@@ -102,9 +102,20 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio crearás tu propio tipo <code>Image</code> con un ancho y un
-  alto. El color de cada píxel sale de sus coordenadas:
+  Escribe en <code>images.go</code> tu propio tipo <code>Image</code>. El
+  color de cada píxel sale de sus coordenadas:
   <code>color.RGBA{uint8(x), uint8(y), 255, 255}</code>. Si los tests pasan,
   <code>png.Encode</code> podrá guardarlo como una imagen de verdad.
+</p>
+<pre><code class="language-go">type Image struct {
+	Width, Height int
+}
+
+func (m Image) ColorModel() color.Model
+func (m Image) Bounds() image.Rectangle
+func (m Image) At(x, y int) color.Color</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: Image</code>.
 </p>
 </section>

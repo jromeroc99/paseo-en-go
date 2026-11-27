@@ -115,3 +115,27 @@ func main() {
   valor. Lo verás de nuevo con los errores, que también son interfaces.
 </p>
 </section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>robot.go</code> un robot que habla. Un
+  <code>*Robot</code> nil es un robot apagado: <code>Speak</code> devuelve
+  <code>"zzz"</code>. <code>Say</code> devuelve <code>"nobody is there"</code>
+  solo si la interfaz está vacía; si guarda un puntero nil, no es nil.
+</p>
+<pre><code class="language-go">type Speaker interface {
+	Speak() string
+}
+
+type Robot struct {
+	Name string
+}
+
+func (r *Robot) Speak() string
+func Say(s Speaker) string</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: Robot</code>.
+</p>
+</section>
