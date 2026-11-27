@@ -124,10 +124,10 @@ Summary: "Cómo hablan dos programas por la red: TCP, un socket propio, HTTP por
 | ID | Specs | Route | Status | Commit |
 |---|---|---|---|---|
 | T1 | S1, S2, S4 | inline | done, approved by the user (L5) | `f2807db`, `311cfd1`, `1424039` |
-| T2a | S2, S5, S6 (`06-generics`) | delegated, worktree | in progress | |
-| T2b | S1, S2, S7 (`07-buffers`) | delegated, worktree | in progress | |
-| T2c | S1, S2, S5, S8 (`08-concurrency`) | delegated, worktree | in progress | |
-| T2d | S1, S2, S9 (`09-web`) | delegated, worktree | in progress | |
+| T2a | S2, S5, S6 (`06-generics`) | delegated, worktree | done | `ebc3dad`, `41e9605`, `a268ac0` |
+| T2b | S1, S2, S7 (`07-buffers`) | delegated, worktree | done | `8d80f3b`, `303ef33`, `dd33c5a` |
+| T2c | S1, S2, S5, S8 (`08-concurrency`) | delegated, worktree | done | `a2969ea`, `0d7759e`, `5007677` |
+| T2d | S1, S2, S9 (`09-web`) | delegated, worktree | done | `ba7d208`, `77d5fb6`, `492b337` |
 | T3 | S1 Part A | — | pending | |
 | T4 | S2 (modules 00–04) | — | pending | |
 
@@ -145,5 +145,13 @@ Route evidence: T1 is one module written in sequence; no writer reason (no paral
   - The exact `int8` overflow message scrolls sideways inside its `pre` at 1280, as an existing lesson's message already does in `01-basics/08-constants`.
   - Next: the user reviews the pilot; corrections go into the specs before T2.
 - L5 (2026-11-27) user, on module order: "sí, déjalo en 5 y sigue con la fase 2, pero ten en cuenta el tour original de go, que no se nos olvide nada". Read as approval of the pilot. Tour audit in S5: modules 00–04 are complete; generics and four concurrency pages were missing. Added `06-generics` (S6); buffers and concurrency renumbered to `07` and `08` (S7, S8). T2 split into T2a–T2c, launched in parallel worktrees.
-- L6 (2026-11-27) First launch of T2a–T2c stopped before writing: the worktrees were created from `main` (4508718), not `feat/low-level`. They were relaunched with an instruction to reset the clean worktree to `1f4a553` first.
+- L6 (2026-11-27) First launch of T2a–T2c stopped before writing: the worktrees were created from `main` (4508718), not `feat/low-level`. They were relaunched with an instruction to reset the clean worktree to `6417ebb` (this plan commit) first.
 - L7 (2026-11-27) user: "Me gustaría añadir al plan acabar el curso con una pequeña api, un pequeño socket, y go templates (Explicando un poco TCP, HTTP, etc)". Added `09-web` as the final module (S9) and task T2d, launched with T2a–T2c.
+- L8 (2026-11-27) T2a returned: `ebc3dad` (generic-demo), `0e4487d` (exercises), `5294b98` (content); all checks green, headless walk 0 overflows at 1280×720 and 390×844. Its diff stays inside the declared surface. Brief defect found: it asked for Spanish test failure messages, but CLAUDE.md puts tests in English and every exercise uses `Func(args) = got, want want`. All four writers were told to follow the repo form; T2a amends its exercise commit.
+- L9 (2026-11-27) T2a amended: `ebc3dad`, `41e9605`, `a268ac0` (English test names and messages). T2b returned: `8d80f3b` (exercises), `303ef33` (buffer-demo), `dd33c5a` (content); diff inside its surface, test messages already in English, all checks green, 46/46 cards fit at 1280×720. Note for the seam check: plain `go vet ./...` in `exercises` always fails on the empty stubs by design; the gate there is `go vet -tags solution ./...`. T2b reports a 9 px sideways scroll at 390 px that also shows on existing lessons (pre-existing, not from 07).
+- L10 (2026-11-27) T2d returned: `ba7d208` (net-demo), `77d5fb6` (exercises), `492b337` (content); diff inside its surface, English test messages, `-race -count=3` green, headless 0 overflows at 1280×720, 1024×768 and 390×844. Every `nc`/`curl` session shown was run on the machine. Merge follow-up for the parent: `content/04-methods/11-images.html` still ends with "Fin del paseo… Con esta lección termina la ruta"; now that `09-web/07-review` closes the course, that card must go. T2d's check script ran `pkill -f "user-data-dir=/tmp/cdp-"`, which may have killed T2c's headless browser; T2c's browser evidence must be re-checked.
+- L11 (2026-11-27) T2c returned: `a2969ea` (sched-demo, chan-demo), `0d7759e` (exercises), `5007677` (content); diff inside its surface; its headless walk finished (0 overflows at 1280×720, 1024×768 and 390×844 after moving 7 outputs to their own cards), so the `pkill` in L10 did not cut it short. Every Go tour Concurrency page maps to a lesson (02, 04–10).
+  - Merged into `feat/low-level` in order (`196310a`, the 08 merge, `779f054`); each `content/catalog.go` conflict resolved to modules 00–09 in order. `fix(content): move the course ending to 09-web` removes the "Fin del paseo" card from `04-methods/11-images.html`.
+  - Seam check on the merged branch: `gofmt -l` empty (root and exercises), `go vet ./...` ok, `go test -count=1 ./...` ok (content, internal/course, internal/site), `cd exercises && go vet -tags solution ./...` ok, `go test -count=1 -tags solution ./...` 62 packages ok and 0 failing, `go test -race -tags solution ./08-concurrency/... ./09-web/...` ok, `node --check` on every animation ok.
+  - Pending: a headless walk of the merged site was not run by the parent; each module's own walk passed on its branch. The 9 px sideways scroll at 390 px (L9) is pre-existing and not fixed here.
+  - Next: T3 (Part A animations), then T4.
