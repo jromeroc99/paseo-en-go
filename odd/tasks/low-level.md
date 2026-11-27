@@ -1,6 +1,6 @@
 # Feature: low-level modules, more animations and write-it-all exercises
 
-Objective: three new modules on how Go works underneath (memory, buffers, processes and the scheduler) plus the generics the official Go tour covers, many more animations across the course, and exercises where the student writes all the code.
+Objective: three new modules on how Go works underneath (memory, buffers, processes and the scheduler) plus the generics the official Go tour covers and a closing module on networks and the web (TCP, HTTP, a small API, templates), many more animations across the course, and exercises where the student writes all the code.
 Branch: `feat/low-level`. Delivery strategy: `ask-on-risk` (forecast ≈ 9000 authored lines; asked only when the user wants to publish).
 Test runner: `go test ./...`, `go vet ./...` and `cd exercises && go test -tags solution ./...`. Repo rules: `CLAUDE.md` (read it first; it is not repeated here).
 
@@ -12,27 +12,27 @@ User: "Quiero que haya muchas más animaciones en las explicaciones y extiendas 
 Approved syllabus (user: "me cuadra"):
 
 - Part A — about 12 new animations in existing lessons, only where something invisible is shown: `01-basics` (a variable as a box with an address, `int8` overflow, `float → int` losing decimals), `02-flow-control` (`for` step by step, `switch` top-down evaluation), `03-more-types` (contiguous struct fields, copying an array copies everything, `range` gives a copy, map buckets, the variable a closure captures), `04-methods` (value vs pointer receiver, type switch).
-- Part B — three new low-level modules, every lesson with its animation, plus `06-generics` (S5):
+- Part B — three new low-level modules, every lesson with its animation, plus `06-generics` (S5) and `09-web` (S9):
   - `05-memory` "La memoria por dentro": bytes and addresses, the stack and call frames, the heap and escape analysis (`-gcflags=-m`), the garbage collector (mark & sweep), struct padding (`unsafe.Sizeof`), strings, bytes and runes (UTF-8).
   - `07-buffers` "Buffers y E/S": what a buffer is, `bytes.Buffer`, `bufio.Writer` and `Flush` (forgetting it is the typical mistake), `bufio.Scanner`, `io.Copy`.
   - `08-concurrency` "Procesos, hilos y goroutines": process vs thread, goroutines, the G-M-P scheduler, unbuffered and buffered channels, `range` and `close`, `select` and `default`, `WaitGroup`, `Mutex` and data races (`-race`).
-- Module order (user: "sí, déjalo en 5"): `05-memory`, `06-generics`, `07-buffers`, `08-concurrency`. Generics goes right after memory because it builds on interfaces, as in the tour; buffers then sit next to concurrency, where buffered channels reuse the idea.
+- Module order (user: "sí, déjalo en 5"): `05-memory`, `06-generics`, `07-buffers`, `08-concurrency`, `09-web` (the course ends there, S9). Generics goes right after memory because it builds on interfaces, as in the tour; buffers then sit next to concurrency, where buffered channels reuse the idea.
 
 ### S2 — Exercises: the student writes all the code
 
 User: "Luego los ejercicios, añade mas ejercicios y que el alumno escriba todo el código para mejorar la sintaxis y tenga mas soltura."
 
-- New exercises (modules 05–08): the stub `<name>.go` holds only the build tag, the package clause and a doc comment that states what to write, signatures included. No function skeletons, no bodies. Until the student writes them, `go test` fails with `undefined: …`, which the lesson's "Tu turno" card explains.
+- New exercises (modules 05–09): the stub `<name>.go` holds only the build tag, the package clause and a doc comment that states what to write, signatures included. No function skeletons, no bodies. Until the student writes them, `go test` fails with `undefined: …`, which the lesson's "Tu turno" card explains.
 - The "Tu turno" card shows the exact signatures to write, as a Go code block.
 - Existing exercises (modules 00–04) are converted to the same style in phase 4.
-- "Más ejercicios": every lesson of modules 05–08 has its own exercise; in phase 4 the existing lessons without one get one. Assumption: one exercise per lesson (the domain allows one), not several.
+- "Más ejercicios": every lesson of modules 05–09 has its own exercise; in phase 4 the existing lessons without one get one. Assumption: one exercise per lesson (the domain allows one), not several.
 
 ### S3 — Phases
 
 | Phase | Work |
 |---|---|
 | 1 | Pilot: module `05-memory` complete; the user reviews it |
-| 2 | Modules `06-generics`, `07-buffers` and `08-concurrency` (S5–S8) |
+| 2 | Modules `06-generics`, `07-buffers`, `08-concurrency` and `09-web` (S5–S9) |
 | 3 | Part A: new animations in existing lessons |
 | 4 | Exercises: write-it-all stubs in modules 00–04, plus exercises for lessons without one |
 
@@ -98,6 +98,27 @@ Summary: "Cómo hace Go varias cosas a la vez: procesos, hilos, goroutines, el p
 | `09-trees` "Práctica: árboles equivalentes" | — | `08-concurrency/trees` · "Recorre dos árboles binarios en goroutines y decide si guardan los mismos valores." |
 | `10-review` "Repaso: el rastreador web" | — | `08-concurrency/crawler` · "Rastrea enlaces en paralelo sin visitar dos veces la misma página." |
 
+### S9 — Module 09-web "Redes y la web" (the course ends here)
+
+User: "Me gustaría añadir al plan acabar el curso con una pequeña api, un pequeño socket, y go templates (Explicando un poco TCP, HTTP, etc)"
+
+Summary: "Cómo hablan dos programas por la red: TCP, un socket propio, HTTP por dentro, una pequeña API y plantillas HTML."
+
+| Lesson | Animation (component · scene) | Exercise · goal |
+|---|---|---|
+| `01-tcp` "TCP: dos programas que hablan" | `net-demo` · `handshake` (IP and port, SYN / SYN-ACK / ACK, then a two-way byte stream) | `09-web/echo` · "Escribe un servidor de eco: devuelve cada línea que recibe." |
+| `02-sockets` "Tu propio socket" | `net-demo` · `stream` (TCP sends bytes, not messages: one write can arrive in two pieces, so the protocol marks where each message ends) | `09-web/kv` · "Un pequeño servidor de clave-valor por TCP con las órdenes SET y GET." |
+| `03-http` "HTTP: texto sobre TCP" | `net-demo` · `request` (request line, headers, blank line, body; the response comes back with its status code) | `09-web/request` · "Lee una petición HTTP a mano y saca el método, la ruta y las cabeceras." |
+| `04-net-http` "Un servidor con net/http" | — | `09-web/greet` · "Escribe un handler que salude por el nombre que llega en la ruta." |
+| `05-json-api` "Una pequeña API JSON" | — | `09-web/todos` · "Una API de tareas: lista, crea y borra tareas en JSON con los códigos de estado correctos." |
+| `06-templates` "Plantillas con html/template" | `net-demo` · `template` (data plus template give HTML; `<` in the data is escaped) | `09-web/page` · "Genera una página HTML con una lista a partir de una plantilla." |
+| `07-review` "Repaso: tu pequeña web" | — | `09-web/notes` · "Una web de notas: una API JSON y una página HTML que las muestra." |
+
+- Standard library only: `net`, `bufio`, `net/http` (Go 1.22 patterns such as `GET /todos/{id}`), `encoding/json`, `html/template`, `net/http/httptest`.
+- One goroutine per connection reuses `08-concurrency`; reading lines reuses `bufio.Scanner` from `07-buffers`. The `todos` and `notes` stores protect shared state with a `Mutex`.
+- Tests never use fixed ports: TCP exercises listen on `127.0.0.1:0` or take a `net.Conn` (`net.Pipe`); HTTP exercises are tested with `httptest`. Tests pass under `-race`.
+- Lessons show real terminal output (for example `nc localhost 8080` or `curl -i`), run on the machine. The site stays fully static: the servers live only in examples and exercises.
+
 ## Tasks
 
 | ID | Specs | Route | Status | Commit |
@@ -106,10 +127,11 @@ Summary: "Cómo hace Go varias cosas a la vez: procesos, hilos, goroutines, el p
 | T2a | S2, S5, S6 (`06-generics`) | delegated, worktree | in progress | |
 | T2b | S1, S2, S7 (`07-buffers`) | delegated, worktree | in progress | |
 | T2c | S1, S2, S5, S8 (`08-concurrency`) | delegated, worktree | in progress | |
+| T2d | S1, S2, S9 (`09-web`) | delegated, worktree | in progress | |
 | T3 | S1 Part A | — | pending | |
 | T4 | S2 (modules 00–04) | — | pending | |
 
-Route evidence: T1 is one module written in sequence; no writer reason (no parallel units launched together), so inline. T2a–T2c are three independent modules with disjoint edit surfaces, each hours of work, launched together in one turn: Writer trigger (a). They all add an entry to `content/catalog.go`, so each runs in its own worktree and the parent merges the three branches into `feat/low-level`.
+Route evidence: T1 is one module written in sequence; no writer reason (no parallel units launched together), so inline. T2a–T2d are four independent modules with disjoint edit surfaces, each hours of work, launched together in one turn: Writer trigger (a). They all add an entry to `content/catalog.go`, so each runs in its own worktree and the parent merges the four branches into `feat/low-level`.
 
 ## Log
 
@@ -123,3 +145,5 @@ Route evidence: T1 is one module written in sequence; no writer reason (no paral
   - The exact `int8` overflow message scrolls sideways inside its `pre` at 1280, as an existing lesson's message already does in `01-basics/08-constants`.
   - Next: the user reviews the pilot; corrections go into the specs before T2.
 - L5 (2026-11-27) user, on module order: "sí, déjalo en 5 y sigue con la fase 2, pero ten en cuenta el tour original de go, que no se nos olvide nada". Read as approval of the pilot. Tour audit in S5: modules 00–04 are complete; generics and four concurrency pages were missing. Added `06-generics` (S6); buffers and concurrency renumbered to `07` and `08` (S7, S8). T2 split into T2a–T2c, launched in parallel worktrees.
+- L6 (2026-11-27) First launch of T2a–T2c stopped before writing: the worktrees were created from `main` (4508718), not `feat/low-level`. They were relaunched with an instruction to reset the clean worktree to `1f4a553` first.
+- L7 (2026-11-27) user: "Me gustaría añadir al plan acabar el curso con una pequeña api, un pequeño socket, y go templates (Explicando un poco TCP, HTTP, etc)". Added `09-web` as the final module (S9) and task T2d, launched with T2a–T2c.
