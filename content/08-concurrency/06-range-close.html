@@ -1,0 +1,152 @@
+<section class="slide">
+<p>
+  Quien recibe de un canal no sabe cuántos valores le van a llegar. Si
+  sigue esperando cuando ya no queda nada, el programa se bloquea. Le falta
+  una señal que diga: «ya está, no hay más».
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  <code>close(ch)</code> cierra un canal: avisa de que no se enviarán más
+  valores. Los que ya estaban dentro se pueden seguir recibiendo.
+</p>
+<p>
+  <code>for v := range ch</code> recibe los valores uno a uno hasta que el
+  canal está cerrado y vacío; entonces el bucle termina.
+</p>
+<p>
+  Para saber si un canal está cerrado, recibe con dos variables:
+  <code>v, ok := &lt;-ch</code>. <code>ok</code> es <code>false</code>
+  cuando el canal está cerrado y ya no quedan valores.
+</p>
+</section>
+
+<section class="slide">
+<h2>Cerrar el canal</h2>
+<chan-demo scene="close">
+  <p>
+    Animación: <code>range ch</code> espera. La goroutine envía 1 y 2, y el
+    bucle los imprime. Después hace <code>close(ch)</code>. El canal está
+    cerrado y vacío, así que <code>range</code> termina y
+    <code>main</code> sigue.
+  </p>
+</chan-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{codeLines "examples/countdown/main.go" 1 10}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/countdown/main.go" 12 18}}
+<pre><code>3
+2
+1</code></pre>
+<p>
+  Fíjate en quién cierra: <code>countdown</code>, la que envía.
+  <code>main</code> no sabe cuántos valores llegarán; le basta con que
+  <code>range</code> termine cuando el canal se cierra.
+</p>
+</section>
+
+<section class="slide">
+<h2>Cerrado, pero no vacío</h2>
+{{code "examples/commaok/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>7 true
+0 false</code></pre>
+<p>
+  Fíjate: el 7 ya estaba dentro, así que llega con <code>ok</code> a
+  <code>true</code> aunque el canal esté cerrado. Después no queda nada:
+  recibir ya no espera, devuelve el valor cero, <code>0</code>, y
+  <code>ok</code> es <code>false</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Borra <code>close(ch)</code> de <code>countdown</code> en el ejemplo y
+  ejecútalo:
+</p>
+<pre><code>3
+2
+1
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+main.main()
+	.../main.go:14 +0xc5
+exit status 2</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>goroutine 1 [chan receive]:
+main.main()
+	.../main.go:14 +0xc5</code></pre>
+<p>
+  Imprime 3, 2 y 1, y luego se bloquea. <code>chan receive</code>:
+  <code>main</code> estaba recibiendo en la línea 14, la del
+  <code>range</code>. <code>countdown</code> ya había terminado sin cerrar
+  el canal, así que <code>range</code> esperaba un cuarto valor que nunca
+  iba a llegar.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Cerrar el canal y seguir enviando:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	ch := make(chan int, 1)
+	close(ch)
+	ch &lt;- 1
+	fmt.Println(&lt;-ch)
+}</code></pre>
+</section>
+
+<section class="slide">
+<h2>Solo cierra quien envía</h2>
+<pre><code>panic: send on closed channel
+
+goroutine 1 [running]:
+main.main()
+	.../main.go:8 +0x45
+exit status 2</code></pre>
+<p>
+  «Enviar por un canal cerrado» no es un bloqueo: es un
+  <code>panic</code>, y el programa se para en la línea 8. Por eso solo
+  cierra quien envía, y solo cuando ya no va a enviar más. Quien recibe
+  nunca cierra.
+</p>
+<p>
+  No hace falta cerrar todos los canales: cierra solo cuando quien recibe
+  necesita saber que se ha acabado, como con <code>range</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>generate.go</code> una función que envía los
+  <code>n</code> primeros números de Fibonacci por el canal y lo cierra al
+  acabar, para que quien lo lea con <code>range</code> sepa cuándo parar.
+</p>
+<pre><code class="language-go">func Fibonacci(n int, ch chan int)</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Fibonacci</code>. Es normal; es tu punto de partida.
+</p>
+</section>

@@ -1,0 +1,98 @@
+<section class="slide">
+<p>
+  Dos árboles pueden tener formas distintas y guardar los mismos valores.
+  ¿Cómo sabes si dos árboles guardan lo mismo? Podrías copiar los valores
+  de cada uno en un slice y compararlos. Con canales hay una forma más
+  elegante: recorrer los dos a la vez y comparar valor a valor.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Un <em>árbol binario</em> es una estructura donde cada nodo tiene un valor
+  y hasta dos hijos: uno a la izquierda y otro a la derecha. En un árbol
+  ordenado, los valores menores van a la izquierda y los mayores a la
+  derecha.
+</p>
+<p>
+  Si recorres un árbol ordenado en orden (primero la izquierda, luego el
+  nodo, luego la derecha), obtienes sus valores de menor a mayor, sea cual
+  sea su forma.
+</p>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{codeLines "examples/inorder/main.go" 5 19}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/inorder/main.go" 21 26}}
+<pre><code>1
+2
+1
+2</code></pre>
+<p>
+  Fíjate: en <code>a</code> el 1 está arriba y el 2 a su derecha; en
+  <code>b</code> el 2 está arriba y el 1 a su izquierda. Formas distintas,
+  pero el recorrido en orden da lo mismo: 1 y 2.
+</p>
+</section>
+
+<section class="slide">
+<h2>Con canales</h2>
+<p>
+  En vez de imprimir cada valor, envíalo por un canal. Arranca dos
+  goroutines, una que recorre cada árbol, y recibe de los dos canales a la
+  vez: si en algún momento los valores no coinciden, los árboles son
+  distintos.
+</p>
+<p>
+  Cuando un recorrido termina, cierra su canal. Así sabes con
+  <code>v, ok := &lt;-ch</code> si un árbol se ha quedado sin valores antes
+  que el otro.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Cerrar el canal dentro de la función recursiva:
+</p>
+<pre><code class="language-go">func Walk(t *Tree, ch chan int) {
+	// ...
+	Walk(t.Left, ch)
+	ch &lt;- t.Value
+	Walk(t.Right, ch)
+	close(ch) // cada llamada cierra
+}</code></pre>
+<p>
+  La primera llamada que acaba cierra el canal, y la siguiente
+  <code>close</code> provoca <code>panic: close of closed channel</code>.
+  Escribe la recursión en una función auxiliar, <code>walk</code>, y deja
+  que <code>Walk</code> la llame y cierre una sola vez.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Es la práctica <em>Equivalent Binary Trees</em> del tour de Go. Escribe en
+  <code>trees.go</code> el tipo <code>Tree</code>, un <code>Walk</code> que
+  envía los valores en orden y cierra el canal, y un <code>Same</code> que
+  compara dos árboles con dos goroutines.
+</p>
+<pre><code class="language-go">type Tree struct {
+	Left  *Tree
+	Value int
+	Right *Tree
+}
+
+func Walk(t *Tree, ch chan int)
+func Same(t1, t2 *Tree) bool</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: Tree</code>. Es normal; es tu punto de partida.
+</p>
+</section>

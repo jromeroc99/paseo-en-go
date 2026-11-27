@@ -1,0 +1,114 @@
+<section class="slide">
+<p>
+  Las goroutines van a la vez, pero a menudo una necesita el resultado de
+  otra. Podrían compartir una variable, pero eso es peligroso, como verás
+  más adelante. Go propone otra idea: no te comuniques compartiendo
+  memoria; comparte memoria comunicándote.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Un <em>channel</em> (canal) es un tubo con tipo por el que una goroutine
+  envía valores a otra. Se crea con <code>make</code>:
+  <code>ch := make(chan int)</code>.
+</p>
+<p>
+  <code>ch &lt;- v</code> envía <code>v</code> por el canal y
+  <code>v := &lt;-ch</code> recibe un valor. La flecha indica hacia dónde
+  va el dato.
+</p>
+<p>
+  En un canal sin buffer, enviar espera a que alguien reciba, y recibir
+  espera a que alguien envíe. Así las dos goroutines se sincronizan solas.
+</p>
+</section>
+
+<section class="slide">
+<h2>Enviar y recibir</h2>
+<chan-demo scene="unbuffered">
+  <p>
+    Animación: <code>main</code> crea un canal sin buffer y arranca una
+    goroutine. <code>main</code> llega a <code>&lt;-ch</code> y espera. La
+    goroutine envía "ping"; el valor pasa de una a otra y
+    <code>main</code> imprime ping.
+  </p>
+</chan-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/ping/main.go"}}
+<pre><code>ping</code></pre>
+<p>
+  Fíjate en que no hace falta un <code>WaitGroup</code>:
+  <code>&lt;-ch</code> espera a que la goroutine envíe, así que
+  <code>main</code> no termina antes de tiempo.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Envías y recibes en la misma goroutine:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	ch := make(chan int)
+	ch &lt;- 1
+	fmt.Println(&lt;-ch)
+}</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan send]:
+main.main()
+	.../main.go:7 +0x36
+exit status 2</code></pre>
+<p>
+  «Todas las goroutines están dormidas»: es un <em>deadlock</em> (bloqueo
+  mutuo). Todas esperan algo que nadie va a hacer, así que Go para el
+  programa. Debajo dice qué hacía cada una: la goroutine 1,
+  <code>main</code>, estaba enviando (<code>chan send</code>) en la línea
+  7. Nadie podía recibir, porque quien iba a hacerlo era ella misma.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Declarar el canal y olvidar el <code>make</code>:
+</p>
+<pre><code class="language-go">var ch chan int // vale nil: no hay canal
+go func() { ch &lt;- 1 }()
+fmt.Println(&lt;-ch)</code></pre>
+<p>
+  Enviar o recibir por un canal <code>nil</code> espera para siempre. Go
+  acaba con el mismo <em>deadlock</em>, pero el mensaje te da la pista:
+  <code>goroutine 1 [chan receive (nil chan)]</code>. Crea siempre los
+  canales con <code>make</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>splitsum.go</code> dos funciones. <code>Sum</code> suma
+  un slice y envía el total por el canal. <code>SplitSum</code> parte el
+  slice en dos mitades, suma cada una en su goroutine y junta los dos
+  totales que llegan por el canal.
+</p>
+<pre><code class="language-go">func Sum(nums []int, ch chan int)
+func SplitSum(nums []int) int</code></pre>
+<p>
+  Hasta que las escribas, <code>go test</code> falla con
+  <code>undefined: Sum</code>. Es normal; es tu punto de partida.
+</p>
+</section>

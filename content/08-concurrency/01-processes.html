@@ -1,0 +1,83 @@
+<section class="slide">
+<p>
+  Tu ordenador hace muchas cosas a la vez: suena música, se descarga un
+  archivo y tú escribes código. Pero un núcleo del procesador solo ejecuta
+  una instrucción detrás de otra. ¿Cómo lo consigue? Antes de ver cómo lo
+  hace Go, mira cómo lo hace el sistema operativo.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Un <em>proceso</em> es un programa en ejecución. El sistema operativo le
+  da su propia memoria, y ningún otro proceso puede tocarla.
+</p>
+<p>
+  Dentro de un proceso viven uno o más <em>hilos</em> (en inglés,
+  <em>threads</em>). Cada hilo ejecuta su propio código, pero todos
+  comparten la memoria del proceso.
+</p>
+<p>
+  El <em>planificador</em> del sistema reparte los núcleos entre los hilos:
+  cada uno se ejecuta un rato muy corto y deja paso al siguiente.
+</p>
+</section>
+
+<section class="slide">
+<h2>Procesos e hilos</h2>
+<sched-demo scene="threads">
+  <p>
+    Animación: el proceso A tiene su propia memoria. Su hilo 1 guarda
+    <code>x := 0</code> y su hilo 2 hace <code>x++</code> sobre la misma
+    <code>x</code>. El proceso B tiene otra memoria, con su propia
+    <code>y</code>, y no puede ver la <code>x</code> de A.
+  </p>
+</sched-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/processes/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>proceso: 692168
+núcleos: 8</code></pre>
+<p>
+  Fíjate en el número de proceso: cambia cada vez que lo ejecutas, porque el
+  sistema da uno nuevo a cada programa que arranca. Los núcleos dependen de
+  tu ordenador. <code>runtime</code> es el paquete que te cuenta cosas del
+  motor de Go y de la máquina donde se ejecuta.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Pensar que cada hilo tiene su propia copia de las variables. No es así:
+  los hilos de un proceso comparten la memoria. Si dos hilos cambian la
+  misma variable a la vez, el resultado puede salir mal, y es un fallo muy
+  difícil de encontrar porque no pasa siempre.
+</p>
+<p>
+  Lo verás de cerca en la lección de <code>Mutex</code>, y también cómo
+  evitarlo.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe tú un pequeño planificador por turnos, en
+  <code>roundrobin.go</code>. Reparte las tareas como cartas: la primera al
+  hilo 0, la segunda al hilo 1, y así hasta volver a empezar.
+</p>
+<pre><code class="language-go">func RoundRobin(tasks []string, threads int) [][]string</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: RoundRobin</code>: el test busca una función que todavía
+  no existe. Es normal; es tu punto de partida.
+</p>
+</section>

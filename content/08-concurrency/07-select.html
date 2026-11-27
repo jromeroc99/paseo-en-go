@@ -1,0 +1,146 @@
+<section class="slide">
+<p>
+  Con <code>&lt;-ch</code> esperas en un solo canal. Pero a veces el
+  resultado puede llegar por varios sitios: un canal con datos, otro que
+  avisa de que hay que parar, un reloj que dice que ya has esperado
+  bastante. Necesitas esperar en todos a la vez y quedarte con el primero.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  <code>select</code> se parece a un <code>switch</code>, pero cada
+  <code>case</code> es un envío o una recepción por un canal.
+  <code>select</code> espera hasta que uno de ellos puede hacerse, y
+  ejecuta ese.
+</p>
+<p>
+  Si hay varios listos a la vez, elige uno al azar, para que ninguno se
+  quede siempre atrás.
+</p>
+<p>
+  Con un caso <code>default</code>, <code>select</code> no espera: si
+  ningún canal está listo, ejecuta <code>default</code> y sigue.
+</p>
+</section>
+
+<section class="slide">
+<h2>Esperar en varios canales</h2>
+<chan-demo scene="select">
+  <p>
+    Animación: <code>select</code> mira los canales a y b. Ninguno tiene un
+    valor, así que ejecuta <code>default</code> e imprime nada listo. Más
+    tarde llega un 7 por b; ahora ese caso está listo y
+    <code>select</code> imprime b 7.
+  </p>
+</chan-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/selectdefault/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>nada listo
+recibido 7</code></pre>
+<p>
+  Fíjate en las dos vueltas. En la primera el canal está vacío:
+  <code>select</code> no espera, ejecuta <code>default</code>, imprime nada
+  listo y mete un 7 en el buffer. En la segunda el 7 ya está dentro, así
+  que el caso de recibir está listo y gana.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un tiempo máximo</h2>
+{{code "examples/timeafter/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>tiempo agotado</code></pre>
+<p>
+  Fíjate en <code>time.After</code>: devuelve un canal que recibe un valor
+  cuando pasa el tiempo que le das. Como nadie envía nada por
+  <code>ch</code>, el primer caso nunca está listo. A los 100 milisegundos
+  llega el aviso del reloj y <code>select</code> se rinde.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Un <code>select</code> sin <code>default</code> y sin nadie que envíe:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	a := make(chan string)
+	b := make(chan string)
+	select {
+	case msg := &lt;-a:
+		fmt.Println("a:", msg)
+	case msg := &lt;-b:
+		fmt.Println("b:", msg)
+	}
+}</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [select]:
+main.main()
+	.../main.go:8 +0xa5
+exit status 2</code></pre>
+<p>
+  El mismo <em>deadlock</em> de siempre, pero ahora la goroutine 1 está en
+  <code>[select]</code>: esperaba en la línea 8, la del
+  <code>select</code>. Ninguno de sus canales iba a recibir nunca nada,
+  porque no hay ninguna otra goroutine que envíe.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Meter un <code>select</code> con <code>default</code> en un bucle para
+  esperar:
+</p>
+<pre><code class="language-go">for {
+	select {
+	case v := &lt;-ch:
+		fmt.Println(v)
+		return
+	default:
+		// nada listo: vuelve a mirar
+	}
+}</code></pre>
+<p>
+  Funciona, pero mantiene un núcleo ocupado dando vueltas sin hacer nada.
+  Si quieres esperar, quita el <code>default</code>: <code>select</code>
+  espera sin gastar núcleo.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>timeout.go</code> una función que ejecuta
+  <code>work</code> en una goroutine y espera su resultado. Si llega a
+  tiempo, devuelve el valor y <code>true</code>. Si pasa
+  <code>limit</code> antes, se rinde y devuelve <code>0</code> y
+  <code>false</code>.
+</p>
+<pre><code class="language-go">func WithTimeout(work func() int, limit time.Duration) (int, bool)</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: WithTimeout</code>. Es normal; es tu punto de partida.
+</p>
+</section>
