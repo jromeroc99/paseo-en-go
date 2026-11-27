@@ -37,6 +37,18 @@
 </section>
 
 <section class="slide">
+<h2>Los campos, en fila</h2>
+<memory-demo scene="struct">
+  <p>
+    Animación: <code>v := Vertex{1, 2}</code> ocupa 16 bytes seguidos en
+    memoria. Los primeros 8 son <code>v.X</code> y los 8 siguientes,
+    <code>v.Y</code>. Al hacer <code>v.X = 4</code>, Go cambia solo los bytes de
+    <code>X</code>.
+  </p>
+</memory-demo>
+</section>
+
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/structs/main.go"}}
 </section>

@@ -35,6 +35,19 @@ default:
 </section>
 
 <section class="slide">
+<h2>Solo mira el tipo</h2>
+<interface-demo scene="type-switch">
+  <p>
+    Animación: <code>i</code> guarda la pareja (string, "hola"). El
+    <code>switch</code> mira solo el tipo y prueba los casos en orden:
+    <code>case int</code> no coincide y <code>case string</code> sí. Dentro de
+    ese caso, <code>v</code> es un <code>string</code>, así que
+    <code>len(v)</code> funciona e imprime <code>4 bytes</code>.
+  </p>
+</interface-demo>
+</section>
+
+<section class="slide">
 <h2>El ejemplo</h2>
 {{codeLines "examples/type-switches/main.go" 1 14}}
 </section>

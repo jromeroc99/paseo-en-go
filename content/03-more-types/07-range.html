@@ -36,6 +36,17 @@
 </section>
 
 <section class="slide">
+<h2><code>v</code> es una copia</h2>
+<slice-demo scene="range-copy">
+  <p>
+    Animación: en cada vuelta, <code>range</code> copia un elemento de
+    <code>scores</code> en <code>v</code>. <code>v = v * 10</code> cambia esa
+    copia, no el elemento, así que al final se imprime <code>[1 2 3]</code>.
+  </p>
+</slice-demo>
+</section>
+
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/range/main.go"}}
 </section>

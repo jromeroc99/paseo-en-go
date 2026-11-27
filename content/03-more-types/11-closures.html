@@ -39,6 +39,18 @@
 </section>
 
 <section class="slide">
+<h2>La variable capturada</h2>
+<pointer-demo scene="closure">
+  <p>
+    Animación: <code>pos</code> y <code>neg</code> son dos closures, y cada
+    uno apunta a su propia variable <code>sum</code>. <code>pos(1)</code> y
+    <code>pos(2)</code> cambian solo la <code>sum</code> de <code>pos</code>;
+    <code>neg(-2)</code> cambia solo la de <code>neg</code>.
+  </p>
+</pointer-demo>
+</section>
+
+<section class="slide">
 <h2>El ejemplo</h2>
 {{codeLines "examples/closures/main.go" 1 12}}
 </section>
