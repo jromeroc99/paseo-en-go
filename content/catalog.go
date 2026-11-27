@@ -40,7 +40,14 @@ var Course = course.Course{
 			Title:   "Lo básico",
 			Summary: "Paquetes, funciones, variables, tipos y constantes: las piezas de cualquier programa.",
 			Lessons: []course.Lesson{
-				{Slug: "01-packages", Title: "Paquetes e imports"},
+				{
+					Slug:  "01-packages",
+					Title: "Paquetes e imports",
+					Exercise: &course.Exercise{
+						Path: "01-basics/shout",
+						Goal: "Usa el paquete strings para gritar un texto en mayúsculas.",
+					},
+				},
 				{
 					Slug:  "02-functions",
 					Title: "Funciones",
@@ -57,9 +64,30 @@ var Course = course.Course{
 						Goal: "Devuelve el cociente y el resto de una división entera.",
 					},
 				},
-				{Slug: "04-variables", Title: "Variables"},
-				{Slug: "05-basic-types", Title: "Tipos básicos"},
-				{Slug: "06-zero-values", Title: "Valores cero"},
+				{
+					Slug:  "04-variables",
+					Title: "Variables",
+					Exercise: &course.Exercise{
+						Path: "01-basics/seconds",
+						Goal: "Convierte horas, minutos y segundos en segundos.",
+					},
+				},
+				{
+					Slug:  "05-basic-types",
+					Title: "Tipos básicos",
+					Exercise: &course.Exercise{
+						Path: "01-basics/discount",
+						Goal: "Calcula el precio con descuento usando float64.",
+					},
+				},
+				{
+					Slug:  "06-zero-values",
+					Title: "Valores cero",
+					Exercise: &course.Exercise{
+						Path: "01-basics/zero",
+						Goal: "Devuelve el valor cero de cada tipo básico.",
+					},
+				},
 				{
 					Slug:  "07-type-conversions",
 					Title: "Conversiones e inferencia de tipos",
@@ -68,7 +96,14 @@ var Course = course.Course{
 						Goal: "Calcula la media de dos enteros sin perder los decimales.",
 					},
 				},
-				{Slug: "08-constants", Title: "Constantes"},
+				{
+					Slug:  "08-constants",
+					Title: "Constantes",
+					Exercise: &course.Exercise{
+						Path: "01-basics/vat",
+						Goal: "Usa una constante para sumar el IVA a un precio.",
+					},
+				},
 				{
 					Slug:  "09-review",
 					Title: "Repaso: el círculo",
@@ -124,7 +159,14 @@ var Course = course.Course{
 						Goal: "Indica a qué estación del año pertenece un mes.",
 					},
 				},
-				{Slug: "06-defer", Title: "defer"},
+				{
+					Slug:  "06-defer",
+					Title: "defer",
+					Exercise: &course.Exercise{
+						Path: "02-flow-control/countdown",
+						Goal: "Haz una cuenta atrás con defer: los defer se ejecutan al revés.",
+					},
+				},
 				{
 					Slug:  "07-review",
 					Title: "Repaso: números primos",
@@ -156,10 +198,38 @@ var Course = course.Course{
 						Goal: "Crea un jugador y súmale puntos.",
 					},
 				},
-				{Slug: "03-arrays", Title: "Arrays"},
-				{Slug: "04-slices", Title: "Slices"},
-				{Slug: "05-slice-len-cap", Title: "Longitud y capacidad"},
-				{Slug: "06-append", Title: "Añadir elementos con append"},
+				{
+					Slug:  "03-arrays",
+					Title: "Arrays",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/reverse",
+						Goal: "Da la vuelta a un array de cinco enteros.",
+					},
+				},
+				{
+					Slug:  "04-slices",
+					Title: "Slices",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/inner",
+						Goal: "Quita el primer y el último elemento de un slice sin copiarlo.",
+					},
+				},
+				{
+					Slug:  "05-slice-len-cap",
+					Title: "Longitud y capacidad",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/room",
+						Goal: "Mide el sitio libre de un slice y amplíalo sin pasar de su capacidad.",
+					},
+				},
+				{
+					Slug:  "06-append",
+					Title: "Añadir elementos con append",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/between",
+						Goal: "Construye un slice con los números de from a to usando append.",
+					},
+				},
 				{
 					Slug:  "07-range",
 					Title: "Recorrer con range",
@@ -239,8 +309,22 @@ var Course = course.Course{
 						Goal: "Calcula el área total de varias figuras con una interfaz.",
 					},
 				},
-				{Slug: "04-interface-values", Title: "Valores de interfaz"},
-				{Slug: "05-any", Title: "La interfaz vacía y las type assertions"},
+				{
+					Slug:  "04-interface-values",
+					Title: "Valores de interfaz",
+					Exercise: &course.Exercise{
+						Path: "04-methods/robot",
+						Goal: "Distingue una interfaz vacía de una que guarda un puntero nil.",
+					},
+				},
+				{
+					Slug:  "05-any",
+					Title: "La interfaz vacía y las type assertions",
+					Exercise: &course.Exercise{
+						Path: "04-methods/sumints",
+						Goal: "Suma solo los enteros de una lista con valores de cualquier tipo.",
+					},
+				},
 				{
 					Slug:  "06-type-switches",
 					Title: "Type switches",

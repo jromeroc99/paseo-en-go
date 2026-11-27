@@ -126,8 +126,19 @@ type Player struct {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio vas a crear un <code>Player</code> con
-  <code>NewPlayer</code>, que devuelve un puntero a un jugador nuevo con cero
-  puntos, y a sumarle puntos con <code>AddPoints</code>.
+  Escribe en <code>player.go</code> el tipo <code>Player</code> y dos
+  funciones: <code>NewPlayer</code> devuelve un puntero a un jugador nuevo con
+  cero puntos y <code>AddPoints</code> le suma puntos.
+</p>
+<pre><code class="language-go">type Player struct {
+	Name  string
+	Score int
+}
+
+func NewPlayer(name string) *Player
+func AddPoints(p *Player, points int)</code></pre>
+<p>
+  Hasta que las escribas, <code>go test</code> falla con
+  <code>undefined: Player</code>.
 </p>
 </section>

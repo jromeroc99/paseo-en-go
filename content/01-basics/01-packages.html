@@ -101,3 +101,18 @@ func main() {
   soporte para Go lo hacen solos al guardar el archivo.
 </p>
 </section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>shout.go</code> una función que grita un texto: lo pasa a
+  mayúsculas y le añade un <code>!</code> al final. Importa el paquete
+  <code>strings</code> y usa su función exportada <code>ToUpper</code>.
+</p>
+<pre><code class="language-go">func Shout(s string) string</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Shout</code>: el test llama a una función que todavía no
+  existe.
+</p>
+</section>

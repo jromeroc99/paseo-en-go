@@ -106,8 +106,14 @@ func incrementPtr(n *int) { *n++ } // cambia el original</code></pre>
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio vas a escribir <code>Swap</code>, que recibe dos punteros a
-  enteros e intercambia sus valores. La función no devuelve nada: el cambio se
-  ve en las variables de quien la llama.
+  Escribe en <code>swap.go</code> una función que recibe dos punteros a
+  enteros e intercambia sus valores. No devuelve nada: el cambio se ve en las
+  variables de quien la llama.
+</p>
+<pre><code class="language-go">func Swap(a, b *int)</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Swap</code>: el test llama a una función que todavía no
+  existe.
 </p>
 </section>

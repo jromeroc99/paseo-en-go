@@ -1,12 +1,14 @@
 //go:build !solution
 
 // Package circle computes measures of a circle.
-package circle
-
+//
+// Write this function in this file:
+//
+//	func Circle(radius int) (area, perimeter float64)
+//
 // Circle returns the area (π·r²) and the perimeter (2·π·r) of a circle
-// with the given radius. Use math.Pi.
+// with the given radius.
 // Example: Circle(1) returns (3.14159…, 6.28318…).
-func Circle(radius int) (area, perimeter float64) {
-	// TODO: convert radius to float64 and use math.Pi.
-	return 0, 0
-}
+//
+// Hint: convert radius to float64 and use the constant math.Pi.
+package circle

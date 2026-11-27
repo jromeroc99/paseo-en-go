@@ -120,11 +120,15 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio vas a contar las palabras de un texto. La función
-  <code>strings.Fields</code>, del paquete <code>strings</code>, parte un
-  texto por los espacios y te devuelve un <code>[]string</code> con las
-  palabras: <code>strings.Fields("  hola  mundo ")</code> da
-  <code>[hola mundo]</code>. Recorre ese slice y suma 1 en el map por cada
+  Escribe en <code>wordcount.go</code> una función que cuenta las palabras de
+  un texto. <code>strings.Fields</code> parte un texto por los espacios y
+  devuelve un <code>[]string</code>: <code>strings.Fields("  hola  mundo ")</code>
+  da <code>[hola mundo]</code>. Recorre ese slice y suma 1 en el map por cada
   palabra.
+</p>
+<pre><code class="language-go">func WordCount(s string) map[string]int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: WordCount</code>.
 </p>
 </section>

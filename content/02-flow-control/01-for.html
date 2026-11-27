@@ -103,7 +103,14 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio sumarás todos los números del 1 al <code>n</code>. Piensa
-  bien la condición: el propio <code>n</code> tiene que entrar en la suma.
+  Escribe en <code>sum.go</code> una función que suma todos los números del 1
+  al <code>n</code>. Piensa bien la condición: el propio <code>n</code> tiene
+  que entrar en la suma.
+</p>
+<pre><code class="language-go">func SumTo(n int) int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: SumTo</code>: el test llama a una función que todavía no
+  existe.
 </p>
 </section>

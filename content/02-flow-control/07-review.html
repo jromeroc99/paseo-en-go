@@ -22,11 +22,16 @@
 <h2>Tu turno</h2>
 <p>
   El ejercicio final junta bucles, condiciones y funciones. Un número
-  <strong>primo</strong> es un entero mayor que 1 que solo se puede dividir entre 1 y
-  entre sí mismo: 2, 3, 5, 7, 11… Escribirás dos funciones.
-  <code>IsPrime</code> busca con un bucle algún divisor entre 2 y el número
-  anterior; si encuentra uno, no es primo. <code>CountPrimes</code> recorre
-  los números hasta un límite y usa <code>IsPrime</code> para contar
-  cuántos lo son.
+  <strong>primo</strong> es un entero mayor que 1 que solo se puede dividir
+  entre 1 y entre sí mismo: 2, 3, 5, 7, 11… Escribe en <code>primes.go</code>
+  dos funciones: <code>IsPrime</code> busca algún divisor con un bucle y
+  <code>CountPrimes</code> usa <code>IsPrime</code> para contar los primos
+  hasta un límite.
+</p>
+<pre><code class="language-go">func IsPrime(n int) bool
+func CountPrimes(limit int) int</code></pre>
+<p>
+  Hasta que las escribas, <code>go test</code> falla con
+  <code>undefined: IsPrime</code>.
 </p>
 </section>

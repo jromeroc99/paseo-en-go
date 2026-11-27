@@ -130,8 +130,19 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio crearás un contador con tres métodos. <code>Increment</code>
-  y <code>Reset</code> cambian la cuenta, así que necesitan receptor de puntero;
-  <code>Value</code> solo la lee.
+  Escribe en <code>counter.go</code> un contador con tres métodos.
+  <code>Increment</code> y <code>Reset</code> cambian la cuenta, así que
+  necesitan receptor de puntero; <code>Value</code> solo la lee.
+</p>
+<pre><code class="language-go">type Counter struct {
+	count int
+}
+
+func (c *Counter) Increment()
+func (c *Counter) Reset()
+func (c Counter) Value() int</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: Counter</code>.
 </p>
 </section>

@@ -78,11 +78,15 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio vas a escribir <code>Pic</code>, que construye una
-  cuadrícula de <code>dy</code> filas y <code>dx</code> columnas de
-  <code>uint8</code>. Cada celda <code>[y][x]</code> vale
-  <code>uint8((x + y) / 2)</code>. Crea cada fila con <code>make</code> y
-  rellénala con un bucle dentro de otro. Es el primer paso hacia las imágenes
-  que dibujarás al final del próximo módulo.
+  Escribe en <code>pic.go</code> una función que construye una cuadrícula de
+  <code>dy</code> filas y <code>dx</code> columnas. Cada celda
+  <code>[y][x]</code> vale <code>uint8((x + y) / 2)</code>. Crea cada fila con
+  <code>make</code> y rellénala con un bucle dentro de otro. Es el primer paso
+  hacia las imágenes del próximo módulo.
+</p>
+<pre><code class="language-go">func Pic(dx, dy int) [][]uint8</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Pic</code>.
 </p>
 </section>

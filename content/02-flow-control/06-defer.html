@@ -115,3 +115,18 @@ hecho
   el cálculo de sus argumentos.
 </p>
 </section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>countdown.go</code> una cuenta atrás: imprime de
+  <code>n</code> a 1, un número por línea, y al final <code>Go!</code>. Usa
+  <code>defer</code> dentro de un bucle que va de 1 a <code>n</code>: como los
+  <code>defer</code> se ejecutan al revés, saldrán en orden descendente.
+</p>
+<pre><code class="language-go">func Countdown(n int)</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Countdown</code>.
+</p>
+</section>

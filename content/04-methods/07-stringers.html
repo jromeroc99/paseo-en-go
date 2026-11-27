@@ -81,8 +81,16 @@ Persona: Ana</code></pre>
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio harás que una dirección IP, guardada como cuatro bytes, se
-  imprima como <code>127.0.0.1</code>. Con <code>fmt.Sprintf</code> y el verbo
-  <code>%d</code> tienes todo lo que necesitas.
+  Escribe en <code>ipaddr.go</code> un tipo para una dirección IP, guardada
+  como cuatro bytes, que se imprima como <code>127.0.0.1</code>. Con
+  <code>fmt.Sprintf</code> y el verbo <code>%d</code> tienes todo lo que
+  necesitas.
+</p>
+<pre><code class="language-go">type IPAddr [4]byte
+
+func (ip IPAddr) String() string</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: IPAddr</code>.
 </p>
 </section>

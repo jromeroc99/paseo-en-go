@@ -96,3 +96,19 @@ var big [5]int = small</code></pre>
   apoyan en un array y sí pueden cambiar de tamaño.
 </p>
 </section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>reverse.go</code> una función que da la vuelta a un array
+  de cinco enteros. Como un array se copia al pasarlo, puedes crear otro con
+  <code>var reversed [5]int</code> y rellenarlo con un bucle sin tocar el
+  original.
+</p>
+<pre><code class="language-go">func Reverse(a [5]int) [5]int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Reverse</code>: el test llama a una función que todavía no
+  existe.
+</p>
+</section>

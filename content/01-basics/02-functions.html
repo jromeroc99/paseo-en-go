@@ -83,7 +83,14 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio vas a escribir dos funciones pequeñas que reciben el ancho y
-  el alto de un rectángulo: una devuelve su área y la otra su perímetro.
+  Escribe tú las dos funciones, en <code>rectangle.go</code>. Reciben el ancho
+  y el alto de un rectángulo: una devuelve su área y la otra su perímetro.
+</p>
+<pre><code class="language-go">func Area(width, height int) int
+func Perimeter(width, height int) int</code></pre>
+<p>
+  Hasta que las escribas, <code>go test</code> falla con
+  <code>undefined: Area</code>: el test llama a una función que todavía no
+  existe. Es normal; es tu punto de partida.
 </p>
 </section>

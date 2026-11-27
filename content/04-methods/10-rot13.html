@@ -72,9 +72,18 @@
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio escribirás <code>Rot13Reader</code>, que envuelve otro
-  <code>Reader</code> y aplica ROT13 a las letras, en mayúscula y en minúscula.
-  Los números, los espacios y los signos de puntuación pasan sin cambios. Los
-  tests lo leerán también de byte en byte.
+  Escribe en <code>rot13.go</code> un <code>Reader</code> que envuelve otro y
+  aplica ROT13 a las letras, en mayúscula y en minúscula. Los números, los
+  espacios y los signos pasan sin cambios. Los tests lo leerán también de byte
+  en byte.
+</p>
+<pre><code class="language-go">type Rot13Reader struct {
+	R io.Reader
+}
+
+func (r Rot13Reader) Read(b []byte) (int, error)</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: Rot13Reader</code>.
 </p>
 </section>
