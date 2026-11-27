@@ -129,7 +129,7 @@ Summary: "Cómo hablan dos programas por la red: TCP, un socket propio, HTTP por
 | T2c | S1, S2, S5, S8 (`08-concurrency`) | delegated, worktree | done | `a2969ea`, `0d7759e`, `5007677` |
 | T2d | S1, S2, S9 (`09-web`) | delegated, worktree | done | `ba7d208`, `77d5fb6`, `492b337` |
 | T3 | S1 Part A | delegated, worktree | in progress | |
-| T4 | S2 (modules 00–04) | delegated, worktree | in progress | |
+| T4 | S2 (modules 00–04) | delegated, worktree | done | `059f7fc`, `75492eb`, `fe1578c`, `4ca9fd8` |
 
 Route evidence: T1 is one module written in sequence; no writer reason (no parallel units launched together), so inline. T2a–T2d are four independent modules with disjoint edit surfaces, each hours of work, launched together in one turn: Writer trigger (a). They all add an entry to `content/catalog.go`, so each runs in its own worktree and the parent merges the four branches into `feat/low-level`. T3 and T4 are two independent units launched together in one turn (Writer trigger (a)); both edit lesson bodies of modules 01–04, so each runs in its own worktree and the parent merges them.
 
@@ -156,3 +156,4 @@ Route evidence: T1 is one module written in sequence; no writer reason (no paral
   - Pending: a headless walk of the merged site was not run by the parent; each module's own walk passed on its branch. The 9 px sideways scroll at 390 px (L9) is pre-existing and not fixed here.
   - Next: T3 (Part A animations), then T4.
 - L12 (2026-11-27) user: "sí, lanza T3 y T4 en paralelo, o lo hago yo, dile que puede o bien por worktree o con cuidado, por los commits". T3 and T4 launched in parallel, each in its own worktree reset to this plan commit, because both touch `content/0[1-4]-*/*.html`.
+- L13 (2026-11-27) T4 returned: `059f7fc`, `75492eb`, `fe1578c`, `4ca9fd8`; diff inside its surface (106 files, +1667/−408), no AI attribution. 28 exercises in 00–04 converted to write-it-all stubs (`hello` included, with a hint), 12 new exercises for the lessons that had none, every "Tu turno" card in 00–04 shows the signatures in a Go block. RED: each new test failed first with `undefined: <Name>`; 94 `undefined` lines across the 00–04 stubs. Merged as `c95be80`; parent spot check `cd exercises && go test -count=1 -tags solution ./...`: 74 ok. Pending: no browser check that the new Tu turno cards fit (longest: 03-interfaces with 15 code lines); it goes into the headless walk after T3.
