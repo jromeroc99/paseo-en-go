@@ -86,7 +86,6 @@ function start(deck) {
 
   label(deck, slides);
   deck.after(bar.element);
-  document.documentElement.classList.add("is-deck");
 
   bar.onPrev(prev);
   bar.onNext(next);

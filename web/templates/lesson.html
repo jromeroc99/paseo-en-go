@@ -1,4 +1,7 @@
 {{define "title"}}{{.Lesson.Title}} · {{.Course.Title}}{{end}}
+{{/* Set before the first paint: deck.js runs later, and until then the
+     lesson would flash as a scrolling article. */}}
+{{define "head"}}<script>document.documentElement.classList.add("is-deck")</script>{{end}}
 {{define "content"}}
 <div class="deck">
   <section class="slide slide-title">

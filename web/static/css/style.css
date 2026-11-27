@@ -351,8 +351,9 @@ pre {
 
 .pager [rel="next"] { margin-left: auto; text-align: right; }
 
-/* Lesson deck: one card on screen at a time. deck.js adds .is-deck to
-   <html>; without it the cards stack and the page scrolls like an article. */
+/* Lesson deck: one card on screen at a time. The lesson page adds .is-deck
+   to <html> before the first paint; without JS the cards stack and the page
+   scrolls like an article. */
 
 .deck-hint { display: none; }
 
@@ -371,6 +372,9 @@ pre {
   max-width: 60rem;
   min-height: 0;
   padding: 1rem;
+  /* The hidden cards wait shifted to the sides; on a phone that shift
+     would let the page scroll sideways. */
+  overflow-x: clip;
 }
 
 .is-deck .deck {
@@ -409,8 +413,9 @@ pre {
 /* A ten-line program and its output must fit one card on a laptop. */
 .is-deck .slide pre { padding-block: 0.75rem; line-height: 1.45; }
 
-.is-deck .slide[data-pos="before"],
-.is-deck .slide[data-pos="after"] {
+/* Until deck.js picks the current card, every card waits hidden, so the
+   first one fades in instead of all of them fading out on top of it. */
+.is-deck .slide:not([data-pos="current"]) {
   visibility: hidden;
   opacity: 0;
   /* The outgoing card hides only after it has faded out. */
