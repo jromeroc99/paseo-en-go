@@ -1,0 +1,146 @@
+<section class="slide">
+<p>
+  Hasta ahora tus programas hablaban contigo: leían lo que escribías y
+  mostraban su resultado en la terminal. Pero un navegador habla con un
+  servidor, y una app de tu móvil con otra que está al otro lado del mundo.
+  ¿Cómo habla un programa con otro?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Por la red. Cada ordenador de una red tiene una <em>dirección IP</em>, como
+  <code>127.0.0.1</code>: tu propio ordenador, que también se llama
+  <code>localhost</code>. Dentro de él, cada programa que espera llamadas
+  ocupa un <em>puerto</em>, un número entre 0 y 65535.
+</p>
+<p>
+  Dirección y puerto juntos, <code>localhost:8080</code>, dicen a qué
+  programa llamar, igual que un número de teléfono y una extensión.
+</p>
+</section>
+
+<section class="slide">
+<h2>TCP: una conexión</h2>
+<p>
+  <em>TCP</em> es la forma más común de hablar por la red. Primero se abre una
+  conexión; después, cada lado escribe bytes y el otro los lee, en el mismo
+  orden y sin perder ninguno.
+</p>
+<p>
+  En Go, el servidor llama a <code>net.Listen</code> y espera con
+  <code>Accept</code>; el cliente llama a <code>net.Dial</code>. Los dos
+  reciben un <code>net.Conn</code>, que es a la vez un <code>io.Reader</code>
+  y un <code>io.Writer</code>: lo lees y lo escribes como un archivo.
+</p>
+</section>
+
+<section class="slide">
+<h2>Así se abre una conexión</h2>
+<net-demo scene="handshake">
+  <p>
+    Animación: el servidor reserva el puerto 8080 y espera en
+    <code>Accept</code>. El cliente llama con <code>Dial</code> y los dos
+    intercambian tres mensajes, SYN, SYN-ACK y ACK. Entonces la conexión está
+    abierta y los bytes de <code>hola\n</code> viajan por ella.
+  </p>
+</net-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+<p>Un servidor que saluda a cada cliente con su dirección:</p>
+{{codeLines "examples/greeter/main.go" 1 12}}
+</section>
+
+<section class="slide">
+<p>
+  <code>main</code> escucha en el puerto 8080 y atiende cada conexión en su
+  propia <em>goroutine</em>, así que puede hablar con muchos clientes a la vez:
+</p>
+{{codeLines "examples/greeter/main.go" 14 26}}
+</section>
+
+<section class="slide">
+<p>
+  Ejecuta el servidor con <code>go run .</code> y, en otra terminal,
+  conéctate con <code>nc</code> (<em>netcat</em>), un cliente TCP:
+</p>
+<pre><code>$ nc localhost 8080
+Hola, 127.0.0.1:39074</code></pre>
+<p>
+  Fíjate en que el cliente también tiene un puerto, 39074: lo elige el
+  sistema al llamar. Y <code>nc</code> termina solo, porque
+  <code>greet</code> cierra la conexión al acabar.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un cliente en Go</h2>
+{{code "examples/dialer/main.go"}}
+</section>
+
+<section class="slide">
+<p>Con el servidor en marcha, ejecuta el cliente:</p>
+<pre><code>$ go run .
+Hola, 127.0.0.1:39090</code></pre>
+<p>
+  Fíjate en que <code>io.Copy</code> lee de la conexión y escribe en la
+  terminal hasta que el servidor cierra. Cada ejecución usa un puerto de
+  cliente nuevo.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Deja el servidor en marcha y, en otra terminal, arráncalo otra vez:
+</p>
+<pre><code>$ go run .
+2026/11/27 12:00:46 listen tcp 127.0.0.1:8080: bind: address already in use
+exit status 1</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>listen tcp 127.0.0.1:8080: bind: address already in use</code></pre>
+<p>
+  Primero va lo que intentabas hacer: escuchar por TCP en
+  <code>127.0.0.1:8080</code>. Después, el motivo: <em>bind</em> (reservar
+  el puerto) ha fallado porque esa dirección ya está en uso. Solo un programa
+  puede escuchar en cada puerto. Para el otro servidor con Ctrl+C o elige
+  otro puerto.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>Olvidar cerrar la conexión:</p>
+<pre><code class="language-go">func greet(conn net.Conn) {
+	fmt.Fprintf(conn, "Hola, %s\n", conn.RemoteAddr())
+}</code></pre>
+<p>
+  Ahora <code>nc</code> muestra <code>Hola, 127.0.0.1:47546</code> y se queda
+  esperando: la conexión sigue abierta y el cliente no sabe que ya no llegará
+  nada más. Cada conexión abierta ocupa memoria en el servidor. Cierra siempre
+  con <code>defer conn.Close()</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>echo.go</code> un servidor de eco. <code>Serve</code>
+  acepta conexiones y pasa cada una a <code>Echo</code> en su propia
+  goroutine. <code>Echo</code> devuelve todo lo que lee y cierra la conexión
+  cuando el cliente deja de enviar. Recuerda que <code>io.Copy</code> copia
+  de un <code>Reader</code> a un <code>Writer</code>.
+</p>
+<pre><code class="language-go">func Serve(l net.Listener) error
+func Echo(conn net.Conn)</code></pre>
+<p>
+  Hasta que las escribas, <code>go test</code> falla con
+  <code>undefined: Echo</code>.
+</p>
+</section>

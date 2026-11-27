@@ -1,0 +1,136 @@
+<section class="slide">
+<p>
+  Cuando abres una web, tu navegador habla con un servidor por TCP. El
+  navegador y el servidor los escribe gente distinta, así que necesitan un
+  protocolo que los dos conozcan. ¿Qué se dicen exactamente?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Se hablan en <em>HTTP</em>, y HTTP es texto. Una <em>petición</em> empieza
+  con una línea con el método (<code>GET</code> para pedir,
+  <code>POST</code> para enviar), la ruta y la versión. Siguen las
+  <em>cabeceras</em>, una por línea; después, una línea en blanco; y al
+  final, el <em>cuerpo</em>, si lo hay.
+</p>
+<p>
+  La <em>respuesta</em> tiene la misma forma, con un <em>código de
+  estado</em> en la primera línea. Cada línea acaba en <code>\r\n</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Una petición y su respuesta</h2>
+<net-demo scene="request">
+  <p>
+    Animación: la petición <code>POST /notes HTTP/1.1</code> aparece línea a
+    línea: dos cabeceras, la línea en blanco y el cuerpo <code>hola</code>.
+    Debajo llega la respuesta, <code>HTTP/1.1 201 Created</code>, con la
+    misma forma. Los códigos 2xx dicen que todo ha ido bien; los 4xx, que la
+    petición tiene un error; los 5xx, que ha fallado el servidor.
+  </p>
+</net-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+<p>
+  Un servidor HTTP escrito a mano sobre TCP. <code>handle</code> imprime la
+  petición hasta la línea en blanco y responde con texto:
+</p>
+{{codeLines "examples/rawhttp/main.go" 10 20}}
+</section>
+
+<section class="slide">
+<p>
+  <code>main</code> es el de siempre. Arriba, el programa importa
+  <code>bufio</code>, <code>fmt</code>, <code>log</code> y
+  <code>net</code>: nada de HTTP.
+</p>
+{{codeLines "examples/rawhttp/main.go" 22 34}}
+</section>
+
+<section class="slide">
+<p>
+  Ejecuta el servidor y, en otra terminal, pide una página con
+  <code>curl -i localhost:8080/hola</code>. <code>curl</code> es un cliente
+  HTTP. El servidor imprime la petición que le llega:
+</p>
+<pre><code>GET /hola HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/8.18.0
+Accept: */*</code></pre>
+</section>
+
+<section class="slide">
+<p>Y <code>curl</code> muestra la respuesta; <code>-i</code> incluye las cabeceras:</p>
+<pre><code>$ curl -i localhost:8080/hola
+HTTP/1.1 200 OK
+Content-Length: 5
+
+Hola</code></pre>
+<p>
+  Fíjate en <code>Content-Length: 5</code>: el cuerpo, <code>Hola\n</code>,
+  ocupa 5 bytes. Así el cliente sabe cuánto leer después de la línea en
+  blanco.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>Prometer un byte más de los que envías:</p>
+<pre><code class="language-go">fmt.Fprint(conn, "Content-Length: 6\r\n")</code></pre>
+<pre><code>$ curl -i localhost:8080/hola
+HTTP/1.1 200 OK
+Content-Length: 6
+
+Hola
+curl: (18) end of response with 1 bytes missing</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>curl: (18) end of response with 1 bytes missing</code></pre>
+<p>
+  <code>(18)</code> es el número de este error en <code>curl</code>. El resto
+  dice qué ha pasado: la respuesta ha terminado y falta 1 byte. La cabecera
+  prometía 6 bytes de cuerpo, llegaron 5 y el servidor cerró la conexión.
+  Las cabeceras tienen que decir la verdad sobre el cuerpo.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>Olvidar la línea en blanco entre las cabeceras y el cuerpo:</p>
+<pre><code class="language-go">fmt.Fprint(conn, "Content-Length: 5\r\n")
+fmt.Fprint(conn, "Hola\n") // falta el "\r\n" de antes</code></pre>
+<pre><code>$ curl -i localhost:8080/hola
+HTTP/1.1 200 OK
+Content-Length: 5
+curl: (18) transfer closed with 5 bytes remaining to read</code></pre>
+<p>
+  Sin ella, <code>curl</code> toma <code>Hola</code> por otra cabecera y
+  sigue esperando los 5 bytes del cuerpo hasta que el servidor cierra. La
+  línea en blanco es la frontera entre las cabeceras y el cuerpo.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>request.go</code> una función que lea una petición HTTP a
+  mano. Saca el método y la ruta de la primera línea, y cada cabecera hasta
+  la línea en blanco. Devuelve un error si la entrada está vacía, si la
+  primera línea no tiene tres partes o si una cabecera no tiene
+  <code>:</code>.
+</p>
+<pre><code class="language-go">type Request struct {
+	Method  string
+	Path    string
+	Headers map[string]string
+}
+
+func Parse(r io.Reader) (Request, error)</code></pre>
+</section>

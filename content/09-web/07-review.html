@@ -1,0 +1,64 @@
+<section class="slide">
+<p>
+  Has terminado el módulo. Antes de seguir, repasa lo que ya sabes:
+</p>
+<ul>
+  <li><a href="../01-tcp/">TCP: dos programas que hablan</a>: una dirección y un puerto; <code>Listen</code>, <code>Accept</code> y <code>Dial</code> abren una conexión.</li>
+  <li><a href="../02-sockets/">Tu propio socket</a>: TCP es un flujo de bytes; un protocolo de líneas marca dónde acaba cada mensaje.</li>
+  <li><a href="../03-http/">HTTP: texto sobre TCP</a>: una línea de inicio, cabeceras, una línea en blanco y el cuerpo.</li>
+</ul>
+</section>
+
+<section class="slide">
+<ul>
+  <li><a href="../04-net-http/">Un servidor con net/http</a>: un handler por patrón; el código de estado va antes del cuerpo.</li>
+  <li><a href="../05-json-api/">Una pequeña API JSON</a>: <code>encoding/json</code> solo ve los campos exportados.</li>
+  <li><a href="../06-templates/">Plantillas con html/template</a>: huecos que se rellenan con datos y se escapan solos.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Vas a escribir una pequeña web de notas, con una API para los programas y
+  una página para las personas. Las dos muestran las mismas notas.
+</p>
+<ul>
+  <li><code>GET /api/notes</code> responde las notas en JSON;
+    <code>[]</code> si no hay ninguna.</li>
+  <li><code>POST /api/notes</code> crea una nota con
+    <code>{"text": "..."}</code> y responde <code>201</code>; un JSON roto o
+    un texto vacío dan <code>400</code>.</li>
+  <li><code>GET /</code> responde una página HTML con un
+    <code>&lt;li&gt;</code> por nota, o
+    <code>&lt;p&gt;Todavía no hay notas.&lt;/p&gt;</code> si no hay
+    ninguna.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Lo que escribes</h2>
+<p>
+  Escribe todo en <code>notes.go</code>. Usa <code>html/template</code> para
+  la página y un <code>sync.Mutex</code> para las notas. El patrón
+  <code>"GET /{$}"</code> solo acepta la ruta <code>/</code>.
+</p>
+<pre><code class="language-go">type Note struct {
+	ID   int    `json:"id"`
+	Text string `json:"text"`
+}
+
+func NewHandler() http.Handler</code></pre>
+</section>
+
+<section class="slide">
+<h2>Fin del paseo</h2>
+<p>
+  Con este módulo termina la ruta. Has empezado con un
+  <code>package main</code> y has llegado a escribir una web que habla con
+  otros programas: tipos, funciones, <code>slices</code>, <code>maps</code>,
+  interfaces, la memoria por dentro y, al final, la red. Es la base sobre la
+  que se escribe cualquier programa en Go. Lo siguiente es usarla: elige un
+  problema pequeño que te interese y resuélvelo con lo que ya sabes.
+</p>
+</section>

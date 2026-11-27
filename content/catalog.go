@@ -535,5 +535,68 @@ var Course = course.Course{
 				},
 			},
 		},
+		{
+			Slug:    "09-web",
+			Title:   "Redes y la web",
+			Summary: "Cómo hablan dos programas por la red: TCP, un socket propio, HTTP por dentro, una pequeña API y plantillas HTML.",
+			Lessons: []course.Lesson{
+				{
+					Slug:  "01-tcp",
+					Title: "TCP: dos programas que hablan",
+					Exercise: &course.Exercise{
+						Path: "09-web/echo",
+						Goal: "Escribe un servidor de eco: devuelve cada línea que recibe.",
+					},
+				},
+				{
+					Slug:  "02-sockets",
+					Title: "Tu propio socket",
+					Exercise: &course.Exercise{
+						Path: "09-web/kv",
+						Goal: "Un pequeño servidor de clave-valor por TCP con las órdenes SET y GET.",
+					},
+				},
+				{
+					Slug:  "03-http",
+					Title: "HTTP: texto sobre TCP",
+					Exercise: &course.Exercise{
+						Path: "09-web/request",
+						Goal: "Lee una petición HTTP a mano y saca el método, la ruta y las cabeceras.",
+					},
+				},
+				{
+					Slug:  "04-net-http",
+					Title: "Un servidor con net/http",
+					Exercise: &course.Exercise{
+						Path: "09-web/greet",
+						Goal: "Escribe un handler que salude por el nombre que llega en la ruta.",
+					},
+				},
+				{
+					Slug:  "05-json-api",
+					Title: "Una pequeña API JSON",
+					Exercise: &course.Exercise{
+						Path: "09-web/todos",
+						Goal: "Una API de tareas: lista, crea y borra tareas en JSON con los códigos de estado correctos.",
+					},
+				},
+				{
+					Slug:  "06-templates",
+					Title: "Plantillas con html/template",
+					Exercise: &course.Exercise{
+						Path: "09-web/page",
+						Goal: "Genera una página HTML con una lista a partir de una plantilla.",
+					},
+				},
+				{
+					Slug:  "07-review",
+					Title: "Repaso: tu pequeña web",
+					Exercise: &course.Exercise{
+						Path: "09-web/notes",
+						Goal: "Una web de notas: una API JSON y una página HTML que las muestra.",
+					},
+				},
+			},
+		},
 	},
 }

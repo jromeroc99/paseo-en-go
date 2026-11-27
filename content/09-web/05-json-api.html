@@ -1,0 +1,131 @@
+<section class="slide">
+<p>
+  Una app del móvil no quiere una página web: quiere datos que pueda leer un
+  programa. Si el servidor responde <code>16</code> en texto, ¿cómo envía
+  una lista de tareas, cada una con su número y su título?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Con <em>JSON</em>, un formato de texto para datos:
+  <code>{"a": 2, "b": 3}</code>. Un servidor que recibe y responde JSON es
+  una <em>API</em>.
+</p>
+<p>
+  <code>encoding/json</code> convierte un <code>struct</code> en JSON y al
+  revés. La etiqueta <code>`json:"a"`</code> junto a un campo dice qué nombre
+  tiene en el JSON. El código de estado dice cómo ha ido: <code>200</code>
+  bien, <code>201</code> creado, <code>400</code> petición mal hecha,
+  <code>404</code> no existe.
+</p>
+</section>
+
+<section class="slide">
+<h2>El ejemplo: una API que suma</h2>
+{{codeLines "examples/sum/main.go" 1 16}}
+</section>
+
+<section class="slide">
+<p>El handler lee con <code>Decode</code> y responde con <code>Encode</code>:</p>
+{{codeLines "examples/sum/main.go" 18 32}}
+</section>
+
+<section class="slide">
+<p>Ejecuta el servidor y envía un JSON con <code>-d</code>:</p>
+<pre><code>$ curl -i -d '{"a":2,"b":3}' localhost:8080/sum
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Fri, 27 Nov 2026 11:14:29 GMT
+Content-Length: 13
+
+{"result":5}</code></pre>
+<p>
+  Fíjate en que <code>-d</code> hace un <code>POST</code> con ese cuerpo, y en
+  que el campo <code>Result</code> sale como <code>result</code>, el nombre
+  de su etiqueta.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un JSON que no lo es</h2>
+<pre><code>$ curl -i -d 'dos' localhost:8080/sum
+HTTP/1.1 400 Bad Request
+Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+Date: Fri, 27 Nov 2026 11:14:30 GMT
+Content-Length: 16
+
+JSON no válido</code></pre>
+<p>
+  <code>Decode</code> devuelve un error y el handler responde
+  <code>400</code>: la culpa es de la petición, no del servidor.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>Escribir el campo con minúscula:</p>
+<pre><code class="language-go">type sumResponse struct {
+	result int `json:"result"`
+}</code></pre>
+<pre><code>$ go vet .
+main.go:15:2: struct field result has json tag but is not exported</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>main.go:15:2: struct field result has json tag but is not exported</code></pre>
+<p>
+  El campo <code>result</code> de la línea 15 tiene etiqueta JSON, pero no
+  está <em>exportado</em>: empieza por minúscula. <code>encoding/json</code>
+  es otro paquete, así que solo ve los campos que empiezan por mayúscula. El
+  programa compila, pero responde <code>{}</code>. Ejecuta
+  <code>go vet</code>: avisa de lo que el compilador deja pasar.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>Poner la cabecera después de escribir el cuerpo:</p>
+<pre><code class="language-go">json.NewEncoder(w).Encode(sumResponse{Result: req.A + req.B})
+w.Header().Set("Content-Type", "application/json")</code></pre>
+<pre><code>HTTP/1.1 200 OK
+Date: Fri, 27 Nov 2026 11:14:33 GMT
+Content-Length: 13
+Content-Type: text/plain; charset=utf-8
+
+{"result":5}</code></pre>
+<p>
+  Las cabeceras ya se habían enviado, así que el cliente cree que es texto.
+  Pon las cabeceras primero.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>todos.go</code> una API de tareas. <code>GET /todos</code>
+  responde la lista (<code>[]</code> si está vacía); <code>POST /todos</code>
+  crea una tarea con <code>{"title": "..."}</code> y responde
+  <code>201</code>; <code>DELETE /todos/{id}</code> la borra y responde
+  <code>204</code>. Un JSON roto, un título vacío o un id que no es un
+  número dan <code>400</code>; un id que no existe, <code>404</code>. Protege
+  la lista con un <code>sync.Mutex</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Lo que escribes</h2>
+<pre><code class="language-go">type Todo struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
+}
+
+func NewHandler() http.Handler</code></pre>
+<p>
+  La primera tarea tiene el ID 1, la siguiente el 2, y así. Hasta que lo
+  escribas, <code>go test</code> falla con <code>undefined: Todo</code>.
+</p>
+</section>

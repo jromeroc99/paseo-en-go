@@ -1,0 +1,132 @@
+<section class="slide">
+<p>
+  Una API responde JSON, pero el navegador muestra HTML. Podrías montar la
+  página a trozos con <code>fmt.Fprintf</code>, pero el HTML se mezcla con
+  el código y cuesta leerlo. Y si un usuario escribe
+  <code>&lt;b&gt;sal&lt;/b&gt;</code>, ¿se ve como texto o se convierte en
+  HTML de tu página?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Una <em>plantilla</em> es el HTML de la página con huecos.
+  <code>{{"{{"}}.Title}}</code> se rellena con el campo <code>Title</code> de
+  los datos que le pasas. <code>{{"{{"}}range .Items}}</code> repite lo que
+  hay hasta <code>{{"{{"}}end}}</code> una vez por elemento, y dentro,
+  <code>{{"{{"}}.}}</code> es el elemento actual.
+</p>
+<p>
+  El paquete <code>html/template</code> además <em>escapa</em> cada valor:
+  cambia <code>&lt;</code> por <code>&amp;lt;</code>, así que lo que escribe
+  un usuario se ve como texto y nunca se convierte en HTML.
+</p>
+</section>
+
+<section class="slide">
+<h2>Datos y plantilla</h2>
+<net-demo scene="template">
+  <p>
+    Animación: a la izquierda, los datos, con el título
+    <code>Compra</code> y dos elementos, <code>pan</code> y
+    <code>&lt;b&gt;sal&lt;/b&gt;</code>. Paso a paso se rellena la página:
+    el título en el <code>&lt;h1&gt;</code>, un <code>&lt;li&gt;</code> por
+    elemento, y el segundo sale escapado, como
+    <code>&amp;lt;b&amp;gt;sal&amp;lt;/b&amp;gt;</code>.
+  </p>
+</net-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+<p>La plantilla es una constante con el HTML y sus huecos:</p>
+{{codeLines "examples/shoplist/main.go" 1 12}}
+</section>
+
+<section class="slide">
+<p>
+  <code>Parse</code> lee la plantilla y <code>Execute</code> la rellena con
+  los datos y escribe el resultado en <code>os.Stdout</code>:
+</p>
+{{codeLines "examples/shoplist/main.go" 14 23}}
+</section>
+
+<section class="slide">
+<p>Ejecuta el programa:</p>
+<pre><code>$ go run .
+&lt;h1&gt;Compra&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;pan&lt;/li&gt;
+  &lt;li&gt;&amp;lt;b&amp;gt;sal&amp;lt;/b&amp;gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<p>
+  Fíjate en el segundo elemento: el navegador mostrará
+  <code>&lt;b&gt;sal&lt;/b&gt;</code> tal cual, como texto, y no una palabra
+  en negrita.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>Olvidar el <code>{{"{{"}}end}}</code> del <code>range</code>:</p>
+<pre><code class="language-go">const page = `&lt;h1&gt;{{"{{"}}.Title}}&lt;/h1&gt;
+&lt;ul&gt;
+{{"{{"}}range .Items}}  &lt;li&gt;{{"{{"}}.}}&lt;/li&gt;
+&lt;/ul&gt;
+`</code></pre>
+<pre><code>$ go run .
+panic: template: page:5: unexpected EOF
+
+goroutine 1 [running]:</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>panic: template: page:5: unexpected EOF</code></pre>
+<p>
+  El error es de la plantilla llamada <code>page</code>, en su línea 5, la
+  última. <em>EOF</em> es el final del texto: la plantilla se ha acabado
+  cuando aún esperaba el <code>{{"{{"}}end}}</code> del
+  <code>range</code>. Es un <code>panic</code> porque
+  <code>template.Must</code> para el programa si <code>Parse</code> falla.
+  Después viene la pila de llamadas, que aquí puedes ignorar.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Importar <code>text/template</code> en vez de
+  <code>html/template</code>. Se usan igual, pero <code>text/template</code>
+  no escapa nada:
+</p>
+<pre><code>$ go run .
+&lt;h1&gt;Compra&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;pan&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;sal&lt;/b&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<p>
+  Ahora <code>sal</code> sale en negrita. Si un usuario escribe un
+  <code>&lt;script&gt;</code>, se ejecutará en el navegador de quien abra la
+  página. Para HTML, usa siempre <code>html/template</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>page.go</code> una función que genere una página con el
+  título en un <code>&lt;h1&gt;</code> y cada elemento en un
+  <code>&lt;li&gt;</code> dentro de un <code>&lt;ul&gt;</code>. Si no hay
+  elementos, escribe <code>&lt;p&gt;No hay nada.&lt;/p&gt;</code> en lugar
+  de la lista: usa <code>{{"{{"}}if}}</code>. Devuelve el error de
+  <code>Execute</code>.
+</p>
+<pre><code class="language-go">func Render(w io.Writer, title string, items []string) error</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Render</code>.
+</p>
+</section>
