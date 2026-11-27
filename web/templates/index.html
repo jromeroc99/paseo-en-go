@@ -1,21 +1,51 @@
 {{define "content"}}
-<h1>{{.Course.Title}}</h1>
-<p class="lead">Un recorrido por Go, paso a paso, con ejercicios que resuelves en tu ordenador.</p>
+<div class="home">
+  <section class="hero">
+    <div class="hero-text">
+      <h1>{{.Course.Title}}</h1>
+      <p class="lead">Un recorrido por Go, paso a paso, con ejercicios que resuelves en tu ordenador.</p>
+      <ul class="facts">
+        <li><strong>{{len .Course.Modules}}</strong> módulos</li>
+        <li><strong>{{len .Course.Lessons}}</strong> lecciones</li>
+        <li>Sin cuentas: tu progreso se guarda en este navegador</li>
+      </ul>
+      <p class="actions">
+        {{with .Course.Lessons}}<a class="button" href="{{$.Base}}{{(index . 0).ID}}/" data-continue>Empieza por la primera lección</a>{{end}}
+        <a class="button button-quiet" href="#temario">Ver el temario</a>
+      </p>
+    </div>
+    {{/* The loop of the whole course at a glance: write the code, run its test. */}}
+    <figure class="window">
+      <figcaption class="window-title">exercises/00-setup/hello/hello.go</figcaption>
+      <pre><code><span class="tok-key">package</span> hello
 
-<ol class="route">
-  {{range .Course.Modules}}
-  {{$module := .}}
-  <li class="module">
-    <h2>{{.Title}}</h2>
-    <p>{{.Summary}}</p>
-    <ul class="lesson-list">
-      {{range .Lessons}}
-      <li data-lesson="{{$module.Slug}}/{{.Slug}}">
-        <a href="{{$.Base}}{{$module.Slug}}/{{.Slug}}/">{{.Title}}</a>
-      </li>
-      {{end}}
-    </ul>
-  </li>
-  {{end}}
-</ol>
+<span class="tok-key">func</span> Greeting(name <span class="tok-key">string</span>) <span class="tok-key">string</span> {
+	<span class="tok-key">return</span> <span class="tok-str">"Hello, "</span> + name + <span class="tok-str">"!"</span>
+}</code></pre>
+      <pre class="window-terminal"><code><span class="tok-prompt">$</span> go test ./00-setup/hello
+<span class="tok-ok">ok</span>  paseo-en-go/exercises/00-setup/hello  0.009s</code></pre>
+    </figure>
+  </section>
+
+  <h2 id="temario" class="temario-title">Temario</h2>
+  <ol class="route">
+    {{range .Course.Modules}}
+    {{$module := .}}
+    <li class="module" data-module>
+      <div class="module-meta">
+        <h3>{{.Title}}</h3>
+        <p>{{.Summary}}</p>
+        <p class="module-progress" data-progress>{{len .Lessons}} lecciones</p>
+      </div>
+      <ol class="lesson-list">
+        {{range .Lessons}}
+        <li data-lesson="{{$module.Slug}}/{{.Slug}}">
+          <a href="{{$.Base}}{{$module.Slug}}/{{.Slug}}/">{{.Title}}</a>
+        </li>
+        {{end}}
+      </ol>
+    </li>
+    {{end}}
+  </ol>
+</div>
 {{end}}

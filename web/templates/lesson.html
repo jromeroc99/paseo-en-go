@@ -1,7 +1,40 @@
 {{define "title"}}{{.Lesson.Title}} · {{.Course.Title}}{{end}}
 {{/* Set before the first paint: deck.js runs later, and until then the
-     lesson would flash as a scrolling article. */}}
-{{define "head"}}<script>document.documentElement.classList.add("is-deck")</script>{{end}}
+     lesson would flash as a scrolling article. The reader can ask for the
+     article instead in the settings (settings.js). */}}
+{{define "head"}}<script>
+  let view;
+  try { view = localStorage.getItem("paseo:view"); } catch {}
+  if (view !== "article") document.documentElement.classList.add("is-deck");
+</script>{{end}}
+{{define "menu-button"}}
+<button type="button" class="icon-button menu-button" popovertarget="sidebar" aria-label="Temario">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <path d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+</button>
+{{end}}
+{{/* The whole syllabus, to jump to any lesson. On a wide screen it stays
+     open beside the lesson; on a narrow one the menu button opens it. */}}
+{{define "sidebar"}}
+<nav id="sidebar" class="sidebar" popover aria-label="Temario">
+  <ol class="sidebar-modules">
+    {{range .Course.Modules}}
+    {{$module := .}}
+    <li>
+      <p class="sidebar-module">{{.Title}}</p>
+      <ol class="sidebar-lessons">
+        {{range .Lessons}}
+        <li data-lesson="{{$module.Slug}}/{{.Slug}}">
+          <a href="{{$.Base}}{{$module.Slug}}/{{.Slug}}/"{{if and (eq $module.Slug $.Module.Slug) (eq .Slug $.Lesson.Slug)}} aria-current="page"{{end}}>{{.Title}}</a>
+        </li>
+        {{end}}
+      </ol>
+    </li>
+    {{end}}
+  </ol>
+</nav>
+{{end}}
 {{define "content"}}
 <div class="deck">
   <section class="slide slide-title">

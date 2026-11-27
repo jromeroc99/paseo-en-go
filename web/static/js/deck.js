@@ -10,8 +10,9 @@ const SWIPE_PX = 50;
 const FIRST_HASH = "#1";
 const LAST_HASH = "#last";
 
+// Without .is-deck the reader chose the article view: the cards stay stacked.
 const deck = document.querySelector(".deck");
-if (deck) start(deck);
+if (deck && document.documentElement.classList.contains("is-deck")) start(deck);
 
 function start(deck) {
   const slides = [...deck.querySelectorAll(":scope > .slide")];

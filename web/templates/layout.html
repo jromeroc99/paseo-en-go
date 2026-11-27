@@ -4,18 +4,50 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{block "title" .}}{{.Course.Title}}{{end}}</title>
+  <link rel="icon" href="{{.Base}}static/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="{{.Base}}static/css/style.css">
   {{block "head" .}}{{end}}
 </head>
 <body>
   <header class="site-header">
-    <a href="{{.Base}}" class="brand">{{.Course.Title}}</a>
+    {{block "menu-button" .}}{{end}}
+    <a href="{{.Base}}" class="brand">
+      <img src="{{.Base}}static/go-logo.svg" alt="" width="46" height="17">
+      {{.Course.Title}}
+    </a>
+    <a class="icon-button" href="https://github.com/jromeroc99/paseo-en-go" aria-label="Código del curso en GitHub">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.1 0 4.6-2.8 5.6-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/>
+      </svg>
+    </a>
+    <button type="button" class="icon-button" popovertarget="settings" aria-label="Ajustes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+      </svg>
+    </button>
+    <div id="settings" class="settings" popover>
+      <fieldset>
+        <legend>Cómo ver las lecciones</legend>
+        <label>
+          <input type="radio" name="view" value="slides">
+          <span><strong>Diapositivas</strong> Una tarjeta en pantalla; avanzas con las flechas.</span>
+        </label>
+        <label>
+          <input type="radio" name="view" value="article">
+          <span><strong>Artículo</strong> Toda la lección seguida, con scroll.</span>
+        </label>
+      </fieldset>
+    </div>
   </header>
+  {{block "sidebar" .}}{{end}}
   <main class="page">
     {{template "content" .}}
   </main>
   <script src="{{.Base}}static/js/progress.js" defer></script>
   <script src="{{.Base}}static/js/copy.js" defer></script>
+  <script src="{{.Base}}static/js/settings.js" defer></script>
+  <script src="{{.Base}}static/js/sidebar.js" defer></script>
   <script src="{{.Base}}static/js/animations.js" type="module"></script>
   <script src="{{.Base}}static/js/deck.js" type="module"></script>
 </body>

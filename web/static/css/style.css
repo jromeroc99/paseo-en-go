@@ -1,3 +1,19 @@
+/* The Go fonts (BSD licence, see fonts/LICENSE), cut down to Latin: Go Bold
+   for headings, Go Mono for code. Body text stays in the system font. */
+@font-face {
+  font-family: "Go";
+  src: url("../fonts/go-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Go Mono";
+  src: url("../fonts/go-mono.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
 /* Dark theme only. Every colour lives here as a token. */
 :root {
   color-scheme: dark;
@@ -12,6 +28,16 @@
   --accent-ink: #081018;
   --glow: 0 0 0.5rem rgb(0 173 216 / 0.55), 0 0 1.5rem rgb(0 173 216 / 0.25);
   --glow-faint: 0 0 1.25rem rgb(0 173 216 / 0.12);
+  --header-bg: rgb(8 16 24 / 0.85);
+  --backdrop: rgb(4 8 12 / 0.7);
+  /* The thumb keeps 3:1 against both --bg and --surface (WCAG 1.4.11);
+     the track is see-through so it takes the colour of what scrolls. */
+  --scrollbar-thumb: #4d6780;
+  --scrollbar-track: transparent;
+
+  /* Syntax colours, only for the hand-written code on the index. */
+  --code-string: #ffcf70;
+  --code-ok: #5ee38a;
 
   /* Animation palette: one meaning per colour. */
   --anim-ink: #081018;      /* outlines, background */
@@ -24,8 +50,10 @@
   --anim-dim: #3a4a5c;      /* unused memory, inactive parts */
 
   --radius: 10px;
+  --header-height: 3.5rem;
   --radius-sm: 6px;
-  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --mono: "Go Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --display: "Go", system-ui, sans-serif;
 
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 1.0625rem;
@@ -33,6 +61,25 @@
 }
 
 * { box-sizing: border-box; }
+
+/* Scrollbars in the site's colours. scrollbar-color is inherited, so one
+   rule themes every scroller; code blocks and the sidebar get the thin one. */
+:root { scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
+
+pre, .sidebar { scrollbar-width: thin; }
+
+@media (prefers-contrast: more) {
+  :root { --scrollbar-thumb: var(--fg); }
+}
+
+/* Older Safari has neither property: the legacy pseudo-elements instead. */
+@supports not (scrollbar-color: auto) {
+  pre, .sidebar { scrollbar-width: auto; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 999px; }
+  ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+}
 
 body {
   margin: 0;
@@ -57,14 +104,18 @@ a:hover { text-decoration-color: currentColor; }
 
 ::selection { background: var(--accent); color: var(--accent-ink); }
 
-/* Header: one thin neon line, nothing else. */
+/* Header: the brand, the settings and one thin neon line. */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 1;
-  padding: 0.9rem 1rem;
-  background: rgb(8 16 24 / 0.85);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: var(--header-height);
+  padding: 0 1rem;
+  background: var(--header-bg);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
@@ -81,23 +132,77 @@ a:hover { text-decoration-color: currentColor; }
 }
 
 .brand {
+  margin-right: auto; /* pushes the settings to the far end */
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
   color: var(--fg);
-  font-weight: 650;
+  font: 700 1.05rem var(--display);
   letter-spacing: -0.01em;
   text-decoration: none;
 }
 
-/* A single pixel: the bridge to the pixel-art animations. */
-.brand::before {
-  content: "";
-  width: 0.6rem;
-  height: 0.6rem;
-  background: var(--accent);
-  box-shadow: var(--glow);
+.brand img { display: block; height: 1.05rem; width: auto; }
+
+/* Icon buttons in the header: the menu and the settings. Each opens a
+   popover; the settings one sits right under its button. */
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
 }
+
+.icon-button:hover { color: var(--accent-soft); border-color: var(--accent); }
+
+.icon-button svg { width: 1.15rem; height: 1.15rem; }
+
+.settings {
+  inset: 3.6rem 1rem auto auto;
+  width: min(20rem, calc(100vw - 2rem));
+  margin: 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--fg);
+  box-shadow: var(--glow-faint);
+}
+
+.settings fieldset { margin: 0; padding: 0; border: 0; }
+
+.settings legend {
+  margin-bottom: 0.6rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.settings label {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.settings label + label { margin-top: 0.5rem; }
+
+.settings label:has(:checked) { border-color: var(--accent); }
+
+.settings input { accent-color: var(--accent); margin: 0.2rem 0 0; }
+
+.settings strong { display: block; font-size: 1rem; }
 
 .page {
   max-width: 42rem;
@@ -105,9 +210,13 @@ a:hover { text-decoration-color: currentColor; }
   padding: 3.5rem 1rem 5rem;
 }
 
+/* The index needs room for its two columns; lessons keep a reading width. */
+.page:has(> .home) { max-width: 68rem; }
+
 /* Type scale: a fourth (1.333). */
 
 h1, h2, h3 {
+  font-family: var(--display);
   line-height: 1.2;
   letter-spacing: -0.02em;
   font-weight: 700;
@@ -190,9 +299,121 @@ pre {
 
 .copy-button.is-copied .icon-done { display: block; }
 
-/* Index: the course as a walk. A neon route links every stop. */
+/* Index hero: the title and the way in on the left, the loop of the course
+   (write the code, run its test) on the right. */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 3rem;
+  margin-bottom: 6rem;
+}
+
+/* A faint street grid behind the hero: the map the walk is drawn on. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -3.5rem -2rem;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem;
+  mask-image: radial-gradient(ellipse at 70% 45%, black, transparent 70%);
+  opacity: 0.6;
+}
+
+.hero h1 {
+  margin-bottom: 1.25rem;
+  font-size: clamp(2.8rem, 7vw, 4.6rem);
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.hero .lead { margin-bottom: 1.5rem; }
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.facts li {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+.facts strong { color: var(--fg); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 0; }
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.7rem 1.25rem;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--accent-ink);
+  font-weight: 650;
+  line-height: 1.3;
+  text-decoration: none;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.button:hover { box-shadow: var(--glow); }
+
+.button-quiet { background: transparent; border-color: var(--line); color: var(--fg); }
+
+.button-quiet:hover { border-color: var(--accent); box-shadow: none; }
+
+.window {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.window-title {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font: 0.8rem var(--mono);
+}
+
+.window pre {
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.95rem;
+}
+
+.window .window-terminal { border-top: 1px solid var(--line); background: var(--bg); }
+
+.tok-key { color: var(--accent-soft); }
+.tok-str { color: var(--code-string); }
+.tok-prompt { color: var(--muted); }
+.tok-ok { color: var(--code-ok); }
+
+.temario-title { margin: 0 0 2.5rem; font-size: 2rem; }
+
+/* The syllabus as a walk: a neon route links every stop. On a wide screen
+   each module puts its title on the left and its stops on the route. */
 
 .route {
+  --meta: 0rem;
+  --gap: 0rem;
   position: relative;
   margin: 0;
   padding: 0;
@@ -205,7 +426,7 @@ pre {
   position: absolute;
   top: 0.6rem;
   bottom: 0.6rem;
-  left: 0.55rem;
+  left: calc(var(--meta) + var(--gap) + 0.55rem);
   width: 2px;
   background: linear-gradient(var(--accent), var(--line) 70%);
   box-shadow: var(--glow-faint);
@@ -235,26 +456,38 @@ pre {
   font: 700 0.7rem/1 var(--mono);
 }
 
-.module h2 { margin: 0 0 0.25rem; font-size: 1.35rem; }
+.module-meta h3 { margin: 0 0 0.25rem; font-size: 1.35rem; }
 
-.module > p { margin: 0 0 1rem; color: var(--muted); }
+.module-meta p { margin: 0 0 0.5rem; color: var(--muted); }
+
+.module-progress { font: 0.8rem var(--mono); }
+
+.is-complete .module-progress { color: var(--accent-soft); }
 
 .lesson-list {
-  margin: 0;
+  margin: 0.75rem 0 0;
   padding: 0;
   list-style: none;
+  counter-reset: lesson;
 }
 
-.lesson-list li { position: relative; }
+.lesson-list li { position: relative; counter-increment: lesson; }
 
 .lesson-list a {
-  display: block;
+  display: flex;
+  gap: 0.9rem;
   padding: 0.45rem 0.75rem;
   margin-left: -0.75rem;
   border-radius: var(--radius-sm);
   color: var(--fg);
   text-decoration: none;
   transition: background-color 0.15s, color 0.15s;
+}
+
+.lesson-list a::before {
+  content: counter(lesson, decimal-leading-zero);
+  color: var(--muted);
+  font: 0.8rem/1.7rem var(--mono);
 }
 
 .lesson-list a:hover { background: var(--surface); color: var(--accent-soft); }
@@ -273,6 +506,34 @@ pre {
 .lesson-list .is-done::before { background: var(--accent); box-shadow: var(--glow); }
 
 .lesson-list .is-done a { color: var(--muted); }
+
+@media (min-width: 52rem) {
+  .route { --meta: 17rem; --gap: 3rem; }
+
+  .module {
+    display: grid;
+    grid-template-columns: var(--meta) minmax(0, 1fr);
+    column-gap: var(--gap);
+    padding: 0 0 3.5rem;
+  }
+
+  /* The number moves from the route to the top of the module's title. */
+  .module::before { display: none; }
+
+  .module-meta::before {
+    content: counter(module, decimal-leading-zero);
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--accent);
+    font: 700 1.6rem/1 var(--mono);
+  }
+
+  .lesson-list { margin: 0; padding-left: 2.75rem; }
+}
+
+@media (width < 52rem) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; margin-bottom: 4rem; }
+}
 
 /* Lesson */
 
@@ -350,6 +611,108 @@ pre {
 }
 
 .pager [rel="next"] { margin-left: auto; text-align: right; }
+
+/* Lesson sidebar: the whole syllabus, to jump to any lesson. On a wide
+   screen it stays beside the lesson; on a narrow one it is a drawer the
+   menu button opens (a popover, so it works without JS). */
+
+.sidebar {
+  margin: 0;
+  padding: 1.5rem 1rem 2rem;
+  background: var(--bg);
+  border: 0;
+  border-right: 1px solid var(--line);
+  color: var(--fg);
+  font-size: 0.9rem;
+  overflow-y: auto;
+}
+
+.sidebar::backdrop { background: var(--backdrop); }
+
+.sidebar ol { margin: 0; padding: 0; list-style: none; }
+
+.sidebar-modules { counter-reset: module -1; }
+
+.sidebar-modules > li { counter-increment: module; margin-bottom: 1.25rem; }
+
+.sidebar-module {
+  display: flex;
+  gap: 0.5em;
+  margin: 0 0 0.4rem;
+  font: 700 0.9rem var(--display);
+}
+
+.sidebar-module::before {
+  content: counter(module, decimal-leading-zero);
+  color: var(--accent);
+  font-family: var(--mono);
+}
+
+/* The lessons hang from a thin route, one stop each, as on the index. */
+.sidebar-lessons { margin-left: 0.3rem; border-left: 1px solid var(--line); }
+
+.sidebar-lessons li { position: relative; }
+
+.sidebar-lessons li::before {
+  content: "";
+  position: absolute;
+  top: 0.75rem;
+  left: -0.2rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  background: var(--line);
+}
+
+.sidebar-lessons .is-done::before { background: var(--accent); }
+
+.sidebar-lessons a {
+  display: block;
+  padding: 0.3rem 0.5rem 0.3rem 0.9rem;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.sidebar-lessons a:hover { color: var(--fg); background: var(--surface); }
+
+.sidebar-lessons a[aria-current="page"] { color: var(--accent-soft); font-weight: 650; }
+
+.sidebar-lessons li:has([aria-current="page"])::before { background: var(--accent); box-shadow: var(--glow); }
+
+@media (width < 64rem) {
+  .sidebar {
+    inset: 0 auto 0 0;
+    width: min(20rem, 85vw);
+    height: 100dvh;
+    max-height: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .menu-button { display: none; }
+
+  body:has(> .sidebar) {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  body:has(> .sidebar) > .site-header { grid-column: 1 / -1; }
+
+  /* Shown in place: a closed popover is hidden only by the browser's own
+     style, which this overrides. */
+  .sidebar {
+    display: block;
+    position: sticky;
+    top: var(--header-height);
+    align-self: start;
+    inset: auto;
+    width: auto;
+    height: auto;
+    max-height: calc(100dvh - var(--header-height));
+  }
+}
 
 /* Lesson deck: one card on screen at a time. The lesson page adds .is-deck
    to <html> before the first paint; without JS the cards stack and the page

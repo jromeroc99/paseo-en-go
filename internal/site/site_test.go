@@ -70,6 +70,12 @@ func TestPages(t *testing.T) {
 			want:     []string{"Test Tour", `href="/00-intro/01-first/"`, `href="/00-intro/02-second/"`},
 		},
 		{
+			name:     "index starts the walk at the first lesson and counts it",
+			path:     "/",
+			wantCode: http.StatusOK,
+			want:     []string{`<a class="button" href="/00-intro/01-first/" data-continue>`, `href="#temario"`, `id="temario"`, "<strong>2</strong> lecciones"},
+		},
+		{
 			name:     "lesson shows body and escaped snippet",
 			path:     "/00-intro/01-first/",
 			wantCode: http.StatusOK,
@@ -92,6 +98,41 @@ func TestPages(t *testing.T) {
 			path:     "/00-intro/02-second/",
 			wantCode: http.StatusOK,
 			want:     []string{`<pre><code class="language-go">` + "\nfunc main() {\n</code></pre>"},
+		},
+		{
+			name:     "every page links the Go logo favicon",
+			path:     "/00-intro/01-first/",
+			wantCode: http.StatusOK,
+			want:     []string{`<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">`},
+		},
+		{
+			name:     "the settings let the reader pick slides or article view",
+			path:     "/00-intro/01-first/",
+			wantCode: http.StatusOK,
+			want:     []string{`popovertarget="settings"`, `name="view" value="slides"`, `name="view" value="article"`, `src="/static/js/settings.js"`},
+		},
+		{
+			name:     "lesson has a sidebar with every lesson and marks the current one",
+			path:     "/00-intro/02-second/",
+			wantCode: http.StatusOK,
+			want: []string{
+				`popovertarget="sidebar"`,
+				`<a href="/00-intro/01-first/">First</a>`,
+				`<a href="/00-intro/02-second/" aria-current="page">Second</a>`,
+				`src="/static/js/sidebar.js"`,
+			},
+		},
+		{
+			name:     "every page links the course repository",
+			path:     "/",
+			wantCode: http.StatusOK,
+			want:     []string{`href="https://github.com/jromeroc99/paseo-en-go"`},
+		},
+		{
+			name:     "the favicon is served",
+			path:     "/static/favicon.svg",
+			wantCode: http.StatusOK,
+			want:     []string{"<svg"},
 		},
 		{
 			name:     "static assets are served",
