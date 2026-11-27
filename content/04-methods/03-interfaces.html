@@ -119,6 +119,14 @@ func main() {
   <code>Area</code> y <code>TotalArea</code>, que suma las áreas sin saber de
   qué tipo es cada figura.
 </p>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: Shape</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Lo que escribes</h2>
 <pre><code class="language-go">type Shape interface {
 	Area() float64
 }
@@ -136,8 +144,4 @@ type Circle struct {
 func (c Circle) Area() float64
 
 func TotalArea(shapes []Shape) float64</code></pre>
-<p>
-  Hasta que los escribas, <code>go test</code> falla con
-  <code>undefined: Shape</code>.
-</p>
 </section>
