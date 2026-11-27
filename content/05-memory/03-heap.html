@@ -1,0 +1,104 @@
+<section class="slide">
+<p>
+  Ya sabes que el frame de una función desaparece cuando vuelve. Entonces,
+  ¿qué pasa si la función devuelve la dirección de una de sus variables? El
+  puntero apuntaría a memoria que ya no existe. En C eso es un error grave.
+  En Go funciona sin problemas. ¿Por qué?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Porque Go tiene otra zona de memoria: el <em>heap</em> (el montón). Lo que
+  vive en el heap no depende de ninguna llamada: dura mientras alguien lo
+  use.
+</p>
+<p>
+  El compilador decide dónde va cada valor con el <em>escape analysis</em>
+  (análisis de escape). Si la dirección de una variable puede salir de su
+  función, la variable «escapa» y va al heap. Si no, se queda en el stack,
+  que es más barato.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<stack-demo scene="escape">
+  <p>
+    Animación: <code>main</code> llama a <code>newPoint</code>, que apila su
+    frame. Como la dirección de <code>p</code> va a salir de la función,
+    <code>p</code> se guarda en el heap. <code>q</code> apunta a ella. El
+    frame de <code>newPoint</code> se va, pero <code>p</code> sigue en el
+    heap, y <code>*q</code> imprime {1 2}.
+  </p>
+</stack-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/escape/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>{1 2}</code></pre>
+<p>
+  Fíjate en que no has escrito nada especial: ni has pedido memoria ni la
+  has liberado. Escribes <code>return &amp;p</code> y el compilador se
+  encarga de que <code>p</code> siga viva.
+</p>
+</section>
+
+<section class="slide">
+<h2>Pregúntale al compilador</h2>
+<p>
+  Puedes ver qué decide el compilador. En la carpeta del ejemplo, ejecuta
+  <code>go build -gcflags='-m -l'</code>. La opción <code>-m</code> le pide
+  que explique sus decisiones, y <code>-l</code> simplifica el informe.
+</p>
+<pre><code>./main.go:10:2: moved to heap: p
+./main.go:16:13: ... argument does not escape
+./main.go:16:14: *q escapes to heap</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el informe</h2>
+<pre><code>./main.go:10:2: moved to heap: p</code></pre>
+<p>
+  Línea 10, columna 2: la declaración <code>p := Point{x, y}</code>.
+  <em>Moved to heap</em> significa «movida al heap». Las otras dos líneas
+  hablan de <code>fmt.Println</code>, que también guarda en el heap una
+  copia de lo que imprime. Busca siempre el nombre de tu variable.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Pensar que devolver un puntero siempre es más rápido que devolver el
+  valor. Copiar un struct pequeño cuesta muy poco, y el puntero obliga a
+  guardarlo en el heap, que es más lento y da trabajo al recolector de
+  basura.
+</p>
+<p>
+  Devuelve el valor. Usa un puntero cuando quien llama tenga que cambiar el
+  original o compartirlo.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>linkedlist.go</code> una lista enlazada: cada nodo vive en
+  el heap y apunta al siguiente. <code>Push</code> pone un nodo delante y
+  devuelve la nueva cabeza; <code>Values</code> recorre la lista.
+</p>
+<pre><code class="language-go">type Node struct {
+	Value int
+	Next  *Node
+}
+
+func Push(head *Node, value int) *Node
+func Values(head *Node) []int</code></pre>
+</section>

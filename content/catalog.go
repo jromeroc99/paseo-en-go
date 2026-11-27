@@ -291,5 +291,68 @@ var Course = course.Course{
 				},
 			},
 		},
+		{
+			Slug:    "05-memory",
+			Title:   "La memoria por dentro",
+			Summary: "Bytes, direcciones, el stack, el heap y el recolector de basura: dónde viven tus datos y cuánto ocupan.",
+			Lessons: []course.Lesson{
+				{
+					Slug:  "01-bytes",
+					Title: "Bytes y direcciones",
+					Exercise: &course.Exercise{
+						Path: "05-memory/bits",
+						Goal: "Decide cuántos bits necesitas para guardar un número.",
+					},
+				},
+				{
+					Slug:  "02-stack",
+					Title: "El stack y las llamadas",
+					Exercise: &course.Exercise{
+						Path: "05-memory/factorial",
+						Goal: "Calcula el factorial con una función recursiva.",
+					},
+				},
+				{
+					Slug:  "03-heap",
+					Title: "El heap y el escape analysis",
+					Exercise: &course.Exercise{
+						Path: "05-memory/linkedlist",
+						Goal: "Construye una lista enlazada con punteros a nodos.",
+					},
+				},
+				{
+					Slug:  "04-gc",
+					Title: "El recolector de basura",
+					Exercise: &course.Exercise{
+						Path: "05-memory/reachable",
+						Goal: "Marca qué objetos siguen vivos, como hace el recolector.",
+					},
+				},
+				{
+					Slug:  "05-padding",
+					Title: "Alineación y padding",
+					Exercise: &course.Exercise{
+						Path: "05-memory/layout",
+						Goal: "Calcula cuánto ocupa un struct, con su padding.",
+					},
+				},
+				{
+					Slug:  "06-strings",
+					Title: "Strings, bytes y runes",
+					Exercise: &course.Exercise{
+						Path: "05-memory/runes",
+						Goal: "Cuenta y da la vuelta a los caracteres de un texto UTF-8.",
+					},
+				},
+				{
+					Slug:  "07-review",
+					Title: "Repaso: tu propia memoria",
+					Exercise: &course.Exercise{
+						Path: "05-memory/arena",
+						Goal: "Reserva trozos alineados de un bloque de memoria.",
+					},
+				},
+			},
+		},
 	},
 }

@@ -1,0 +1,78 @@
+<section class="slide">
+<p>
+  Lo que va al heap dura mientras alguien lo use. Pero ¿quién decide que ya
+  nadie lo usa, y quién libera esa memoria? En C lo haces tú: si te olvidas,
+  la memoria se acaba; si lo haces antes de tiempo, el programa falla. Go lo
+  hace por ti.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  El <em>garbage collector</em> (recolector de basura) trabaja en dos fases:
+</p>
+<ul>
+  <li><em>Mark</em> (marcar): parte de tus variables y sigue cada puntero.
+    Todo lo que alcanza está vivo y lo marca.</li>
+  <li><em>Sweep</em> (barrer): lo que no ha marcado es basura, y libera su
+    memoria.</li>
+</ul>
+<p>
+  Trabaja a la vez que tu programa, con pausas muy cortas.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<gc-demo scene="mark-sweep">
+  <p>
+    Animación: <code>a</code> apunta al nodo 1, y el nodo 1 apunta primero
+    al nodo 2 y luego al nodo 3. Ya nadie apunta al nodo 2. El recolector
+    parte de <code>a</code> y marca los nodos 1 y 3; el nodo 2 no está
+    marcado, así que libera su memoria. El programa imprime 1 3.
+  </p>
+</gc-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{codeLines "examples/garbage/main.go" 1 11}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/garbage/main.go" 13 19}}
+<pre><code>1 3</code></pre>
+<p>
+  Fíjate en que nunca borras el nodo 2: basta con que nadie apunte a él.
+  <code>runtime.GC()</code> pide una recolección ahora mismo, solo para el
+  ejemplo. En un programa normal no lo llames: el recolector sabe cuándo
+  trabajar.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Guardar sin querer una referencia a algo grande. Un slice pequeño de un
+  array enorme mantiene vivo el array entero, porque apunta a él:
+</p>
+<pre><code class="language-go">func header(data []byte) []byte {
+	return data[:16] // los 16 bytes mantienen vivo todo data
+}</code></pre>
+<p>
+  Si solo necesitas un trozo, cópialo: <code>slices.Clone(data[:16])</code>.
+  Así el recolector puede liberar el resto.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>reachable.go</code> la fase de marcado. <code>refs</code>
+  dice a qué objetos apunta cada uno y <code>roots</code> son los que usan
+  tus variables. Devuelve los objetos vivos, ordenados y sin repetir. Cuidado
+  con los ciclos: guarda en un map los que ya has marcado.
+</p>
+<pre><code class="language-go">func Reachable(refs map[string][]string, roots []string) []string</code></pre>
+</section>

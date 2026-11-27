@@ -1,0 +1,74 @@
+<section class="slide">
+<p>
+  Un <code>bool</code> ocupa 1 byte y un <code>int64</code> ocupa 8. Un
+  struct con dos <code>bool</code> y un <code>int64</code> debería ocupar
+  10. Pero según el orden de los campos ocupa 16 o 24. ¿De dónde salen esos
+  bytes de más?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  El procesador lee más rápido un valor cuando empieza en una dirección
+  múltiplo de su tamaño. A eso se le llama <em>alineación</em>: un
+  <code>int64</code> empieza en un múltiplo de 8 y un <code>int32</code> en
+  un múltiplo de 4.
+</p>
+<p>
+  Para cumplirlo, el compilador deja bytes vacíos entre los campos: el
+  <em>padding</em> (relleno). Además, el struct entero mide un múltiplo de
+  su campo más grande.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<memory-demo scene="padding">
+  <p>
+    Animación: en <code>Loose</code>, <code>A</code> ocupa el primer byte y
+    <code>B</code> tiene que esperar al byte 8, así que quedan 7 bytes de
+    relleno; tras <code>C</code> hay otros 7. Total: 24. En
+    <code>Tight</code>, <code>B</code> va primero y <code>A</code> y
+    <code>C</code> van juntos detrás. Total: 16.
+  </p>
+</memory-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{codeLines "examples/padding/main.go" 1 12}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/padding/main.go" 14 22}}
+<pre><code>24 16</code></pre>
+<p>
+  Fíjate en que los dos structs tienen los mismos campos. Ordenarlos de
+  mayor a menor suele ahorrar relleno. Solo merece la pena cuando guardas
+  millones de structs; si no, ordénalos para que se lean bien.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Pensar que <code>unsafe.Sizeof</code> mide todo lo que hay detrás de un
+  valor. Un slice es una cabecera de 24 bytes: un puntero, la longitud y la
+  capacidad. <code>Sizeof</code> mide la cabecera, no los elementos:
+</p>
+<pre><code class="language-go">s := make([]int, 1000)
+fmt.Println(unsafe.Sizeof(s)) // 24, no 8000</code></pre>
+<p>Con un string pasa lo mismo: su cabecera mide 16 bytes.</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>layout.go</code> la regla del compilador.
+  <code>fields</code> son los tamaños de los campos en orden (1, 2, 4 u 8).
+  Coloca cada uno en un múltiplo de su tamaño y redondea el total a un
+  múltiplo del campo más grande. Sin campos, el tamaño es 0.
+</p>
+<pre><code class="language-go">func Size(fields []int) int</code></pre>
+</section>

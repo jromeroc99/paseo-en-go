@@ -1,0 +1,104 @@
+<section class="slide">
+<p>
+  Hasta ahora has guardado números sin preguntarte dónde ni cuánto sitio
+  ocupan. Pero un <code>int8</code> y un <code>int64</code> no son iguales
+  por dentro, y si un número no cabe en su tipo pasan cosas raras. Para
+  entenderlo hay que mirar la memoria de cerca.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  La memoria del ordenador es una fila enorme de <em>bytes</em>. Un byte son
+  8 bits y guarda un número del 0 al 255. Cada byte tiene una dirección, y
+  las direcciones van seguidas.
+</p>
+<p>
+  El tipo de una variable dice cuántos bytes ocupa: un <code>int8</code>
+  ocupa 1, un <code>int32</code> ocupa 4 y un <code>int64</code> ocupa 8.
+  Cuantos más bytes, más grande es el número que cabe.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<memory-demo scene="bytes">
+  <p>
+    Animación: dos filas de ocho bytes con su dirección. <code>a</code>, un
+    <code>int8</code>, ocupa un byte. <code>b</code>, un <code>int32</code>,
+    ocupa cuatro y empieza en el byte 4, así que quedan tres libres.
+    <code>c</code>, un <code>int64</code>, ocupa la segunda fila entera.
+  </p>
+</memory-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/sizes/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>1 4 8</code></pre>
+<p>
+  Fíjate en <code>unsafe.Sizeof</code>: te dice cuántos bytes ocupa un valor.
+  El paquete se llama <code>unsafe</code> (inseguro) porque tiene funciones
+  que se saltan las reglas de Go. <code>Sizeof</code> solo mira, así que
+  puedes usarlo sin miedo para aprender.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Un <code>int8</code> va de -128 a 127. ¿Qué pasa si le das 200?
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	var x int8 = 200
+	fmt.Println(x)
+}</code></pre>
+<pre><code>./prog.go:6:15: cannot use 200 (untyped int constant) as int8 value in variable declaration (overflows)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:6:15: cannot use 200 (untyped int constant) as int8 value in variable declaration (overflows)</code></pre>
+<p>
+  Línea 6, columna 15: justo donde está el 200. «No puedo usar 200 como
+  valor <code>int8</code>»; el final, <em>overflows</em>, significa que se
+  desborda: no cabe en un byte con signo. El compilador lo ve porque 200 es
+  una constante escrita en el código.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Si el número crece mientras el programa se ejecuta, el compilador no puede
+  verlo. El valor da la vuelta, como un cuentakilómetros, y nadie te avisa:
+</p>
+{{code "examples/wraparound/main.go"}}
+<pre><code>-128</code></pre>
+<p>
+  Elige un tipo con sitio de sobra. Si dudas, usa <code>int</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe tú toda la función, en <code>bits.go</code>. Devuelve 8, 16, 32 o
+  64: los bits del tipo sin signo más pequeño en el que cabe <code>n</code>.
+</p>
+<pre><code class="language-go">func BitsNeeded(n uint64) int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: BitsNeeded</code>: el test busca una función que todavía
+  no existe. Es normal; es tu punto de partida.
+</p>
+</section>

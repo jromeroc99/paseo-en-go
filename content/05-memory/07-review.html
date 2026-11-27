@@ -1,0 +1,49 @@
+<section class="slide">
+<p>
+  Has terminado el módulo. Antes de seguir, repasa lo que ya sabes:
+</p>
+<ul>
+  <li><a href="../01-bytes/">Bytes y direcciones</a>: cada tipo ocupa unos bytes; un número que no cabe da la vuelta.</li>
+  <li><a href="../02-stack/">El stack</a>: cada llamada apila un frame y lo quita al volver.</li>
+  <li><a href="../03-heap/">El heap</a>: lo que escapa de su función vive en el heap; <code>-gcflags='-m'</code> te lo cuenta.</li>
+</ul>
+</section>
+
+<section class="slide">
+<ul>
+  <li><a href="../04-gc/">El recolector de basura</a>: marca lo que alcanzan tus variables y libera el resto.</li>
+  <li><a href="../05-padding/">Alineación y padding</a>: cada campo empieza en un múltiplo de su tamaño.</li>
+  <li><a href="../06-strings/">Strings, bytes y runes</a>: <code>len</code> cuenta bytes; <code>range</code> lee runes.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Vas a escribir tu propio reparto de memoria: una <em>arena</em>. Es un
+  bloque de bytes que reparte trozos uno detrás de otro, cada uno alineado,
+  y que se libera entero de una vez. Algunos programas muy rápidos reservan
+  así la memoria.
+</p>
+<ul>
+  <li><code>New</code> crea una arena de <code>size</code> bytes.</li>
+  <li><code>Alloc</code> reserva <code>n</code> bytes en el primer múltiplo
+    de <code>align</code> libre. Si no caben, devuelve <code>0, false</code>.</li>
+  <li><code>Reset</code> lo libera todo.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Lo que escribes</h2>
+<p>
+  Escribe todo en <code>arena.go</code>. Los campos de <code>Arena</code> los
+  decides tú; los tests solo usan los métodos.
+</p>
+<pre><code class="language-go">type Arena struct {
+	// tus campos
+}
+
+func New(size int) *Arena
+func (a *Arena) Alloc(n, align int) (offset int, ok bool)
+func (a *Arena) Reset()</code></pre>
+</section>

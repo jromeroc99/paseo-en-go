@@ -1,0 +1,114 @@
+<section class="slide">
+<p>
+  Cuando una función llama a otra, Go tiene que recordar muchas cosas: las
+  variables de cada función, sin mezclarlas, y a dónde volver cuando la
+  llamada termina. Y si una función se llama a sí misma, cada llamada
+  necesita sus propias variables. ¿Dónde guarda todo eso?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  En el <em>stack</em> (la pila). Cada llamada recibe un <em>frame</em>: un
+  trozo de memoria con sus parámetros y sus variables locales. Llamar a una
+  función apila un frame encima; volver de ella lo quita.
+</p>
+<p>
+  Funciona como una pila de platos: solo tocas el de arriba. Por eso es muy
+  rápido, y por eso las variables de una función dejan de existir cuando
+  vuelve.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<stack-demo scene="calls">
+  <p>
+    Animación: el frame de <code>main</code> está abajo. Encima se apila el
+    de <code>sumSquares</code>, con <code>a</code> y <code>b</code>. Cada
+    llamada a <code>square</code> apila un frame y lo quita al volver: la
+    primera devuelve 4 y la segunda 9. Al final <code>main</code> imprime 13.
+  </p>
+</stack-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/frames/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>13</code></pre>
+<p>
+  Fíjate en que <code>square</code> se llama dos veces y cada vez tiene su
+  propia <code>n</code> y su propia <code>r</code>. Cuando la primera
+  llamada vuelve, su <code>r</code> desaparece; la segunda empieza de cero
+  en el mismo hueco.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Una función que se llama a sí misma es <em>recursiva</em>. Esta no para
+  nunca, así que apila frames sin fin:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func countdown(n int) int {
+	return countdown(n - 1)
+}
+
+func main() {
+	fmt.Println(countdown(3))
+}</code></pre>
+<pre><code>runtime: goroutine stack exceeds 1000000000-byte limit
+fatal error: stack overflow</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>runtime: goroutine stack exceeds 1000000000-byte limit
+fatal error: stack overflow</code></pre>
+<p>
+  Compila bien, pero falla al ejecutarse. El stack tiene un límite, aquí 1000
+  millones de bytes, y cada llamada lo llena un poco más. <em>Stack
+  overflow</em> significa que la pila se ha desbordado. Una
+  <em>goroutine</em> es la tarea que ejecuta tu código; las verás en el
+  módulo de concurrencia.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Toda función recursiva necesita un <em>caso base</em>: una condición en la
+  que vuelve sin llamarse otra vez. El error típico es escribirlo, pero de
+  forma que nunca se cumpla:
+</p>
+<pre><code class="language-go">func countdown(n int) {
+	if n == 0 { // con n = 3: 3, 1, -1, -3... nunca vale 0
+		return
+	}
+	countdown(n - 2)
+}</code></pre>
+<p>Con <code>n &lt;= 0</code> el caso base sí se cumple.</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>factorial.go</code> una función recursiva que calcule
+  <code>n!</code> = n × (n-1) × … × 1. Recuerda el caso base:
+  <code>0!</code> vale 1.
+</p>
+<pre><code class="language-go">func Factorial(n int) int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Factorial</code>.
+</p>
+</section>

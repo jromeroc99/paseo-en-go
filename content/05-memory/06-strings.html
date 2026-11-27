@@ -1,0 +1,106 @@
+<section class="slide">
+<p>
+  Escribe <code>len("año")</code> y Go te dirá 4. Pero «año» tiene tres
+  letras. No es un fallo: <code>len</code> no cuenta letras. Para saber qué
+  cuenta, hay que ver cómo se guarda un texto en memoria.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Un string es una fila de bytes que no se puede cambiar. El texto se guarda
+  en <em>UTF-8</em>: cada carácter ocupa de 1 a 4 bytes. Las letras
+  inglesas ocupan 1, la «ñ» ocupa 2 y el «€» ocupa 3.
+</p>
+<ul>
+  <li>Un <code>byte</code> es un número de 0 a 255: un trozo del texto.</li>
+  <li>Una <em>rune</em> es un carácter entero, como «ñ». Su tipo es
+    <code>rune</code>.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<memory-demo scene="utf8">
+  <p>
+    Animación: «año» son cuatro bytes, 61 c3 b1 6f; la ñ ocupa dos, c3 y
+    b1. <code>len</code> cuenta los cuatro. <code>range</code> lee una rune
+    cada vez: la a en el byte 0, la ñ en los bytes 1 y 2, y la o en el byte
+    3.
+  </p>
+</memory-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/utf8/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>4
+0 a
+1 ñ
+3 o</code></pre>
+<p>
+  Fíjate en el índice: salta del 1 al 3. Con un string, <code>range</code>
+  te da la posición en bytes donde empieza cada rune, no el número de
+  letra.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Un string no se puede cambiar. Intenta poner la primera letra en
+  mayúscula:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	s := "hola"
+	s[0] = 'H'
+	fmt.Println(s)
+}</code></pre>
+<pre><code>./prog.go:7:2: cannot assign to s[0] (neither addressable nor a map index expression)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:7:2: cannot assign to s[0] (neither addressable nor a map index expression)</code></pre>
+<p>
+  «No puedo asignar a <code>s[0]</code>». Entre paréntesis te da el motivo:
+  no es una posición de memoria que puedas cambiar. Para cambiar un texto,
+  crea uno nuevo: convierte el string en <code>[]rune</code>, cambia lo que
+  quieras y conviértelo de nuevo con <code>string(r)</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Leer una letra con un índice. <code>s[i]</code> te da un byte, no un
+  carácter:
+</p>
+<pre><code class="language-go">s := "año"
+fmt.Println(s[1]) // 195: el primer byte de la ñ</code></pre>
+<p>
+  Para recorrer caracteres usa <code>range</code>. Para contarlos o
+  acceder a ellos por posición, conviértelo en <code>[]rune(s)</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>runes.go</code> dos funciones. <code>CountRunes</code>
+  cuenta los caracteres, no los bytes. <code>Reverse</code> les da la
+  vuelta: <code>Reverse("año")</code> es <code>"oña"</code>. Si das la
+  vuelta a los bytes, romperás la ñ.
+</p>
+<pre><code class="language-go">func CountRunes(s string) int
+func Reverse(s string) string</code></pre>
+</section>
