@@ -1,0 +1,116 @@
+<section class="slide">
+<p>
+  Quieres construir un texto poco a poco: una cabecera y luego una línea por
+  cada dato. Con <code>s += parte</code>, cada suma crea un string nuevo y
+  copia todo lo anterior, porque un string no se puede cambiar. Con mil
+  partes, copias el principio del texto mil veces. Necesitas un sitio donde
+  ir añadiendo bytes sin copiarlo todo cada vez.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  <code>bytes.Buffer</code> es ese sitio: un <em>slice</em> de bytes que
+  crece cuando escribes. <code>Write</code> y <code>WriteString</code>
+  añaden al final; <code>Read</code> lee desde el principio y avanza.
+  <code>Len()</code> dice cuántos bytes quedan sin leer y
+  <code>String()</code> los devuelve como texto.
+</p>
+<p>
+  Su valor cero ya sirve: declara <code>var buf bytes.Buffer</code> y
+  escribe. Como <code>*bytes.Buffer</code> tiene un método
+  <code>Write</code>, es un <code>io.Writer</code>: puedes pasárselo a
+  <code>fmt.Fprintf</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<buffer-demo scene="bytes">
+  <p>
+    Animación: el buffer empieza vacío. <code>WriteString("uno ")</code> y
+    <code>Write([]byte("dos"))</code> añaden bytes al final, y
+    <code>Len()</code> pasa a 7. <code>Read</code> copia los 4 primeros en
+    <code>b</code> y avanza: quedan 3 sin leer, y <code>String()</code> es
+    <code>"dos"</code>.
+  </p>
+</buffer-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+<p>Primero escribes en el buffer:</p>
+{{codeLines "examples/bytesbuffer/main.go" 1 12}}
+</section>
+
+<section class="slide">
+<p>Y luego lees de él:</p>
+{{codeLines "examples/bytesbuffer/main.go" 14 18}}
+<pre><code>7
+4 "uno "
+3 dos</code></pre>
+<p>
+  Fíjate en que <code>Read</code> no borra el texto: avanza. Después de leer
+  4 bytes, <code>Len()</code> baja de 7 a 3 y <code>String()</code> solo
+  devuelve lo que queda sin leer.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<pre><code class="language-go">package main
+
+import (
+	"bytes"
+	"fmt"
+)
+
+func main() {
+	var buf bytes.Buffer
+	fmt.Fprintf(buf, "hola %d", 7) // el buffer, tal cual
+	fmt.Println(buf.String())
+}</code></pre>
+<pre><code>./prog.go:10:14: cannot use buf (variable of struct type bytes.Buffer) as io.Writer value in argument to fmt.Fprintf: bytes.Buffer does not implement io.Writer (method Write has pointer receiver)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:10:14: cannot use buf (variable of struct type bytes.Buffer) as io.Writer value in argument to fmt.Fprintf: bytes.Buffer does not implement io.Writer (method Write has pointer receiver)</code></pre>
+<p>
+  «No puedo usar <code>buf</code> como <code>io.Writer</code>». El final te
+  da el motivo: <code>Write</code> tiene un <em>pointer receiver</em>, es
+  decir, está declarado sobre <code>*bytes.Buffer</code>. Solo el puntero es
+  un <code>io.Writer</code>. Pasa su dirección:
+  <code>fmt.Fprintf(&amp;buf, "hola %d", 7)</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>Pasar el buffer a una función por valor:</p>
+<pre><code class="language-go">func header(buf bytes.Buffer) { // recibe una copia
+	buf.WriteString("Informe\n")
+}</code></pre>
+<p>
+  Compila, porque dentro de la función <code>buf</code> es una variable y Go
+  toma su dirección por ti. Pero escribe en la copia, y tu buffer se queda
+  como estaba. Pasa siempre un <code>*bytes.Buffer</code>, como en el
+  ejercicio.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>table.go</code> una función que añada una tabla de texto
+  al final de <code>buf</code>: una línea por fila, las celdas separadas por
+  <code> | </code> y cada columna rellena con espacios hasta su celda más
+  ancha, para que quede alineada.
+</p>
+<pre><code class="language-go">func WriteTable(buf *bytes.Buffer, rows [][]string)</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: WriteTable</code>.
+</p>
+</section>

@@ -1,0 +1,97 @@
+<section class="slide">
+<p>
+  Imagina que copias un texto a un archivo letra a letra. Escribir en el
+  disco o en la red tiene un coste fijo por cada llamada, lleve un byte o
+  mil: el programa pide permiso al sistema, espera y vuelve. Con miles de
+  escrituras pequeñas, tu programa pasa casi todo el tiempo pagando ese
+  coste. ¿Cómo lo evitas?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Con un <em>buffer</em>: un trozo de memoria donde juntas los datos antes
+  de enviarlos. En vez de hacer un viaje por cada palabra, las dejas en el
+  buffer, que está cerca y es rápido. Cuando se llena, o cuando terminas, lo
+  envías todo de golpe.
+</p>
+<p>
+  Pocos viajes grandes cuestan mucho menos que muchos pequeños. Go usa
+  buffers en todas partes; en este módulo verás <code>bytes.Buffer</code>,
+  <code>bufio</code> e <code>io.Copy</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<buffer-demo scene="batch">
+  <p>
+    Animación: sin buffer, cada palabra hace su propio viaje al disco: tres
+    palabras, tres viajes. Con buffer, las tres palabras se juntan en
+    memoria y un solo <code>Write</code> las lleva de golpe: un viaje. El
+    programa imprime <code>3 1</code>.
+  </p>
+</buffer-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+<p>
+  <code>disk</code> hace de archivo: solo cuenta cuántas veces le llaman a
+  <code>Write</code>.
+</p>
+{{codeLines "examples/batch/main.go" 1 13}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/batch/main.go" 15 31}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>3 1</code></pre>
+<p>
+  Fíjate en que los dos discos reciben los mismos 13 bytes. La diferencia
+  está en el número de viajes: <code>slow</code> recibe tres llamadas y
+  <code>fast</code> una. Con un disco de verdad, cada llamada que te ahorras
+  es tiempo que tu programa no pasa esperando.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Enviar el buffer solo cuando está lleno y olvidar lo que queda al final:
+</p>
+<pre><code class="language-go">for _, word := range words {
+	buf = append(buf, word...)
+	if len(buf) >= 1024 { // lleno: envíalo y vacíalo
+		f.Write(buf)
+		buf = buf[:0]
+	}
+}
+// falta f.Write(buf): las últimas palabras no llegan nunca</code></pre>
+<p>
+  Al terminar, envía siempre lo que quede en el buffer. Lo verás otra vez
+  con <code>Flush</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Un <em>buffer circular</em> guarda los últimos n valores: cuando está
+  lleno, cada valor nuevo ocupa el sitio del más antiguo. Así funcionan los
+  registros que solo guardan las últimas líneas. Escribe en
+  <code>ring.go</code> el tipo <code>Ring</code> y sus métodos.
+  <code>Values</code> devuelve los valores del más antiguo al más nuevo.
+</p>
+<pre><code class="language-go">func NewRing(size int) *Ring
+func (r *Ring) Put(v int)
+func (r *Ring) Values() []int</code></pre>
+<p>
+  Hasta que lo escribas, <code>go test</code> falla con
+  <code>undefined: NewRing</code>.
+</p>
+</section>

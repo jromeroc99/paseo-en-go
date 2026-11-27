@@ -1,0 +1,142 @@
+<section class="slide">
+<p>
+  Quieres leer un texto línea a línea: un registro, una lista, lo que
+  escribe alguien en el teclado. Con <code>Read</code> recibes trozos de
+  bytes del tamaño que toque, y una línea puede quedar partida entre dos
+  trozos. Tendrías que juntar tú los trozos y buscar cada salto de línea.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  <code>bufio.Scanner</code> lo hace por ti. Envuelve un
+  <code>io.Reader</code>, llena su buffer con pocas llamadas a
+  <code>Read</code> y lo corta en <em>tokens</em>, trozos de texto: por
+  defecto, líneas.
+</p>
+<p>
+  Cada <code>Scan</code> avanza al siguiente token y devuelve
+  <code>false</code> cuando no quedan. <code>Text</code> te da el token, sin
+  el salto de línea. Al terminar el bucle, <code>Err</code> te dice si ha
+  parado por un error o porque se ha acabado el texto.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<buffer-demo scene="scan">
+  <p>
+    Animación: el primer <code>Scan</code> llena el buffer del Scanner con
+    todo el texto en un solo <code>Read</code>. Después corta en cada salto
+    de línea: <code>Text()</code> da <code>"uno"</code>, <code>"dos"</code> y
+    <code>"tres"</code>, y el programa los imprime. Cuando no quedan líneas,
+    <code>Scan</code> devuelve false.
+  </p>
+</buffer-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/scanner/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>&gt; uno
+&gt; dos
+&gt; tres</code></pre>
+<p>
+  Fíjate en que <code>Text()</code> no incluye el salto de línea. Y el
+  <code>if</code> de después del bucle no sobra: <code>Scan</code> devuelve
+  <code>false</code> tanto al final del texto como ante un error, y solo
+  <code>Err</code> te dice cuál de los dos ha sido.
+</p>
+</section>
+
+<section class="slide">
+<h2>Palabras en vez de líneas</h2>
+<p>Con <code>Split(bufio.ScanWords)</code>, corta en palabras:</p>
+{{code "examples/words/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>"hola,"
+"mundo"
+"de"
+"Go"</code></pre>
+<p>
+  Fíjate en que la coma se queda pegada a <code>hola</code>: para
+  <code>ScanWords</code>, una palabra es todo lo que hay entre espacios o
+  saltos de línea. Los dos espacios seguidos no dan una palabra vacía.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  El buffer del Scanner tiene un límite: un token puede ocupar como mucho
+  64 KB. Prueba con una sola línea de 70 000 bytes:
+</p>
+<pre><code class="language-go">package main
+
+import (
+	"bufio"
+	"fmt"
+	"strings"
+)</code></pre>
+</section>
+
+<section class="slide">
+<pre><code class="language-go">func main() {
+	long := strings.Repeat("a", 70000) // una sola línea de 70 000 bytes
+	scanner := bufio.NewScanner(strings.NewReader(long))
+	for scanner.Scan() {
+		fmt.Println(len(scanner.Text()))
+	}
+	fmt.Println("error:", scanner.Err())
+}</code></pre>
+<pre><code>error: bufio.Scanner: token too long</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>error: bufio.Scanner: token too long</code></pre>
+<p>
+  «Token demasiado largo». La línea no cabe en el buffer, así que el primer
+  <code>Scan</code> se rinde y devuelve <code>false</code>: no se imprime
+  ningún número. Si no miraras <code>Err</code>, el programa terminaría en
+  silencio, como si el texto estuviera vacío. Si esperas líneas tan largas,
+  dale un buffer mayor con <code>scanner.Buffer</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>Olvidar que <code>Text</code> quita el salto de línea:</p>
+<pre><code class="language-go">for scanner.Scan() {
+	fmt.Print(scanner.Text()) // "unodostres": los saltos se han perdido
+}</code></pre>
+<p>
+  Si quieres conservar las líneas, añade tú el salto:
+  <code>fmt.Println</code> o <code>scanner.Text() + "\n"</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>wc.go</code> el tipo <code>Counts</code> y una función que
+  cuente las líneas, las palabras y los bytes de un texto, como el comando
+  <code>wc</code>. Lee con un <code>bufio.Scanner</code>;
+  <code>strings.Fields</code> te da las palabras de una línea. Cada línea
+  termina en salto de línea, pero <code>Text</code> te la da sin él: suma
+  <code>len(line)+1</code> bytes. Devuelve el error de <code>Err</code>.
+</p>
+<pre><code class="language-go">func Count(r io.Reader) (Counts, error)</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Counts</code>.
+</p>
+</section>

@@ -1,0 +1,117 @@
+<section class="slide">
+<p>
+  Tu programa escribe miles de líneas en un archivo con
+  <code>fmt.Fprintln</code>. Cada llamada es una escritura en el archivo: un
+  viaje al sistema operativo por cada línea, y ya sabes que eso es lento.
+  Podrías juntar tú las líneas en un <code>bytes.Buffer</code> y escribirlas
+  al final, pero entonces guardas todo el texto en memoria. ¿Y si es
+  enorme?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  <code>bufio.Writer</code> envuelve a otro <code>io.Writer</code> y le pone
+  delante un buffer de tamaño fijo: 4096 bytes si no pides otro. Tú escribes
+  en él como en cualquier <code>io.Writer</code>. Él junta los bytes y,
+  cuando el buffer se llena, los envía de una vez y vuelve a empezar.
+</p>
+<p>
+  Lo que queda al final no se envía solo. Tienes que llamar a
+  <code>Flush</code>, que vacía el buffer en el <code>Writer</code> de debajo
+  y te devuelve su error.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<buffer-demo scene="flush">
+  <p>
+    Animación: <code>bufio.NewWriter</code> pone un buffer de 4096 bytes
+    delante de la pantalla. Cada <code>Fprintln</code> deja una línea en el
+    buffer y la pantalla sigue vacía: 9, 18 y 27 bytes esperando. Al llamar
+    a <code>Flush</code>, las tres líneas pasan juntas a la pantalla.
+  </p>
+</buffer-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/flush/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>línea 1
+línea 2
+línea 3</code></pre>
+<p>
+  Fíjate en que <code>fmt.Fprintln</code> recibe <code>w</code>, no
+  <code>os.Stdout</code>: las líneas van al buffer. Llegan a la pantalla
+  todas juntas en el <code>Flush</code>, con una sola escritura.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>Borra el <code>w.Flush()</code> y ejecuta el programa:</p>
+<pre><code class="language-go">package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+func main() {
+	w := bufio.NewWriter(os.Stdout)
+	for i := 1; i &lt;= 3; i++ {
+		fmt.Fprintln(w, "línea", i)
+	}
+}</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<p>
+  No hay mensaje que leer, y eso es lo peligroso: compila, termina sin
+  error y no imprime nada. Las tres líneas se quedan en el buffer y se
+  pierden al terminar <code>main</code>. La pista es una salida vacía o un
+  archivo cortado justo en un múltiplo de 4096 bytes.
+</p>
+<p>
+  Escribe el <code>Flush</code> en cuanto escribes el
+  <code>bufio.NewWriter</code>, igual que cierras un paréntesis en cuanto lo
+  abres.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>Llamar a <code>Flush</code>, pero tirar su error:</p>
+<pre><code class="language-go">w := bufio.NewWriter(f)
+defer w.Flush() // si el disco se llena, nadie se entera</code></pre>
+<p>
+  <code>Flush</code> es la escritura de verdad, así que es ahí donde
+  aparecen los errores del archivo. Devuelve lo que te diga:
+  <code>return w.Flush()</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>report.go</code> el tipo <code>Score</code> y una función
+  que escriba un informe en <code>w</code> a través de un
+  <code>bufio.Writer</code>: primero <code>Informe</code>, luego una línea
+  <code>Nombre: Puntos</code> por cada uno y al final <code>Total: N</code>.
+  Devuelve el error de <code>Flush</code>. Los tests comprueban que el
+  informe llega a <code>w</code> en una sola escritura.
+</p>
+<pre><code class="language-go">func WriteReport(w io.Writer, scores []Score) error</code></pre>
+<p>
+  Hasta que lo escribas, <code>go test</code> falla con
+  <code>undefined: Score</code>.
+</p>
+</section>

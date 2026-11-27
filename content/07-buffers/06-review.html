@@ -1,0 +1,48 @@
+<section class="slide">
+<p>
+  Has terminado el módulo. Antes de seguir, repasa lo que ya sabes:
+</p>
+<ul>
+  <li><a href="../01-buffers/">Qué es un buffer</a>: juntas los datos en memoria y los envías de golpe.</li>
+  <li><a href="../02-bytes-buffer/">bytes.Buffer</a>: escribes al final y lees desde el principio.</li>
+  <li><a href="../03-bufio-writer/">bufio.Writer y Flush</a>: sin <code>Flush</code>, lo último se queda en el buffer.</li>
+</ul>
+</section>
+
+<section class="slide">
+<ul>
+  <li><a href="../04-scanner/">bufio.Scanner</a>: lee línea a línea; mira siempre <code>Err</code> al terminar.</li>
+  <li><a href="../05-io-copy/">io.Copy</a>: copia de un <code>Reader</code> a un <code>Writer</code> por trozos, sin cargarlo todo.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Vas a escribir tu propio <code>uniq</code>, el comando que quita las
+  líneas repetidas cuando vienen seguidas:
+</p>
+<ul>
+  <li>Lee las líneas de <code>r</code> con un <code>bufio.Scanner</code>.</li>
+  <li>Escribe en <code>w</code> cada línea con su salto, salvo si es igual
+    que la anterior. Una línea vacía también es una línea.</li>
+  <li>Escribe a través de un <code>bufio.Writer</code> y no olvides el
+    <code>Flush</code>.</li>
+  <li>Devuelve el error de <code>Err</code> si lo hay, o si no el de
+    <code>Flush</code>.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Lo que escribes</h2>
+<p>
+  Escribe todo en <code>uniq.go</code>. Con <code>"a\na\nb\na\n"</code>
+  escribe <code>"a\nb\na\n"</code>: la última <code>a</code> se queda,
+  porque la línea de antes es <code>b</code>.
+</p>
+<pre><code class="language-go">func Uniq(r io.Reader, w io.Writer) error</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Uniq</code>.
+</p>
+</section>
