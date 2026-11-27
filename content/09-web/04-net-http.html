@@ -1,0 +1,139 @@
+<section class="slide">
+<p>
+  Ya has escrito un servidor HTTP a mano: leer líneas, buscar la línea en
+  blanco, contar los bytes del cuerpo. Funciona, pero es fácil equivocarse,
+  y aún faltan muchas cosas: leer el cuerpo, elegir qué código hacer según
+  la ruta, atender peticiones que llegan a la vez. ¿Hay que escribir todo
+  eso cada vez?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  No. El paquete <code>net/http</code> de la biblioteca estándar ya lo hace.
+  Tú escribes un <em>handler</em>, una función que recibe la petición
+  (<code>*http.Request</code>) y escribe la respuesta
+  (<code>http.ResponseWriter</code>).
+</p>
+<p>
+  Un <code>http.ServeMux</code> elige qué handler atiende cada petición
+  según un patrón como <code>"GET /square/{n}"</code>: el método, la ruta y
+  los trozos variables entre llaves, que lees con <code>r.PathValue</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{codeLines "examples/square/main.go" 1 17}}
+</section>
+
+<section class="slide">
+<p>
+  <code>main</code> registra el patrón y arranca el servidor.
+  <code>ListenAndServe</code> hace el <code>Listen</code>, el bucle de
+  <code>Accept</code> y una goroutine por conexión, como tú en las lecciones
+  anteriores:
+</p>
+{{codeLines "examples/square/main.go" 19 23}}
+</section>
+
+<section class="slide">
+<p>Ejecuta el servidor y pide el cuadrado de 4:</p>
+<pre><code>$ curl -i localhost:8080/square/4
+HTTP/1.1 200 OK
+Date: Fri, 27 Nov 2026 11:14:21 GMT
+Content-Length: 3
+Content-Type: text/plain; charset=utf-8
+
+16</code></pre>
+<p>
+  Fíjate en que no has escrito ninguna cabecera: <code>net/http</code> ha
+  puesto la fecha, la longitud y el tipo del cuerpo por ti.
+</p>
+</section>
+
+<section class="slide">
+<h2>Cuando algo va mal</h2>
+<pre><code>$ curl -i localhost:8080/square/cuatro
+HTTP/1.1 400 Bad Request
+Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+Date: Fri, 27 Nov 2026 11:14:21 GMT
+Content-Length: 19
+
+n no es un número</code></pre>
+<p>
+  <code>http.Error</code> escribe el código de estado y el mensaje.
+  Fíjate en el <code>return</code> que lo sigue: el handler tiene que
+  terminar ahí.
+</p>
+</section>
+
+<section class="slide">
+<h2>Lo que hace el ServeMux</h2>
+<pre><code>$ curl -X POST localhost:8080/square/4
+Method Not Allowed
+$ curl localhost:8080/cube/4
+404 page not found</code></pre>
+<p>
+  Sin escribir nada más: un <code>POST</code> a una ruta que solo acepta
+  <code>GET</code> recibe un <code>405</code>, y una ruta que no existe, un
+  <code>404</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>Escribir el cuerpo y después el código de estado:</p>
+<pre><code class="language-go">func create(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "creada")
+	w.WriteHeader(http.StatusCreated)
+}</code></pre>
+<pre><code>2026/11/27 12:14:22 http: superfluous response.WriteHeader call from main.create (main.go:11)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>http: superfluous response.WriteHeader call from main.create (main.go:11)</code></pre>
+<p>
+  <em>Superfluous</em> significa que sobra: la llamada a
+  <code>WriteHeader</code> de la línea 11 no sirve. Al escribir el cuerpo,
+  <code>net/http</code> envió la primera línea y las cabeceras con un
+  <code>200</code>, y lo enviado ya no se puede cambiar. El cliente recibe
+  <code>200 OK</code>. Llama a <code>WriteHeader</code> antes de escribir el
+  cuerpo.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>Olvidar el <code>return</code> después de <code>http.Error</code>:</p>
+<pre><code class="language-go">if err != nil {
+	http.Error(w, "n no es un número", http.StatusBadRequest)
+}
+fmt.Fprintln(w, n*n)</code></pre>
+<pre><code>$ curl localhost:8080/square/cuatro
+n no es un número
+0</code></pre>
+<p>
+  <code>http.Error</code> no para el handler: escribe y sigue. Termina tú
+  con <code>return</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>greet.go</code> una función que devuelva un handler.
+  Con <code>GET /hello/{name}</code> responde <code>Hola, </code> y el
+  nombre, con un salto de línea al final. Usa un
+  <code>http.ServeMux</code>: así los métodos y las rutas que no existen
+  responden solos con <code>405</code> y <code>404</code>.
+</p>
+<pre><code class="language-go">func NewHandler() http.Handler</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: NewHandler</code>.
+</p>
+</section>

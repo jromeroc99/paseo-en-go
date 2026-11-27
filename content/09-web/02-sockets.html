@@ -1,0 +1,121 @@
+<section class="slide">
+<p>
+  Ya sabes abrir una conexión y enviar bytes. Ahora el cliente envía dos
+  mensajes seguidos: <code>uno</code> y <code>dos</code>. ¿Cómo sabe el
+  servidor dónde acaba el primero y dónde empieza el segundo?
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  No lo sabe. TCP no conoce los mensajes: es un <em>flujo</em> de bytes, como
+  el agua de un grifo. Lo que escribes en dos veces puede llegar en un solo
+  <code>Read</code>, y lo que escribes de golpe puede llegar en dos.
+</p>
+<p>
+  Por eso los dos programas acuerdan un <em>protocolo</em>: unas reglas sobre
+  qué se envía. La más sencilla es que cada mensaje sea una línea acabada en
+  <code>\n</code>. <code>bufio.Scanner</code> lee justo hasta ahí.
+</p>
+</section>
+
+<section class="slide">
+<h2>Bytes, no mensajes</h2>
+<net-demo scene="stream">
+  <p>
+    Animación: el cliente escribe <code>uno\n</code> y luego
+    <code>dos\n</code>, y dentro de la conexión queda una sola fila de bytes.
+    Un <code>Read</code> se lleva un trozo cualquiera,
+    <code>uno\nd</code>. <code>Scan</code>, en cambio, corta en cada
+    <code>\n</code> y devuelve <code>uno</code> y después <code>dos</code>.
+  </p>
+</net-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{codeLines "examples/shout/main.go" 1 17}}
+</section>
+
+<section class="slide">
+<p>
+  <code>main</code> es el de la lección anterior: escucha en el puerto 8080 y
+  atiende cada conexión en su goroutine.
+</p>
+{{codeLines "examples/shout/main.go" 19 31}}
+</section>
+
+<section class="slide">
+<p>Ejecuta el servidor, conéctate con <code>nc</code> y escribe dos líneas:</p>
+<pre><code>$ nc localhost 8080
+hola
+HOLA
+qué tal
+QUÉ TAL</code></pre>
+<p>
+  Fíjate en que <code>sc.Text()</code> devuelve la línea sin el
+  <code>\n</code>, y <code>Fprintln</code> lo vuelve a poner. El bucle acaba
+  cuando el cliente cierra la conexión: entonces <code>Scan</code> devuelve
+  <code>false</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>Leer con <code>Read</code> y suponer que cada lectura es un mensaje:</p>
+<pre><code class="language-go">func handle(conn net.Conn) {
+	defer conn.Close()
+	buf := make([]byte, 1024)
+	for {
+		n, err := conn.Read(buf)
+		if err != nil {
+			return
+		}
+		fmt.Printf("mensaje: %q\n", buf[:n])
+	}
+}</code></pre>
+<pre><code>mensaje: "uno\ndos\n"</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>mensaje: "uno\ndos\n"</code></pre>
+<p>
+  Aquí no hay mensaje de error: el fallo es silencioso. El cliente envió dos
+  líneas con <code>printf 'uno\ndos\n' | nc -N localhost 8080</code>, y un
+  solo <code>Read</code> se las llevó juntas. Otras veces llegarían
+  partidas. <code>Read</code> devuelve los bytes que ya han llegado, sin
+  saber de mensajes. Para leer mensajes, usa un <code>Scanner</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>Olvidar el <code>\n</code> al responder:</p>
+<pre><code class="language-go">fmt.Fprint(conn, strings.ToUpper(sc.Text())) // sin \n</code></pre>
+<p>
+  El cliente lee con <code>Scan</code>, que espera hasta encontrar un
+  <code>\n</code>. Como nunca llega, se queda esperando. Si tu
+  protocolo dice que cada mensaje acaba en <code>\n</code>, los dos lados
+  tienen que cumplirlo: usa <code>Fprintln</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>kv.go</code> un servidor de clave-valor con un protocolo
+  de líneas. <code>SET clave valor</code> guarda el valor y responde
+  <code>OK</code>; <code>GET clave</code> responde el valor o
+  <code>NOT FOUND</code>; cualquier otra línea, <code>ERROR</code>. Muchas
+  conexiones comparten el mismo <code>Store</code>, así que protégelo con un
+  <code>sync.Mutex</code>.
+</p>
+<pre><code class="language-go">type Store struct {
+	// tus campos
+}
+
+func NewStore() *Store
+func (s *Store) Handle(conn net.Conn)</code></pre>
+</section>
