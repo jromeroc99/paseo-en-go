@@ -354,5 +354,60 @@ var Course = course.Course{
 				},
 			},
 		},
+		{
+			Slug:    "07-buffers",
+			Title:   "Buffers y E/S",
+			Summary: "Por qué escribir de golpe es más rápido que byte a byte: bytes.Buffer, bufio y io.Copy.",
+			Lessons: []course.Lesson{
+				{
+					Slug:  "01-buffers",
+					Title: "Qué es un buffer",
+					Exercise: &course.Exercise{
+						Path: "07-buffers/ring",
+						Goal: "Guarda los últimos n valores en un buffer circular.",
+					},
+				},
+				{
+					Slug:  "02-bytes-buffer",
+					Title: "bytes.Buffer",
+					Exercise: &course.Exercise{
+						Path: "07-buffers/table",
+						Goal: "Escribe una tabla de texto en un bytes.Buffer.",
+					},
+				},
+				{
+					Slug:  "03-bufio-writer",
+					Title: "bufio.Writer y Flush",
+					Exercise: &course.Exercise{
+						Path: "07-buffers/report",
+						Goal: "Escribe un informe con bufio.Writer sin olvidar el Flush.",
+					},
+				},
+				{
+					Slug:  "04-scanner",
+					Title: "Leer línea a línea con bufio.Scanner",
+					Exercise: &course.Exercise{
+						Path: "07-buffers/wc",
+						Goal: "Cuenta las líneas, las palabras y los bytes de un texto, como wc.",
+					},
+				},
+				{
+					Slug:  "05-io-copy",
+					Title: "io.Copy: de un Reader a un Writer",
+					Exercise: &course.Exercise{
+						Path: "07-buffers/counter",
+						Goal: "Cuenta cuántos bytes pasan por un Writer mientras copias con io.Copy.",
+					},
+				},
+				{
+					Slug:  "06-review",
+					Title: "Repaso: tu propio uniq",
+					Exercise: &course.Exercise{
+						Path: "07-buffers/uniq",
+						Goal: "Lee líneas y quita las que se repiten seguidas, como uniq.",
+					},
+				},
+			},
+		},
 	},
 }

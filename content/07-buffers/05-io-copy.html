@@ -1,0 +1,115 @@
+<section class="slide">
+<p>
+  Quieres copiar un archivo en otro, o guardar en un archivo lo que llega
+  por la red. Si lo lees todo en memoria y luego lo escribes, un archivo de
+  4 GB necesita 4 GB de memoria. Lo que quieres es pasar los datos por
+  trozos: leer un poco, escribirlo y repetir.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  <code>io.Copy(dst, src)</code> hace justo eso. Lee de un
+  <code>io.Reader</code> y escribe en un <code>io.Writer</code> a través de
+  un buffer pequeño que reutiliza, hasta que <code>Read</code> devuelve
+  <code>io.EOF</code>.
+</p>
+<p>
+  Devuelve cuántos bytes ha copiado y el primer error que encuentra.
+  <code>io.EOF</code> no cuenta como error: es el final esperado. Funciona
+  con cualquier pareja: archivos, conexiones de red,
+  <code>strings.Reader</code> o <code>bytes.Buffer</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>En la memoria</h2>
+<buffer-demo scene="copy">
+  <p>
+    Animación: un buffer de 4 bytes entre <code>src</code> y
+    <code>dst</code>. Cada vuelta, <code>Read</code> llena el buffer con el
+    siguiente trozo de <code>"Hola, Gopher"</code> y <code>Write</code> lo
+    lleva al destino. Tras tres vueltas, el siguiente <code>Read</code>
+    devuelve <code>io.EOF</code> y la copia termina.
+  </p>
+</buffer-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/copy/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>Hola desde un Reader
+21 bytes copiados, error: &lt;nil&gt;</code></pre>
+<p>
+  Fíjate en el <code>&lt;nil&gt;</code>: <code>io.Copy</code> ha llegado al
+  final del texto y no te devuelve <code>io.EOF</code>, porque terminar no es
+  un error. Los 21 bytes incluyen el salto de línea.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<pre><code class="language-go">package main
+
+import (
+	"io"
+	"os"
+	"strings"
+)
+
+func main() {
+	src := strings.NewReader("hola\n")
+	io.Copy(src, os.Stdout) // los argumentos, al revés
+}</code></pre>
+<pre><code>./prog.go:11:10: cannot use src (variable of type *strings.Reader) as io.Writer value in argument to io.Copy: *strings.Reader does not implement io.Writer (missing method Write)</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./prog.go:11:10: cannot use src (variable of type *strings.Reader) as io.Writer value in argument to io.Copy: *strings.Reader does not implement io.Writer (missing method Write)</code></pre>
+<p>
+  El primer argumento de <code>io.Copy</code> es el destino y tiene que ser
+  un <code>io.Writer</code>. <code>src</code> sabe leer, pero le falta el
+  método <code>Write</code> (<em>missing method Write</em>). El orden es el
+  de una asignación, <code>dst = src</code>: primero adónde va y luego de
+  dónde viene.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>Leerlo todo en memoria para copiarlo:</p>
+<pre><code class="language-go">data, err := io.ReadAll(src) // todo el archivo en memoria
+if err != nil {
+	return err
+}
+_, err = dst.Write(data)</code></pre>
+<p>
+  Con un archivo pequeño no notas nada; con uno de varios GB, tu programa se
+  queda sin memoria. <code>io.Copy(dst, src)</code> hace lo mismo con un
+  buffer de unos pocos KB.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Un <code>io.Writer</code> puede envolver a otro, como hace
+  <code>bufio.Writer</code>. Escribe en <code>counter.go</code> un
+  <code>CountingWriter</code> que pase cada <code>Write</code> a
+  <code>W</code> y sume en <code>Count</code> la <code>n</code> que devuelve
+  <code>W</code>, que puede ser menor que <code>len(p)</code> si falla.
+  Después devuelve esa misma <code>n</code> y el error. Así cuentas los
+  bytes que pasan por <code>io.Copy</code>.
+</p>
+<pre><code class="language-go">func (c *CountingWriter) Write(p []byte) (int, error)</code></pre>
+<p>
+  Hasta que lo escribas, <code>go test</code> falla con
+  <code>undefined: CountingWriter</code>.
+</p>
+</section>
