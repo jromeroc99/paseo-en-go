@@ -1,6 +1,8 @@
-// <slice-demo> shows a slice as a window over an array. Scenes: "view" (two
-// slices share one array), "len-cap" (a window has a length and a capacity)
-// and "append" (append moves to a bigger array when the current one is full).
+// <slice-demo> shows arrays and slices as rows of cells. Scenes:
+// "array-copy" (assigning an array copies every element), "range-copy"
+// (range hands each element over as a copy), "view" (two slices share one
+// array), "len-cap" (a window has a length and a capacity) and "append"
+// (append moves to a bigger array when the current one is full).
 import { Scene, lerp } from "./scene.js";
 
 const DROP = 6; // units an entering array falls before it settles
@@ -29,7 +31,102 @@ const ARRAYS = [
   { y: 35, cap: 6 },
 ];
 
+// array-copy: the array primes and, below it, the copy.
+const ORIGINAL = { x: 40, y: 8, cellWidth: 19, cellHeight: 16 };
+const COPY = { ...ORIGINAL, y: 32 };
+const COPIED_VALUES = ["100", "3", "5", "7", "11", "13"];
+
+// range-copy: the elements of scores and, apart, the loop variable v.
+const SCORES = { x: 40, y: 18, cellWidth: 20, cellHeight: 16 };
+const SCORES_VALUES = ["1", "2", "3"];
+const V_BOX = { x: 116, y: 18, width: 24, height: 16 };
+
 const scenes = {
+  "array-copy": {
+    code: ["primes := [6]int{2, 3, 5, 7, 11, 13}", "copied := primes", "copied[0] = 100", "fmt.Println(primes[0], copied[0])"],
+    steps: [
+      {
+        line: 0,
+        caption: "`primes` es un array: sus 6 números ocupan 6 casillas seguidas.",
+        enter: true,
+      },
+      {
+        line: 1,
+        caption: "`copied := primes` copia el array entero: 6 casillas nuevas con los mismos números.",
+        copied: PRIMES_VALUES,
+        copying: true,
+      },
+      {
+        line: 2,
+        caption: "`copied[0] = 100` cambia solo la copia. `primes` sigue igual.",
+        copied: COPIED_VALUES,
+        change: { index: 0, was: "2" },
+      },
+      {
+        line: 3,
+        caption: "Son dos arrays distintos: se imprime 2 y 100.",
+        copied: COPIED_VALUES,
+        output: ["2 100"],
+        printed: true,
+      },
+    ],
+  },
+
+  "range-copy": {
+    code: ["scores := []int{1, 2, 3}", "for _, v := range scores {", "\tv = v * 10", "}", "fmt.Println(scores)"],
+    steps: [
+      {
+        line: 0,
+        caption: "`scores` guarda 1, 2 y 3.",
+        enter: true,
+      },
+      {
+        line: 1,
+        caption: "En cada vuelta, `range` copia un elemento en `v`. Primera vuelta: `v` vale 1.",
+        reading: 0,
+        v: "1",
+      },
+      {
+        line: 2,
+        caption: "`v = v * 10` cambia la copia: `v` vale 10, pero `scores[0]` sigue valiendo 1.",
+        v: "10",
+        was: "1",
+      },
+      {
+        line: 1,
+        caption: "Segunda vuelta: `range` copia el 2 en `v`, encima del 10.",
+        reading: 1,
+        v: "2",
+        was: "10",
+      },
+      {
+        line: 2,
+        caption: "`v` pasa a valer 20. El elemento de `scores` no se toca.",
+        v: "20",
+        was: "2",
+      },
+      {
+        line: 1,
+        caption: "Tercera vuelta: `v` recibe una copia del 3.",
+        reading: 2,
+        v: "3",
+        was: "20",
+      },
+      {
+        line: 2,
+        caption: "`v` vale 30 y `scores[2]` sigue en 3.",
+        v: "30",
+        was: "3",
+      },
+      {
+        line: 4,
+        caption: "El bucle solo cambió copias: se imprime [1 2 3].",
+        output: ["[1 2 3]"],
+        printed: true,
+      },
+    ],
+  },
+
   view: {
     code: [
       'names := [4]string{"Ana", "Luis", "Marta", "Pablo"}',
@@ -289,11 +386,69 @@ const scenes = {
 class SliceDemo extends Scene {
   static scenes = scenes;
 
-  // The three scenes share cells and output, but each has its own layout.
+  // The scenes share cells and output, but each has its own layout.
   draw(paint, step, t) {
-    const drawScene = { view: drawView, "len-cap": drawLenCap, append: drawAppend }[this.getAttribute("scene")];
+    const drawScene = {
+      "array-copy": drawArrayCopy,
+      "range-copy": drawRangeCopy,
+      view: drawView,
+      "len-cap": drawLenCap,
+      append: drawAppend,
+    }[this.getAttribute("scene")];
     drawScene(paint, step, t);
     if (step.output) drawOutput(paint, step.output, step.printed, t);
+  }
+}
+
+// drawArrayCopy draws primes and, once it exists, copied. A step plays in
+// two halves: the copy drops in empty, then every value slides down into
+// it. A cell that changes shows its old value until the motion ends.
+function drawArrayCopy(paint, step, t) {
+  const { colors } = paint;
+  const y = ORIGINAL.y - (step.enter ? lerp(DROP, 0, t) : 0);
+  paint.text("primes", 4, y + textOffset(ORIGINAL), colors.paper);
+  drawCells(paint, ORIGINAL, y, PRIMES_VALUES.map((text) => ({ text, kind: "value" })));
+  if (!step.copied) return;
+
+  const settle = Math.min(1, t * 2);
+  const slide = Math.max(0, t * 2 - 1);
+  const copyY = COPY.y - (step.copying ? lerp(DROP, 0, settle) : 0);
+  paint.text("copied", 4, copyY + textOffset(COPY), colors.paper);
+  const cells = step.copied.map((text, i) => {
+    if (step.copying) return { text: t < 1 ? "" : text, kind: "highlight" };
+    if (step.change?.index === i) return { text: t < 1 ? step.change.was : text, kind: "highlight" };
+    return { text, kind: "value" };
+  });
+  drawCells(paint, COPY, copyY, cells);
+
+  if (step.copying && slide > 0 && t < 1) {
+    const textY = lerp(ORIGINAL.y, COPY.y, slide) + textOffset(COPY);
+    step.copied.forEach((text, i) => paint.centerText(text, cellX(COPY, i), textY, COPY.cellWidth, colors.highlight));
+  }
+}
+
+// drawRangeCopy draws the elements of scores and the loop variable v. When
+// range reads an element, a copy of its value travels into v; the element
+// itself never changes.
+function drawRangeCopy(paint, step, t) {
+  const { colors } = paint;
+  const y = SCORES.y - (step.enter ? lerp(DROP, 0, t) : 0);
+  paint.text("scores", 4, y + textOffset(SCORES), colors.paper);
+  const cells = SCORES_VALUES.map((text, i) => ({ text, kind: i === step.reading ? "highlight" : "value" }));
+  drawCells(paint, SCORES, y, cells);
+  if (step.v === undefined) return;
+
+  const changing = step.was !== undefined || step.reading !== undefined;
+  const value = changing && t < 1 ? (step.was ?? "") : step.v;
+  const { x, width, height } = V_BOX;
+  paint.text("v", x, V_BOX.y - 7, colors.paper);
+  paint.frame(x, V_BOX.y, width, height, changing ? colors.highlight : colors.value);
+  paint.centerText(value, x, V_BOX.y + 5.5, width, changing ? colors.highlight : colors.value);
+
+  if (step.reading !== undefined && t < 1) {
+    const fromX = cellX(SCORES, step.reading);
+    const textX = lerp(fromX, x + (width - SCORES.cellWidth) / 2, t);
+    paint.centerText(step.v, textX, SCORES.y + textOffset(SCORES), SCORES.cellWidth, colors.highlight);
   }
 }
 

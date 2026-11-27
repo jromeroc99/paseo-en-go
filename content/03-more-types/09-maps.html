@@ -34,6 +34,18 @@ stock := map[string]int{"manzanas": 3, "peras": 5}</code></pre>
 </section>
 
 <section class="slide">
+<h2>Dónde vive cada clave</h2>
+<map-demo scene="buckets">
+  <p>
+    Animación: para guardar una clave, Go calcula su <em>hash</em>, un número
+    que sale de la clave, y ese número elige un bucket. "Ana" cae en el bucket
+    2 y "Luis" en el 0. Al leer <code>ages["Ana"]</code>, Go calcula el mismo
+    hash y va directo al bucket 2.
+  </p>
+</map-demo>
+</section>
+
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/maps/main.go"}}
 </section>
