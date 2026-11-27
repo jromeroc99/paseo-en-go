@@ -1,0 +1,55 @@
+<section class="slide">
+<p>
+  Has terminado el módulo. Antes de seguir, repasa lo que ya sabes:
+</p>
+<ul>
+  <li><a href="../01-processes/">Procesos e hilos</a>: los hilos de un proceso comparten su memoria.</li>
+  <li><a href="../02-goroutines/">Goroutines</a>: <code>go f()</code> arranca una; un <code>WaitGroup</code> espera a todas.</li>
+  <li><a href="../03-scheduler/">El planificador G-M-P</a>: un P sin trabajo roba la mitad de la cola de otro.</li>
+  <li><a href="../04-channels/">Canales</a>: enviar y recibir esperan el uno al otro.</li>
+  <li><a href="../05-buffered-channels/">Canales con buffer</a>: enviar solo espera si el buffer está lleno.</li>
+</ul>
+</section>
+
+<section class="slide">
+<ul>
+  <li><a href="../06-range-close/">range y close</a>: solo cierra quien envía; <code>range</code> para al cerrar.</li>
+  <li><a href="../07-select/">select y default</a>: espera en varios canales y se queda con el primero.</li>
+  <li><a href="../08-mutex/">Mutex y data races</a>: un cerrojo deja pasar a una goroutine a la vez; <code>-race</code> encuentra las carreras.</li>
+  <li><a href="../09-trees/">Árboles equivalentes</a>: dos recorridos en goroutines, comparados valor a valor.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Es la última práctica del tour de Go, <em>Web Crawler</em>: un rastreador
+  web. Empieza en una página, la descarga y sigue sus enlaces, cada uno en
+  su propia goroutine, hasta una profundidad máxima.
+</p>
+<ul>
+  <li>Con profundidad 1, solo descarga la primera página.</li>
+  <li>Nunca descarga dos veces la misma, aunque varias la enlacen.</li>
+  <li>Una página que falla cuenta como visitada.</li>
+  <li><code>Crawl</code> no vuelve hasta que todas las goroutines han
+    acabado.</li>
+</ul>
+</section>
+
+<section class="slide">
+<h2>Lo que escribes</h2>
+<p>
+  Escribe todo en <code>crawler.go</code>. Guarda las páginas visitadas en
+  un map protegido por un <code>sync.Mutex</code>, y cuenta las goroutines
+  con un <code>sync.WaitGroup</code>.
+</p>
+<pre><code class="language-go">type Fetcher interface {
+	Fetch(url string) (body string, urls []string, err error)
+}
+
+func Crawl(url string, depth int, fetcher Fetcher)</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: Crawl</code>. Es normal; es tu punto de partida.
+</p>
+</section>

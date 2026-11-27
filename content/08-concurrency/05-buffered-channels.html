@@ -1,0 +1,117 @@
+<section class="slide">
+<p>
+  En un canal sin buffer, quien envía se queda esperando hasta que alguien
+  recibe. A veces no quieres eso: una goroutine produce rápido, otra
+  procesa más despacio, y te basta con que los valores esperen en una cola
+  mientras tanto.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Un canal <em>con buffer</em> tiene sitio para guardar valores. El tamaño
+  va como segundo argumento de <code>make</code>:
+  <code>ch := make(chan int, 2)</code>.
+</p>
+<p>
+  Enviar solo espera si el buffer está lleno; recibir solo espera si está
+  vacío. Los valores salen en el mismo orden en que entraron, como en una
+  cola.
+</p>
+<p>
+  <code>len(ch)</code> dice cuántos valores esperan dentro y
+  <code>cap(ch)</code>, cuántos caben.
+</p>
+</section>
+
+<section class="slide">
+<h2>El buffer</h2>
+<chan-demo scene="buffered">
+  <p>
+    Animación: un canal con dos huecos. <code>main</code> envía 1 y 2, que
+    entran en el buffer sin esperar. Al enviar 3 el buffer está lleno y
+    <code>main</code> espera. Otra goroutine recibe el 1, el primero que
+    entró; queda un hueco, el 2 avanza, el 3 entra y <code>main</code>
+    sigue.
+  </p>
+</chan-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/buffered/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>1
+2</code></pre>
+<p>
+  Fíjate en que aquí no hay ninguna goroutine más: <code>main</code> envía
+  y recibe sola, porque los dos valores caben en el buffer.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Envías un valor más de los que caben:
+</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+	ch := make(chan int, 2)
+	ch &lt;- 1
+	ch &lt;- 2
+	ch &lt;- 3
+	fmt.Println(&lt;-ch)
+}</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan send]:
+main.main()
+	.../main.go:9 +0x58
+exit status 2</code></pre>
+<p>
+  Es el mismo <em>deadlock</em> que con un canal sin buffer, solo que llega
+  más tarde. <code>chan send</code> en la línea 9: el tercer envío. Los dos
+  huecos ya estaban llenos, así que <code>main</code> esperó a que alguien
+  recibiera, y no había nadie más.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Usar el buffer para tapar un <em>deadlock</em>. Si tu programa se bloquea
+  y le das un buffer más grande, puede que funcione... hasta que lleguen más
+  valores de los que caben.
+</p>
+<p>
+  El buffer no sustituye a una goroutine que reciba: solo deja que quien
+  envía se adelante un poco. Elige su tamaño porque sabes cuántos valores
+  van a esperar, no para que el error desaparezca.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Un canal con buffer también sirve para limitar cuántas cosas pasan a la
+  vez: cada hueco es un permiso. Escribe en <code>limit.go</code> una
+  función que ejecuta cada tarea en su goroutine, pero nunca más de
+  <code>limit</code> a la vez.
+</p>
+<pre><code class="language-go">func RunLimited(tasks []func(), limit int)</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: RunLimited</code>. Es normal; es tu punto de partida.
+</p>
+</section>

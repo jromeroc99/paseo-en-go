@@ -448,5 +448,92 @@ var Course = course.Course{
 				},
 			},
 		},
+		{
+			Slug:    "08-concurrency",
+			Title:   "Procesos, hilos y goroutines",
+			Summary: "Cómo hace Go varias cosas a la vez: procesos, hilos, goroutines, el planificador, canales y Mutex.",
+			Lessons: []course.Lesson{
+				{
+					Slug:  "01-processes",
+					Title: "Procesos e hilos",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/roundrobin",
+						Goal: "Reparte tareas entre varios hilos por turnos, como un planificador.",
+					},
+				},
+				{
+					Slug:  "02-goroutines",
+					Title: "Goroutines",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/squares",
+						Goal: "Calcula cuadrados en goroutines y espera a todas con un WaitGroup.",
+					},
+				},
+				{
+					Slug:  "03-scheduler",
+					Title: "El planificador G-M-P",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/steal",
+						Goal: "Simula el robo de trabajo: un procesador sin tareas se lleva la mitad de la cola de otro.",
+					},
+				},
+				{
+					Slug:  "04-channels",
+					Title: "Canales",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/splitsum",
+						Goal: "Suma las dos mitades de un slice en dos goroutines y junta los resultados por un canal.",
+					},
+				},
+				{
+					Slug:  "05-buffered-channels",
+					Title: "Canales con buffer",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/limit",
+						Goal: "Limita cuántas tareas se ejecutan a la vez con un canal con buffer.",
+					},
+				},
+				{
+					Slug:  "06-range-close",
+					Title: "range y close",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/generate",
+						Goal: "Envía la sucesión de Fibonacci por un canal y ciérralo al acabar.",
+					},
+				},
+				{
+					Slug:  "07-select",
+					Title: "select y default",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/timeout",
+						Goal: "Espera un resultado, pero ríndete si tarda más de un tiempo máximo.",
+					},
+				},
+				{
+					Slug:  "08-mutex",
+					Title: "Mutex y data races",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/safecounter",
+						Goal: "Cuenta visitas desde muchas goroutines sin perder ninguna, con un Mutex.",
+					},
+				},
+				{
+					Slug:  "09-trees",
+					Title: "Práctica: árboles equivalentes",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/trees",
+						Goal: "Recorre dos árboles binarios en goroutines y decide si guardan los mismos valores.",
+					},
+				},
+				{
+					Slug:  "10-review",
+					Title: "Repaso: el rastreador web",
+					Exercise: &course.Exercise{
+						Path: "08-concurrency/crawler",
+						Goal: "Rastrea enlaces en paralelo sin visitar dos veces la misma página.",
+					},
+				},
+			},
+		},
 	},
 }

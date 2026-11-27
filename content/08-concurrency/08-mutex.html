@@ -1,0 +1,157 @@
+<section class="slide">
+<p>
+  Mil goroutines suman uno a un contador. Al final debería valer 1000. Lo
+  ejecutas tres veces y sale 967, 958 y 970. Ningún error, ningún aviso:
+  simplemente se pierden sumas, y cada vez un número distinto.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  <code>count++</code> parece una sola cosa, pero son tres: leer el valor,
+  sumarle uno y escribirlo. Si dos goroutines leen a la vez el mismo valor,
+  las dos escriben lo mismo y se pierde una suma. Es una <em>data
+  race</em> (carrera de datos).
+</p>
+<p>
+  Un <code>sync.Mutex</code> es un cerrojo. <code>mu.Lock()</code> lo
+  cierra y <code>mu.Unlock()</code> lo abre. Si otra goroutine ya lo tiene
+  cerrado, <code>Lock</code> espera, así que solo una a la vez ejecuta el
+  código de en medio.
+</p>
+</section>
+
+<section class="slide">
+<h2>Una carrera</h2>
+<sched-demo scene="race">
+  <p>
+    Animación: g1 y g2 leen <code>count</code>, que vale 0. Las dos le suman
+    uno y escriben 1: se ha perdido una suma. Con un <code>Mutex</code>, g1
+    cierra el cerrojo, y g2 espera hasta que g1 escribe 1 y lo abre.
+    Entonces g2 lee 1 y escribe 2. <code>count</code> acaba valiendo 2.
+  </p>
+</sched-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{codeLines "examples/race/main.go" 8 20}}
+</section>
+
+<section class="slide">
+<p>Tres ejecuciones:</p>
+<pre><code>967
+958
+970</code></pre>
+<p>
+  Fíjate en que cada vez sale un número distinto, y en tu ordenador saldrán
+  otros. A veces incluso sale 1000, y eso es lo peor: el fallo se esconde.
+  No puedes fiarte de probarlo unas cuantas veces.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Go trae un detector de carreras. Ejecuta el ejemplo con
+  <code>go run -race .</code>:
+</p>
+<pre><code>==================
+WARNING: DATA RACE
+Read at 0x00c000112028 by goroutine 9:
+  main.main.func1()
+      .../race/main.go:15 +0x7b
+
+Previous write at 0x00c000112028 by goroutine 11:
+  main.main.func1()
+      .../race/main.go:15 +0x8d
+
+Goroutine 9 (running) created at:
+  main.main()
+      .../race/main.go:13 +0x78
+==================</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>Read at 0x00c000112028 by goroutine 9:
+      .../race/main.go:15 +0x7b
+Previous write at 0x00c000112028 by goroutine 11:
+      .../race/main.go:15 +0x8d</code></pre>
+<p>
+  «Carrera de datos»: la goroutine 9 lee una dirección de memoria que la
+  goroutine 11 acaba de escribir, y ninguna ha esperado a la otra. Las dos
+  en la línea 15, <code>count++</code>. Debajo te dice dónde se creó la
+  goroutine: la línea 13, el <code>go func()</code>. Al final imprime la
+  cuenta, <code>Found 2 data race(s)</code> y acaba con
+  <code>exit status 66</code> para avisarte.
+</p>
+</section>
+
+<section class="slide">
+<h2>Con un Mutex</h2>
+{{codeLines "examples/mutex/main.go" 8 23}}
+</section>
+
+<section class="slide">
+<p>Salida, siempre:</p>
+<pre><code>1000</code></pre>
+<p>
+  Fíjate en que solo protege <code>count++</code>: lo que está entre
+  <code>Lock</code> y <code>Unlock</code>. Con <code>go run -race</code> ya
+  no hay ningún aviso. Si una función tiene varios <code>return</code>,
+  escribe <code>defer mu.Unlock()</code> justo después del
+  <code>Lock</code>, para no dejar nunca el cerrojo cerrado.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Copiar el <code>Mutex</code> con un receptor por valor:
+</p>
+<pre><code class="language-go">type Counter struct {
+	mu    sync.Mutex
+	count int
+}
+
+func (c Counter) Inc() {
+	c.mu.Lock()
+	c.count++
+	c.mu.Unlock()
+}</code></pre>
+</section>
+
+<section class="slide">
+<h2>Lo que dice go vet</h2>
+<pre><code>main.go:13:9: Inc passes lock by value: contador.Counter contains sync.Mutex</code></pre>
+<p>
+  «<code>Inc</code> pasa el cerrojo por valor». Con un receptor por valor,
+  cada llamada recibe una copia de <code>Counter</code>, con su propio
+  <code>Mutex</code> y su propio <code>count</code>: cierra una copia del
+  cerrojo y suma en una copia del contador. Usa un receptor puntero,
+  <code>func (c *Counter) Inc()</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>safecounter.go</code> un contador de visitas por página
+  que pueden usar muchas goroutines a la vez sin perder ninguna.
+</p>
+<pre><code class="language-go">type SafeCounter struct {
+	mu     sync.Mutex
+	counts map[string]int
+}
+
+func NewSafeCounter() *SafeCounter
+func (c *SafeCounter) Inc(key string)
+func (c *SafeCounter) Value(key string) int</code></pre>
+<p>
+  Hasta que lo escribas, <code>go test</code> falla con
+  <code>undefined: NewSafeCounter</code>. Es normal; es tu punto de
+  partida.
+</p>
+</section>

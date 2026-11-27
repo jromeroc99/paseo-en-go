@@ -1,0 +1,131 @@
+<section class="slide">
+<p>
+  Los hilos del sistema son caros: cada uno reserva memoria para su stack, y
+  pasar de uno a otro lleva tiempo. Un programa con miles de hilos pesa
+  mucho. Pero un servidor web quiere atender a miles de clientes a la vez.
+  Go tiene su propia forma de hacerlo.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  Una <em>goroutine</em> es una función que se ejecuta a la vez que el resto
+  del programa. Es muy ligera: empieza con un stack de pocos KB, y puedes
+  crear miles. Todas comparten la memoria del programa.
+</p>
+<p>
+  Se arranca con <code>go</code> delante de una llamada:
+  <code>go say("hola")</code>. El programa no espera a que termine y sigue
+  con la línea siguiente.
+</p>
+<p>
+  <code>main</code> también es una goroutine. Cuando termina, el programa
+  acaba, aunque queden otras.
+</p>
+</section>
+
+<section class="slide">
+<h2>Arrancar y esperar</h2>
+<sched-demo scene="goroutines">
+  <p>
+    Animación: <code>main</code> arranca dos goroutines con
+    <code>go say</code>. Si <code>main</code> termina enseguida, las dos
+    desaparecen sin imprimir nada. Con un <code>sync.WaitGroup</code>,
+    <code>wg.Add(2)</code> apunta dos pendientes, cada goroutine llama a
+    <code>wg.Done()</code> al acabar y <code>wg.Wait()</code> espera a que
+    el contador llegue a 0.
+  </p>
+</sched-demo>
+</section>
+
+<section class="slide">
+<h2>Esperar con un WaitGroup</h2>
+<p>
+  Un <code>sync.WaitGroup</code> cuenta las goroutines pendientes:
+</p>
+<ul>
+  <li><code>wg.Add(n)</code> suma <code>n</code> al contador.</li>
+  <li>Cada goroutine llama a <code>wg.Done()</code> al acabar, y resta
+    uno.</li>
+  <li><code>wg.Wait()</code> espera hasta que el contador llega a 0.</li>
+</ul>
+<p>
+  Pásalo siempre con un puntero, <code>&amp;wg</code>. Si lo copias, cada
+  copia cuenta por su lado y <code>Wait</code> no se entera.
+</p>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{codeLines "examples/goroutines/main.go" 1 11}}
+</section>
+
+<section class="slide">
+{{codeLines "examples/goroutines/main.go" 13 20}}
+<pre><code>adiós
+hola
+fin</code></pre>
+<p>
+  Fíjate en que hola y adiós pueden salir en otro orden cada vez que lo
+  ejecutas: las dos goroutines van a la vez y nadie decide cuál imprime
+  antes. fin sale siempre el último, porque <code>wg.Wait()</code> espera a
+  las dos.
+</p>
+</section>
+
+<section class="slide">
+<h2>Un error a propósito</h2>
+<p>
+  Te olvidas de los paréntesis del final:
+</p>
+<pre><code class="language-go">package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	go func() {
+		fmt.Println("hola")
+	}
+	time.Sleep(time.Second)
+}</code></pre>
+</section>
+
+<section class="slide">
+<h2>Cómo leer el error</h2>
+<pre><code>./main.go:9:5: expression in go must be function call</code></pre>
+<p>
+  Línea 9, columna 5: justo donde está <code>go</code>. «La expresión de un
+  <code>go</code> tiene que ser una llamada a una función». Escribir
+  <code>func() { ... }</code> solo define la función; los <code>()</code>
+  del final la llaman. Así que escribe <code>go func() { ... }()</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+{{code "examples/nowait/main.go"}}
+<p>
+  Ejecútalo: casi siempre no imprime nada. <code>main</code> termina antes
+  de que las goroutines lleguen a imprimir, y el programa acaba con ellas.
+  No lo arregles con <code>time.Sleep</code>, porque no sabes cuánto
+  esperar. Usa un <code>WaitGroup</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>squares.go</code> una función que calcula cada cuadrado
+  en su propia goroutine y espera a todas con un
+  <code>sync.WaitGroup</code> antes de devolver el resultado.
+</p>
+<pre><code class="language-go">func Squares(nums []int) []int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Squares</code>. Es normal; es tu punto de partida.
+</p>
+</section>

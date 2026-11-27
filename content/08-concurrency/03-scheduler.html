@@ -1,0 +1,101 @@
+<section class="slide">
+<p>
+  Ya sabes que puedes crear miles de goroutines. Pero tu ordenador tiene
+  pocos núcleos, y el sistema operativo solo sabe ejecutar hilos. ¿Quién
+  decide qué goroutine se ejecuta, en qué hilo y cuándo? El
+  <em>planificador</em> de Go, que viene dentro de cada programa.
+</p>
+</section>
+
+<section class="slide">
+<h2>El concepto</h2>
+<p>
+  El planificador de Go trabaja con tres piezas:
+</p>
+<ul>
+  <li><code>G</code>: una goroutine, con su código y su stack.</li>
+  <li><code>M</code>: un hilo del sistema (de <em>machine</em>), el que de
+    verdad se ejecuta en un núcleo.</li>
+  <li><code>P</code>: un procesador lógico. Tiene una cola de G que esperan
+    su turno, y un M que las ejecuta.</li>
+</ul>
+<p>
+  Hay tantos P como núcleos, salvo que digas otra cosa con
+  <code>GOMAXPROCS</code>.
+</p>
+</section>
+
+<section class="slide">
+<h2>El robo de trabajo</h2>
+<p>
+  Si un P se queda sin G en su cola, no se queda parado: mira la cola de
+  otro P y le roba la mitad. Se llama <em>work stealing</em> (robo de
+  trabajo). Así todos los núcleos tienen algo que hacer, sin que tú
+  repartas nada.
+</p>
+<p>
+  Y cuando una G espera (un canal, la red, un <code>time.Sleep</code>), el
+  planificador la aparta y pone otra en su lugar.
+</p>
+</section>
+
+<section class="slide">
+<h2>G, M y P</h2>
+<sched-demo scene="gmp">
+  <p>
+    Animación: un bucle crea cinco goroutines, de G0 a G4, y todas esperan
+    en la cola de P0. El hilo M0 ejecuta G0. P1 tiene su hilo, M1, pero la
+    cola vacía, así que roba la mitad de la cola de P0: G1 y G2. Ahora M1
+    ejecuta G1 y los dos hilos trabajan a la vez.
+  </p>
+</sched-demo>
+</section>
+
+<section class="slide">
+<h2>El ejemplo</h2>
+{{code "examples/many/main.go"}}
+</section>
+
+<section class="slide">
+<p>Salida:</p>
+<pre><code>goroutines: 100001
+P: 8</code></pre>
+<p>
+  Fíjate: cien mil goroutines, más <code>main</code>, en un programa que
+  tarda un instante. Cada una espera en <code>&lt;-block</code> y no gasta
+  núcleo mientras espera. <code>runtime.GOMAXPROCS(0)</code> te dice
+  cuántos P hay sin cambiarlo; en tu ordenador puede salir otro número.
+</p>
+</section>
+
+<section class="slide">
+<h2>El error típico</h2>
+<p>
+  Pensar que más goroutines hacen siempre el programa más rápido. Si el
+  trabajo es solo calcular, con más goroutines que núcleos no ganas nada:
+  se turnan en los mismos núcleos. Ganas cuando las goroutines esperan (a
+  la red, al disco), porque mientras una espera, otra trabaja.
+</p>
+<p>
+  Tampoco toques <code>GOMAXPROCS</code> sin medir: el valor por defecto
+  suele ser el mejor.
+</p>
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Simula el robo de trabajo en <code>steal.go</code>. Un <code>P</code>
+  tiene una cola de goroutines. <code>Steal</code> pasa la mitad de la cola
+  de la víctima, redondeando hacia arriba, al final de la cola del ladrón.
+</p>
+<pre><code class="language-go">type P struct {
+	Queue []string
+}
+
+func Steal(thief, victim *P)</code></pre>
+<p>
+  Hasta que los escribas, <code>go test</code> falla con
+  <code>undefined: P</code>. Es normal; es tu punto de partida.
+</p>
+</section>
