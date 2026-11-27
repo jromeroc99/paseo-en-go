@@ -112,3 +112,18 @@ fmt.Println(len(s), len(more)) // 3 4</code></pre>
   <code>s = append(s, x)</code>: la misma variable a los dos lados.
 </p>
 </section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>between.go</code> una función que devuelve los números de
+  <code>from</code> a <code>to</code>, los dos incluidos. Empieza con un slice
+  vacío y hazlo crecer con <code>append</code> dentro de un bucle. Si
+  <code>from</code> es mayor que <code>to</code>, devuelve un slice vacío.
+</p>
+<pre><code class="language-go">func Between(from, to int) []int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Between</code>.
+</p>
+</section>

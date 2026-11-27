@@ -101,8 +101,13 @@ func main() {
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio vas a escribir <code>Apply</code>, que recibe una lista y
-  una función, y devuelve una lista nueva con la función aplicada a cada
-  elemento. Es el bucle que solo se escribe una vez.
+  Escribe en <code>apply.go</code> una función que recibe una lista y una
+  función, y devuelve una lista nueva con la función aplicada a cada elemento.
+  Es el bucle que solo se escribe una vez.
+</p>
+<pre><code class="language-go">func Apply(nums []int, f func(int) int) []int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Apply</code>.
 </p>
 </section>

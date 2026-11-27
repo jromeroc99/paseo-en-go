@@ -198,10 +198,38 @@ var Course = course.Course{
 						Goal: "Crea un jugador y súmale puntos.",
 					},
 				},
-				{Slug: "03-arrays", Title: "Arrays"},
-				{Slug: "04-slices", Title: "Slices"},
-				{Slug: "05-slice-len-cap", Title: "Longitud y capacidad"},
-				{Slug: "06-append", Title: "Añadir elementos con append"},
+				{
+					Slug:  "03-arrays",
+					Title: "Arrays",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/reverse",
+						Goal: "Da la vuelta a un array de cinco enteros.",
+					},
+				},
+				{
+					Slug:  "04-slices",
+					Title: "Slices",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/inner",
+						Goal: "Quita el primer y el último elemento de un slice sin copiarlo.",
+					},
+				},
+				{
+					Slug:  "05-slice-len-cap",
+					Title: "Longitud y capacidad",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/room",
+						Goal: "Mide el sitio libre de un slice y amplíalo sin pasar de su capacidad.",
+					},
+				},
+				{
+					Slug:  "06-append",
+					Title: "Añadir elementos con append",
+					Exercise: &course.Exercise{
+						Path: "03-more-types/between",
+						Goal: "Construye un slice con los números de from a to usando append.",
+					},
+				},
 				{
 					Slug:  "07-range",
 					Title: "Recorrer con range",

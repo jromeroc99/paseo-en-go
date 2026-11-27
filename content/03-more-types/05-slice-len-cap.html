@@ -136,3 +136,19 @@ func main() {
   <code>nil</code> y con uno vacío.
 </p>
 </section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>room.go</code> dos funciones. <code>Room</code> dice cuántos
+  elementos caben aún en un slice sin un array nuevo. <code>Extend</code> lo
+  alarga <code>n</code> elementos volviendo a cortarlo, como en
+  <code>s[:4]</code>, solo si caben; si no, lo devuelve tal cual.
+</p>
+<pre><code class="language-go">func Room(s []int) int
+func Extend(s []int, n int) []int</code></pre>
+<p>
+  Hasta que las escribas, <code>go test</code> falla con
+  <code>undefined: Room</code>.
+</p>
+</section>

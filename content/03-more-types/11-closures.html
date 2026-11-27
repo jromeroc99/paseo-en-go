@@ -74,10 +74,15 @@
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  En el ejercicio vas a escribir <code>Fibonacci</code>, que devuelve una
-  función. Cada vez que llames a esa función, te dará el siguiente número de
-  la sucesión de Fibonacci: 0, 1, 1, 2, 3, 5, 8… Cada número es la suma de
-  los dos anteriores. El closure tiene que recordar los dos últimos números,
-  y dos generadores distintos deben llevar cuentas independientes.
+  Escribe en <code>fibonacci.go</code> una función que devuelve otra función.
+  Cada llamada a esta te da el siguiente número de Fibonacci: 0, 1, 1, 2, 3,
+  5, 8… Cada número es la suma de los dos anteriores, así que el closure tiene
+  que recordar los dos últimos. Dos generadores distintos llevan cuentas
+  independientes.
+</p>
+<pre><code class="language-go">func Fibonacci() func() int</code></pre>
+<p>
+  Hasta que la escribas, <code>go test</code> falla con
+  <code>undefined: Fibonacci</code>.
 </p>
 </section>

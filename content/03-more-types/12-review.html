@@ -25,17 +25,24 @@
 <section class="slide">
 <h2>Tu turno</h2>
 <p>
-  El ejercicio final es un pequeño inventario. Cada producto es un
-  <code>Item</code> con nombre y cantidad, y el inventario es un
-  <code>[]Item</code>. Vas a escribir cuatro funciones:
+  El ejercicio final es un pequeño inventario: cada producto es un
+  <code>Item</code>. Escribe en <code>inventory.go</code> el tipo y cuatro
+  funciones. <code>Total</code> suma las cantidades, <code>Restock</code> añade
+  unidades a través de un puntero, <code>ByName</code> agrupa las cantidades
+  por nombre en un map y <code>Filter</code> se queda con los productos que
+  acepta <code>keep</code>.
 </p>
-<ul>
-  <li><code>Total</code> suma las cantidades de todos los productos.</li>
-  <li><code>Restock</code> recibe un puntero a un <code>Item</code> y le suma
-    unidades.</li>
-  <li><code>ByName</code> devuelve un map con la cantidad de cada nombre;
-    si un nombre se repite, suma sus cantidades.</li>
-  <li><code>Filter</code> recibe una función que decide qué productos se
-    quedan y devuelve un slice nuevo con ellos.</li>
-</ul>
+<pre><code class="language-go">type Item struct {
+	Name     string
+	Quantity int
+}
+
+func Total(items []Item) int
+func Restock(item *Item, amount int)
+func ByName(items []Item) map[string]int
+func Filter(items []Item, keep func(Item) bool) []Item</code></pre>
+<p>
+  Hasta que las escribas, <code>go test</code> falla con
+  <code>undefined: Item</code>.
+</p>
 </section>
