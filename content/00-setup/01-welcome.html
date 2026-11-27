@@ -10,7 +10,7 @@
 <h2>Cómo funciona</h2>
 <ol>
   <li>Lee la lección en esta web.</li>
-  <li>Abre la carpeta del ejercicio en tu editor y completa el código.</li>
+  <li>Abre la carpeta del ejercicio en tu editor y escribe tú todo el código que te pide.</li>
   <li>Ejecuta <code>go test</code>. Cuando todos los tests pasan, el ejercicio está resuelto.</li>
   <li>Marca la lección como completada. Tu progreso se guarda en este navegador.</li>
 </ol>
@@ -35,4 +35,19 @@ cd paseo-en-go/exercises</code></pre>
 <h2>Tu primer programa</h2>
 <p>Todo programa de Go empieza en la función <code>main</code> del paquete <code>main</code>:</p>
 {{code "examples/hello/main.go"}}
+</section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Abre <code>hello.go</code> y escribe tú la función entera, con su cuerpo
+  entre llaves como en <code>main</code>. Devuelve el saludo con
+  <code>return</code>; el operador <code>+</code> une dos textos.
+</p>
+<pre><code class="language-go">func Greeting(name string) string</code></pre>
+<p>
+  Ejecuta <code>go test</code> antes de escribir nada: falla con
+  <code>undefined: Greeting</code>, porque el test llama a una función que
+  todavía no existe. Es normal; es tu punto de partida.
+</p>
 </section>

@@ -120,3 +120,19 @@ func main() {
   usa una variable.
 </p>
 </section>
+
+<section class="slide">
+<h2>Tu turno</h2>
+<p>
+  Escribe en <code>vat.go</code> la constante del IVA y una función que lo
+  suma a un precio: 100 con IVA son 121. Si declaras <code>VAT</code> con
+  <code>var</code>, el test no compila y te dice que no es una constante.
+</p>
+<pre><code class="language-go">const VAT = 0.21
+
+func WithVAT(price float64) float64</code></pre>
+<p>
+  Hasta que las escribas, <code>go test</code> falla con
+  <code>undefined: VAT</code>.
+</p>
+</section>

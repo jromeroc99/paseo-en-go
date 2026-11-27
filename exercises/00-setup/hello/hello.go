@@ -1,10 +1,14 @@
 //go:build !solution
 
-package hello
-
+// Package hello is your first exercise: a function that greets someone.
+//
+// Write this function in this file:
+//
+//	func Greeting(name string) string
+//
 // Greeting returns a friendly greeting for name.
 // Example: Greeting("Gopher") returns "Hello, Gopher!".
-func Greeting(name string) string {
-	// TODO: build the greeting using name.
-	return ""
-}
+//
+// Hint: put the body between braces, as in func main, and give back the
+// text with return. The + operator joins two strings: "Hello, " + name.
+package hello

@@ -40,7 +40,14 @@ var Course = course.Course{
 			Title:   "Lo básico",
 			Summary: "Paquetes, funciones, variables, tipos y constantes: las piezas de cualquier programa.",
 			Lessons: []course.Lesson{
-				{Slug: "01-packages", Title: "Paquetes e imports"},
+				{
+					Slug:  "01-packages",
+					Title: "Paquetes e imports",
+					Exercise: &course.Exercise{
+						Path: "01-basics/shout",
+						Goal: "Usa el paquete strings para gritar un texto en mayúsculas.",
+					},
+				},
 				{
 					Slug:  "02-functions",
 					Title: "Funciones",
@@ -57,9 +64,30 @@ var Course = course.Course{
 						Goal: "Devuelve el cociente y el resto de una división entera.",
 					},
 				},
-				{Slug: "04-variables", Title: "Variables"},
-				{Slug: "05-basic-types", Title: "Tipos básicos"},
-				{Slug: "06-zero-values", Title: "Valores cero"},
+				{
+					Slug:  "04-variables",
+					Title: "Variables",
+					Exercise: &course.Exercise{
+						Path: "01-basics/seconds",
+						Goal: "Convierte horas, minutos y segundos en segundos.",
+					},
+				},
+				{
+					Slug:  "05-basic-types",
+					Title: "Tipos básicos",
+					Exercise: &course.Exercise{
+						Path: "01-basics/discount",
+						Goal: "Calcula el precio con descuento usando float64.",
+					},
+				},
+				{
+					Slug:  "06-zero-values",
+					Title: "Valores cero",
+					Exercise: &course.Exercise{
+						Path: "01-basics/zero",
+						Goal: "Devuelve el valor cero de cada tipo básico.",
+					},
+				},
 				{
 					Slug:  "07-type-conversions",
 					Title: "Conversiones e inferencia de tipos",
@@ -68,7 +96,14 @@ var Course = course.Course{
 						Goal: "Calcula la media de dos enteros sin perder los decimales.",
 					},
 				},
-				{Slug: "08-constants", Title: "Constantes"},
+				{
+					Slug:  "08-constants",
+					Title: "Constantes",
+					Exercise: &course.Exercise{
+						Path: "01-basics/vat",
+						Goal: "Usa una constante para sumar el IVA a un precio.",
+					},
+				},
 				{
 					Slug:  "09-review",
 					Title: "Repaso: el círculo",
