@@ -159,7 +159,14 @@ var Course = course.Course{
 						Goal: "Indica a qué estación del año pertenece un mes.",
 					},
 				},
-				{Slug: "06-defer", Title: "defer"},
+				{
+					Slug:  "06-defer",
+					Title: "defer",
+					Exercise: &course.Exercise{
+						Path: "02-flow-control/countdown",
+						Goal: "Haz una cuenta atrás con defer: los defer se ejecutan al revés.",
+					},
+				},
 				{
 					Slug:  "07-review",
 					Title: "Repaso: números primos",
