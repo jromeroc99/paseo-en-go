@@ -128,10 +128,10 @@ Summary: "Cómo hablan dos programas por la red: TCP, un socket propio, HTTP por
 | T2b | S1, S2, S7 (`07-buffers`) | delegated, worktree | done | `8d80f3b`, `303ef33`, `dd33c5a` |
 | T2c | S1, S2, S5, S8 (`08-concurrency`) | delegated, worktree | done | `a2969ea`, `0d7759e`, `5007677` |
 | T2d | S1, S2, S9 (`09-web`) | delegated, worktree | done | `ba7d208`, `77d5fb6`, `492b337` |
-| T3 | S1 Part A | — | pending | |
-| T4 | S2 (modules 00–04) | — | pending | |
+| T3 | S1 Part A | delegated, worktree | in progress | |
+| T4 | S2 (modules 00–04) | delegated, worktree | in progress | |
 
-Route evidence: T1 is one module written in sequence; no writer reason (no parallel units launched together), so inline. T2a–T2d are four independent modules with disjoint edit surfaces, each hours of work, launched together in one turn: Writer trigger (a). They all add an entry to `content/catalog.go`, so each runs in its own worktree and the parent merges the four branches into `feat/low-level`.
+Route evidence: T1 is one module written in sequence; no writer reason (no parallel units launched together), so inline. T2a–T2d are four independent modules with disjoint edit surfaces, each hours of work, launched together in one turn: Writer trigger (a). They all add an entry to `content/catalog.go`, so each runs in its own worktree and the parent merges the four branches into `feat/low-level`. T3 and T4 are two independent units launched together in one turn (Writer trigger (a)); both edit lesson bodies of modules 01–04, so each runs in its own worktree and the parent merges them.
 
 ## Log
 
@@ -155,3 +155,4 @@ Route evidence: T1 is one module written in sequence; no writer reason (no paral
   - Seam check on the merged branch: `gofmt -l` empty (root and exercises), `go vet ./...` ok, `go test -count=1 ./...` ok (content, internal/course, internal/site), `cd exercises && go vet -tags solution ./...` ok, `go test -count=1 -tags solution ./...` 62 packages ok and 0 failing, `go test -race -tags solution ./08-concurrency/... ./09-web/...` ok, `node --check` on every animation ok.
   - Pending: a headless walk of the merged site was not run by the parent; each module's own walk passed on its branch. The 9 px sideways scroll at 390 px (L9) is pre-existing and not fixed here.
   - Next: T3 (Part A animations), then T4.
+- L12 (2026-11-27) user: "sí, lanza T3 y T4 en paralelo, o lo hago yo, dile que puede o bien por worktree o con cuidado, por los commits". T3 and T4 launched in parallel, each in its own worktree reset to this plan commit, because both touch `content/0[1-4]-*/*.html`.
