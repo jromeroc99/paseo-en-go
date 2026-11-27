@@ -35,6 +35,18 @@ var language = "Go"</code></pre>
 </section>
 
 <section class="slide">
+<h2>En la memoria</h2>
+<pointer-demo scene="variable">
+  <p>
+    Animación: <code>var count int</code> reserva una caja en la memoria, con
+    su dirección, que empieza valiendo 0. <code>count = 42</code> escribe en
+    esa misma caja. <code>other := count</code> crea otra caja y copia el 42;
+    cambiar <code>other</code> no toca <code>count</code>.
+  </p>
+</pointer-demo>
+</section>
+
+<section class="slide">
 <h2>El ejemplo</h2>
 {{code "examples/variables/main.go"}}
 </section>

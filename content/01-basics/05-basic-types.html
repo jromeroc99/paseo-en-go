@@ -45,6 +45,18 @@
 </section>
 
 <section class="slide">
+<h2>Un número en 8 bits</h2>
+<memory-demo scene="int8">
+  <p>
+    Animación: un <code>int8</code> guarda 127 en 8 bits, 0111 1111; el
+    primer bit es el signo. <code>b++</code> suma 1 y el acarreo llega hasta
+    el bit de signo: 1000 0000. Go lo lee como -128. El número da la vuelta
+    sin avisar.
+  </p>
+</memory-demo>
+</section>
+
+<section class="slide">
 <h2>El ejemplo</h2>
 <p>
   <code>fmt.Printf</code> con <code>%T</code> imprime el tipo de un valor, y

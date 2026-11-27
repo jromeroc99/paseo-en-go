@@ -1,20 +1,42 @@
 // <pointer-demo> shows variables as boxes in memory and pointers as arrows
-// to those boxes. Scenes: "basics" (&, * and nil) and "receivers" (a value
-// receiver gets a copy, a pointer receiver gets the original).
+// to those boxes. Scenes: "variable" (a variable is a box with an address),
+// "convert" (int(f) copies the value and drops its decimals), "basics" (&,
+// * and nil), "closure" (each closure keeps its own captured variable) and
+// "receivers" (a value receiver gets a copy, a pointer receiver gets the
+// original).
 import { Scene, lerp, pointOnPath } from "./scene.js";
 
 const BOX_WIDTH = 40;
 const BOX_HEIGHT = 16;
 const DROP = 6; // units an entering box falls before it settles
+const FALL = 20; // units a discarded piece of a value falls as it is lost
 
 // The output strip, where fmt.Println writes.
 const OUTPUT = { x: 84, y: 52, width: 72, height: 40 };
+
+// variable: two ints, eight bytes apart in memory.
+const COUNT = { id: "count", label: "count", x: 16, y: 16, addr: "0xc0" };
+const OTHER = { id: "other", label: "other", x: 100, y: 16, addr: "0xc8" };
+
+// convert: the float64 on the left, the int made from it on the right. The
+// decimals start next to the 9 inside euros and fall away.
+const PRICE = { id: "price", label: "price · float64", x: 8, y: 20, width: 64, value: "9.75" };
+const EUROS = { id: "euros", label: "euros · int", x: 88, y: 20, width: 64 };
+const DECIMALS = { text: ".75", x: 123, y: 26 };
 
 // basics: p points to i; q is nil.
 const I = { id: "i", label: "i", x: 100, y: 16, addr: "0xc0" };
 const P = { id: "p", label: "p", x: 20, y: 16, kind: "pointer", value: "0xc0" };
 const Q = { id: "q", label: "q", x: 20, y: 60, kind: "nil", value: "nil" };
 const P_TO_I = { from: "p", points: [[61, 23], [98, 23]] };
+
+// closure: each function adder returns points to its own sum.
+const POS = { id: "pos", label: "pos", x: 8, y: 14, kind: "pointer", value: "func" };
+const NEG = { id: "neg", label: "neg", x: 8, y: 60, kind: "pointer", value: "func" };
+const POS_SUM = { id: "pos-sum", label: "sum", x: 100, y: 14 };
+const NEG_SUM = { id: "neg-sum", label: "sum", x: 100, y: 60 };
+const POS_TO_SUM = { from: "pos", points: [[49, 21], [98, 21]] };
+const NEG_TO_SUM = { from: "neg", points: [[49, 67], [98, 67]] };
 
 // receivers: the method's own v lives inside the method's scope.
 const V = { id: "v", label: "v", x: 8, y: 24, width: 56, addr: "0xc0" };
@@ -23,6 +45,67 @@ const METHOD_TO_V = { from: "method-v", points: [[87, 31], [65, 31]] };
 const SCOPE = { x: 80, y: 4, width: 76, height: 44 };
 
 const scenes = {
+  variable: {
+    code: ["var count int", "count = 42", "other := count", "other = 7", "fmt.Println(count, other)"],
+    steps: [
+      {
+        line: 0,
+        caption: "`var count int` reserva una caja en la memoria, con su dirección. Aún sin valor, guarda 0.",
+        boxes: [{ ...COUNT, value: "0" }],
+        enter: ["count"],
+      },
+      {
+        line: 1,
+        caption: "`count = 42` escribe 42 dentro de la misma caja. La dirección no cambia.",
+        boxes: [{ ...COUNT, value: "42", was: "0" }],
+      },
+      {
+        line: 2,
+        caption: "`other := count` crea otra caja, en otra dirección, y copia dentro el 42.",
+        boxes: [{ ...COUNT, value: "42" }, { ...OTHER, value: "42" }],
+        enter: ["other"],
+      },
+      {
+        line: 3,
+        caption: "`other = 7` solo cambia su propia caja. `count` sigue valiendo 42.",
+        boxes: [{ ...COUNT, value: "42" }, { ...OTHER, value: "7", was: "42" }],
+      },
+      {
+        line: 4,
+        caption: "Cada variable es su propia caja: `fmt.Println` imprime 42 y 7.",
+        boxes: [{ ...COUNT, value: "42" }, { ...OTHER, value: "7" }],
+        output: ["42 7"],
+        printed: true,
+      },
+    ],
+  },
+
+  convert: {
+    code: ["price := 9.75", "euros := int(price)", "fmt.Println(price, euros)"],
+    steps: [
+      {
+        line: 0,
+        caption: "`price := 9.75` es un `float64`: guarda la parte entera y los decimales.",
+        boxes: [PRICE],
+        enter: ["price"],
+      },
+      {
+        line: 1,
+        caption: "`int(price)` crea un `int`, que no tiene sitio para decimales: el .75 se pierde. No redondea.",
+        boxes: [PRICE, { ...EUROS, value: "9" }],
+        enter: ["euros"],
+        discard: DECIMALS,
+      },
+      {
+        line: 2,
+        caption: "Convertir hace una copia: `price` sigue valiendo 9.75. Se imprime 9.75 y 9.",
+        boxes: [PRICE, { ...EUROS, value: "9" }],
+        output: ["9.75 9"],
+        printed: true,
+      },
+    ],
+  },
+
   basics: {
     code: ["i := 42", "p := &i", "fmt.Println(*p)", "*p = 21", "fmt.Println(i)", "var q *int", "fmt.Println(q == nil)"],
     steps: [
@@ -79,6 +162,59 @@ const scenes = {
         arrows: [P_TO_I],
         output: ["42", "21", "true"],
         printed: true,
+      },
+    ],
+  },
+
+  closure: {
+    code: [
+      "func adder() func(int) int {",
+      "\tsum := 0",
+      "\treturn func(x int) int {",
+      "\t\tsum += x",
+      "\t\treturn sum",
+      "\t}",
+      "}",
+      "pos, neg := adder(), adder()",
+      "pos(1)",
+      "pos(2)",
+      "neg(-2)",
+    ],
+    steps: [
+      {
+        line: 7,
+        caption: "`adder()` crea una variable `sum` que vale 0 y devuelve una función que la usa: `pos`.",
+        boxes: [POS, { ...POS_SUM, value: "0" }],
+        arrows: [POS_TO_SUM],
+        enter: ["pos", "pos-sum"],
+      },
+      {
+        line: 7,
+        caption: "La segunda llamada a `adder` crea otra `sum`, nueva. La función `neg` usa esa.",
+        boxes: [POS, { ...POS_SUM, value: "0" }, NEG, { ...NEG_SUM, value: "0" }],
+        arrows: [POS_TO_SUM, NEG_TO_SUM],
+        enter: ["neg", "neg-sum"],
+      },
+      {
+        line: 8,
+        caption: "`pos(1)` sigue su flecha y suma 1 a su `sum`: ahora vale 1.",
+        boxes: [POS, { ...POS_SUM, value: "1", was: "0" }, NEG, { ...NEG_SUM, value: "0" }],
+        arrows: [POS_TO_SUM, NEG_TO_SUM],
+        follow: POS_TO_SUM,
+      },
+      {
+        line: 9,
+        caption: "`adder` ya terminó, pero su `sum` sigue viva: `pos(2)` la deja en 3.",
+        boxes: [POS, { ...POS_SUM, value: "3", was: "1" }, NEG, { ...NEG_SUM, value: "0" }],
+        arrows: [POS_TO_SUM, NEG_TO_SUM],
+        follow: POS_TO_SUM,
+      },
+      {
+        line: 10,
+        caption: "`neg(-2)` cambia solo su propia `sum`. La de `pos` sigue valiendo 3.",
+        boxes: [POS, { ...POS_SUM, value: "3" }, NEG, { ...NEG_SUM, value: "-2", was: "0" }],
+        arrows: [POS_TO_SUM, NEG_TO_SUM],
+        follow: NEG_TO_SUM,
       },
     ],
   },
@@ -146,8 +282,9 @@ const scenes = {
 class PointerDemo extends Scene {
   static scenes = scenes;
 
-  // A step plays in two halves: new boxes drop in, then new arrows grow.
-  // A step that changes a value or follows an arrow uses all of t.
+  // A step plays in two halves: new boxes drop in, then new arrows grow and
+  // discarded pieces fall. A step that changes a value or follows an arrow
+  // uses all of t.
   draw(paint, step, t) {
     const entering = new Set(step.enter ?? []);
     const settle = Math.min(1, t * 2);
@@ -164,6 +301,11 @@ class PointerDemo extends Scene {
     if (step.follow && t < 1) {
       const [x, y] = pointOnPath(step.follow.points, t);
       paint.dot(x, y, paint.colors.highlight);
+    }
+    if (step.discard && t < 1) {
+      // The piece rides down with its box, then falls on its own.
+      const y = step.discard.y - lerp(DROP, 0, settle) + lerp(0, FALL, grow);
+      paint.text(step.discard.text, step.discard.x, y, paint.colors.error);
     }
     if (step.output) drawOutput(paint, step.output, step.printed, t);
   }

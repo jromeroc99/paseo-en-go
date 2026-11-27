@@ -1,6 +1,8 @@
-// <memory-demo> shows memory as a row of bytes. Scenes: "bytes" (each type
-// takes a number of bytes), "padding" (the order of a struct's fields
-// changes its size) and "utf8" (a string is bytes; a rune can take several).
+// <memory-demo> shows memory as a row of bytes. Scenes: "int8" (a number in
+// eight bits wraps around when it passes its maximum), "struct" (a struct's
+// fields sit one after another), "bytes" (each type takes a number of
+// bytes), "padding" (the order of a struct's fields changes its size) and
+// "utf8" (a string is bytes; a rune can take several).
 import { Scene, lerp } from "./scene.js";
 
 const DROP = 6; // units an entering value falls before it settles
@@ -11,6 +13,16 @@ const ADDRESSES = ["0xc000", "0xc008"];
 const A = { id: "a", label: "a · 1 byte", row: 0, start: 0, size: 1, value: "1" };
 const B = { id: "b", label: "b · 4 bytes", row: 0, start: 4, size: 4, value: "2" };
 const C = { id: "c", label: "c · 8 bytes", row: 1, start: 0, size: 8, value: "3" };
+
+// struct: v's two fields, drawn on the same rows as the bytes scene.
+const X = { id: "X", label: "v.X · 8 bytes", row: 0, start: 0, size: 8 };
+const Y = { id: "Y", label: "v.Y · 8 bytes", row: 1, start: 0, size: 8 };
+
+// int8: the eight bits of b, the sign bit first, and the number they mean.
+const BITS = { x: 20, y: 22, cellWidth: 13, cellHeight: 14 };
+const BITS_VALUE_X = 124;
+const MAX_INT8 = "01111111";
+const MIN_INT8 = "10000000";
 
 // padding: the same three fields, in two orders, eight bytes per row.
 const LOOSE = { title: "Loose", x: 10, cellWidth: 8, cellHeight: 12, rows: [16, 27, 38] };
@@ -32,6 +44,91 @@ const RUNES = [
 ];
 
 const scenes = {
+  int8: {
+    output: { x: 4, y: 62, width: 152, height: 30 },
+    code: ["var b int8 = 127", "b++", "fmt.Println(b)"],
+    steps: [
+      {
+        line: 0,
+        caption: "Un `int8` guarda su número en 8 bits, ceros y unos. 127 es 0111 1111.",
+        bits: MAX_INT8,
+        value: "127",
+        enter: true,
+      },
+      {
+        line: 0,
+        caption: "El primer bit es el signo: 0 para los positivos. 127 es el mayor número que cabe.",
+        bits: MAX_INT8,
+        value: "127",
+        sign: true,
+      },
+      {
+        line: 1,
+        caption: "`b++` suma 1. Como en 0999 + 1, el 1 se lleva de bit en bit hasta el primero: 1000 0000.",
+        bits: MIN_INT8,
+        was: { bits: MAX_INT8, value: "127" },
+        value: "-128",
+      },
+      {
+        line: 2,
+        caption: "Ahora el bit de signo vale 1: Go lee -128. El número da la vuelta sin avisar.",
+        bits: MIN_INT8,
+        value: "-128",
+        sign: true,
+        output: ["-128"],
+        printed: true,
+      },
+    ],
+  },
+
+  struct: {
+    output: { x: 4, y: 62, width: 152, height: 30 },
+    code: [
+      "type Vertex struct {",
+      "\tX int",
+      "\tY int",
+      "}",
+      "v := Vertex{1, 2}",
+      "fmt.Println(v)",
+      "v.X = 4",
+      "fmt.Println(v.X, v.Y)",
+    ],
+    steps: [
+      {
+        line: 4,
+        caption: "`Vertex{1, 2}` guarda los campos uno detrás de otro. `X` es un `int`: los 8 primeros bytes.",
+        vars: [{ ...X, value: "1" }],
+        enter: "X",
+      },
+      {
+        line: 4,
+        caption: "`Y` va justo detrás, sin huecos. `v` es un solo bloque de 16 bytes.",
+        vars: [{ ...X, value: "1" }, { ...Y, value: "2" }],
+        enter: "Y",
+      },
+      {
+        line: 5,
+        caption: "`fmt.Println(v)` imprime los campos en el orden en que están: {1 2}.",
+        vars: [{ ...X, value: "1" }, { ...Y, value: "2" }],
+        output: ["{1 2}"],
+        printed: true,
+      },
+      {
+        line: 6,
+        caption: "`v.X = 4` escribe en los 8 primeros bytes de `v`. Los de `Y` no se tocan.",
+        vars: [{ ...X, value: "4", was: "1" }, { ...Y, value: "2" }],
+        output: ["{1 2}"],
+      },
+      {
+        line: 7,
+        caption: "`v.X` y `v.Y` leen cada uno su trozo del bloque: 4 y 2.",
+        vars: [{ ...X, value: "4" }, { ...Y, value: "2" }],
+        output: ["{1 2}", "4 2"],
+        printed: true,
+      },
+    ],
+  },
+
   bytes: {
     output: { x: 4, y: 62, width: 152, height: 30 },
     code: [
@@ -186,17 +283,44 @@ const scenes = {
 class MemoryDemo extends Scene {
   static scenes = scenes;
 
-  // The three scenes share cells and output, but each has its own layout.
+  // The scenes share cells and output, but each has its own layout.
   draw(paint, step, t) {
     const name = this.getAttribute("scene");
-    const drawScene = { bytes: drawBytes, padding: drawPadding, utf8: drawUtf8 }[name];
+    const drawScene = { int8: drawBits, struct: drawBytes, bytes: drawBytes, padding: drawPadding, utf8: drawUtf8 }[name];
     drawScene(paint, step, t);
     if (step.output) drawOutput(paint, scenes[name].output, step.output, step.printed, t);
   }
 }
 
+// drawBits draws the eight bits of an int8 and the number they mean. When
+// the bits change, the carry runs from the last bit to the first, and the
+// number changes when it arrives.
+function drawBits(paint, step, t) {
+  const { colors } = paint;
+  const y = BITS.y - (step.enter ? lerp(DROP, 0, t) : 0);
+  const changing = step.was !== undefined;
+
+  paint.text("b · int8", BITS.x, y - 7, colors.paper);
+  const cells = [...step.bits].map((bit, i) => {
+    if (changing) {
+      const reached = t >= (step.bits.length - i) / step.bits.length;
+      return { text: reached ? bit : step.was.bits[i], kind: "highlight" };
+    }
+    const isSign = step.sign && i === 0;
+    return { text: bit, kind: isSign ? "highlight" : "value" };
+  });
+  drawCells(paint, BITS, y, cells);
+
+  const signColor = step.sign ? colors.highlight : colors.paper;
+  paint.centerText("signo", BITS.x - 6, y + BITS.cellHeight + 3, BITS.cellWidth + 12, signColor);
+  const value = changing && t < 1 ? step.was.value : step.value;
+  const valueColor = value.startsWith("-") ? colors.error : colors.value;
+  paint.text(`= ${value}`, BITS_VALUE_X, y + textOffset(BITS), valueColor);
+}
+
 // drawBytes draws two rows of empty bytes and, over them, each variable as
-// one frame across the bytes it takes. The new variable drops in.
+// one frame across the bytes it takes. The new variable drops in; a value
+// that changes shows its old value until the step's motion ends.
 function drawBytes(paint, step, t) {
   const { colors } = paint;
   BYTES.rows.forEach((y, row) => {
@@ -205,13 +329,14 @@ function drawBytes(paint, step, t) {
   });
   for (const v of step.vars) {
     const entering = v.id === step.enter;
+    const changing = v.was !== undefined;
     const y = BYTES.rows[v.row] - (entering ? lerp(DROP, 0, t) : 0);
-    const color = entering ? colors.highlight : colors.value;
+    const color = entering || changing ? colors.highlight : colors.value;
     const x = cellX(BYTES, v.start);
     const width = spanWidth(BYTES, v.size);
     paint.text(v.label, x, y - 7, colors.paper);
     paint.frame(x, y, width, BYTES.cellHeight, color);
-    paint.centerText(v.value, x, y + textOffset(BYTES), width, color);
+    paint.centerText(changing && t < 1 ? v.was : v.value, x, y + textOffset(BYTES), width, color);
   }
 }
 
